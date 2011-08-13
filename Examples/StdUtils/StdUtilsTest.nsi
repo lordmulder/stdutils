@@ -97,9 +97,9 @@ Section
 	SetOutPath "$PLUGINSDIR\TestDirA\SubDir"
 	File "${NSISDIR}\Contrib\Graphics\Header\*.*"
 	
-	${StdUtils.SHFileMove} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirX\TestDirB" $HWNDPARENT
-	DetailPrint "SHFileMove: $0"
-	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\SubDirX\TestDirB" "$PLUGINSDIR\SubDirY\TestDirC" $HWNDPARENT
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirX\TestDirB" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
+	${StdUtils.SHFileMove} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirY\TestDirC" $HWNDPARENT
+	DetailPrint "SHFileMove: $0"
 	ExecShell "explore" "$PLUGINSDIR"
 SectionEnd

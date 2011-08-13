@@ -174,7 +174,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="msvc_func.h" />
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
