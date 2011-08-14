@@ -1,6 +1,7 @@
 #include "StdUtils.h"
 
 HANDLE g_hInstance;
+bool g_bVerbose;
 
 NSISFUNC(Time)
 {
@@ -8,6 +9,7 @@ NSISFUNC(Time)
 	long t = time(NULL);
 	pushint(t);
 }
+
 NSISFUNC(Rand)
 {
 	EXDLL_INIT();
@@ -49,7 +51,11 @@ NSISFUNC(RandList)
 
 	if(count > max)
 	{
-		MessageBoxW(NULL, L"RandList() was called with bad arguments!", L"StdUtils::RandList", MB_ICONERROR | MB_TASKMODAL);
+		if(g_bVerbose)
+		{
+			MessageBoxW(NULL, L"RandList() was called with bad arguments!", L"StdUtils::RandList", MB_ICONERROR | MB_TASKMODAL);
+		}
+		pushstring(_T("EOL"));
 		return;
 	}
 
@@ -92,12 +98,12 @@ NSISFUNC(FormatStr)
 #ifdef UNICODE
 	if(_snwprintf(out, g_stringsize, fmt, v) < 0)
 	{
-		out[g_stringsize-1] = L'0';
+		out[g_stringsize-1] = L'\0';
 	}
 #else
 	if(_snprintf(out, g_stringsize, fmt, v) < 0)
 	{
-		out[g_stringsize-1] = '0';
+		out[g_stringsize-1] = '\0';
 	}
 #endif
 
@@ -119,12 +125,12 @@ NSISFUNC(FormatStr2)
 #ifdef UNICODE
 	if(_snwprintf(out, g_stringsize, fmt, v1, v2) < 0)
 	{
-		out[g_stringsize-1] = L'0';
+		out[g_stringsize-1] = L'\0';
 	}
 #else
 	if(_snprintf(out, g_stringsize, fmt, v1, v2) < 0)
 	{
-		out[g_stringsize-1] = '0';
+		out[g_stringsize-1] = '\0';
 	}
 #endif
 
@@ -147,12 +153,12 @@ NSISFUNC(FormatStr3)
 #ifdef UNICODE
 	if(_snwprintf(out, g_stringsize, fmt, v1, v2, v3) < 0)
 	{
-		out[g_stringsize-1] = L'0';
+		out[g_stringsize-1] = L'\0';
 	}
 #else
 	if(_snprintf(out, g_stringsize, fmt, v1, v2, v3) < 0)
 	{
-		out[g_stringsize-1] = '0';
+		out[g_stringsize-1] = '\0';
 	}
 #endif
 
@@ -187,6 +193,14 @@ NSISFUNC(SHFileMove)
 	int result = SHFileOperation(&fileop);
 	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? _T("ABORTED") : _T("OK")) : _T("ERROR"));
 
+	if((result != 0) && g_bVerbose)
+	{
+		char temp[1024];
+		_snprintf(temp, 1024, "Failed with error code: 0x%X", result);
+		temp[1023] = '\0';
+		MessageBoxA(NULL, temp, "StdUtils::SHFileMove", MB_TOPMOST|MB_ICONERROR);
+	}
+
 	delete [] from;
 	delete [] to;
 }
@@ -217,8 +231,29 @@ NSISFUNC(SHFileCopy)
 	int result = SHFileOperation(&fileop);
 	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? _T("ABORTED") : _T("OK")) : _T("ERROR"));
 
+	if((result != 0) && g_bVerbose)
+	{
+		char temp[1024];
+		_snprintf(temp, 1024, "Failed with error code: 0x%X", result);
+		temp[1023] = '\0';
+		MessageBoxA(NULL, temp, "StdUtils::SHFileCopy", MB_TOPMOST|MB_ICONERROR);
+	}
+
+
 	delete [] from;
 	delete [] to;
+}
+
+NSISFUNC(EnableVerboseMode)
+{
+	EXDLL_INIT();
+	g_bVerbose = true;
+}
+
+NSISFUNC(DisableVerboseMode)
+{
+	EXDLL_INIT();
+	g_bVerbose = false;
 }
 
 NSISFUNC(Unload)
@@ -228,7 +263,11 @@ NSISFUNC(Unload)
 
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
+	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
+	{
+		g_bVerbose = false;
+		srand(static_cast<unsigned int>(time(NULL)));
+	}
 	g_hInstance = hInst;
-	srand(static_cast<unsigned int>(time(NULL)));
 	return TRUE;
 }

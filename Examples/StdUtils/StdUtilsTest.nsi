@@ -96,12 +96,27 @@ Section
 	File "${NSISDIR}\Contrib\Graphics\Checks\*.*"
 	SetOutPath "$PLUGINSDIR\TestDirA\SubDir"
 	File "${NSISDIR}\Contrib\Graphics\Header\*.*"
+	CreateDirectory "$PLUGINSDIR\SubDirX"
+	CreateDirectory "$PLUGINSDIR\SubDirY"
 	
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirX\TestDirB" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 	${StdUtils.SHFileMove} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirY\TestDirC" $HWNDPARENT
 	DetailPrint "SHFileMove: $0"
 	ExecShell "explore" "$PLUGINSDIR"
+SectionEnd
+
+Section
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+	
+	${StdUtils.SetVerbose} 1
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+	
+	${StdUtils.SetVerbose} 0
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
 SectionEnd
 
 Section
