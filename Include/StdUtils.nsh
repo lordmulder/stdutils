@@ -12,6 +12,7 @@
 !define StdUtils.FormatStr3 '!insertmacro _StdUtils_FormatStr3'  #sprintf() with three format tags (only %d supported!)
 !define StdUtils.SHFileMove '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
+!define StdUtils.Unload     '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
 
 
 !macro _StdUtils_Time out
@@ -81,4 +82,8 @@
 	push ${hwnd}
 	StdUtils::SHFileCopy /NOUNLOAD
 	pop ${out}
+!macroend
+
+!macro _StdUtils_Unload
+	StdUtils::Unload
 !macroend

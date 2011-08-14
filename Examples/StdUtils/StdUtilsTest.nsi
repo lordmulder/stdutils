@@ -103,3 +103,7 @@ Section
 	DetailPrint "SHFileMove: $0"
 	ExecShell "explore" "$PLUGINSDIR"
 SectionEnd
+
+Section
+	${StdUtils.Unload}
+SectionEnd
