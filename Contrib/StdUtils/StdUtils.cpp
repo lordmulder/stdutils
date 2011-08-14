@@ -167,6 +167,33 @@ NSISFUNC(FormatStr3)
 	delete [] out;
 }
 
+NSISFUNC(ScanStr)
+{
+	EXDLL_INIT();
+	TCHAR *fmt = new TCHAR[g_stringsize];
+	TCHAR *in = new TCHAR[g_stringsize];
+	int def = popint();
+	popstringn(in, 0);
+	popstringn(fmt, 0);
+	int out = 0;
+
+#ifdef UNICODE
+	if(swscanf(in, fmt, &out) != 1)
+	{
+		out = def;
+	}
+#else
+	if(sscanf(in, fmt, &out) != 1)
+	{
+		out = def;
+	}
+#endif
+
+	pushint(out);
+	delete [] fmt;
+	delete [] in;
+}
+
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();

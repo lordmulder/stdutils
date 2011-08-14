@@ -10,6 +10,7 @@
 !define StdUtils.FormatStr  '!insertmacro _StdUtils_FormatStr'   #sprintf() with one format tag (only %d supported!)
 !define StdUtils.FormatStr2 '!insertmacro _StdUtils_FormatStr2'  #sprintf() with two format tags (only %d supported!)
 !define StdUtils.FormatStr3 '!insertmacro _StdUtils_FormatStr3'  #sprintf() with three format tags (only %d supported!)
+!define StdUtils.ScanStr    '!insertmacro _StdUtils_ScanStr'     #sscanf() with one format tag (only %d supported!)
 !define StdUtils.SHFileMove '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
 !define StdUtils.Unload     '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
@@ -66,6 +67,14 @@
 	push ${val2}
 	push ${val3}
 	StdUtils::FormatStr3 /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_ScanStr out format input default
+	push '${format}'
+	push '${input}'
+	push ${default}
+	StdUtils::ScanStr /NOUNLOAD
 	pop ${out}
 !macroend
 

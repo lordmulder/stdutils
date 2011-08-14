@@ -91,6 +91,13 @@ Section
 SectionEnd
 
 Section
+	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+SectionEnd
+
+Section
 	InitPluginsDir
 	SetOutPath "$PLUGINSDIR\TestDirA"
 	File "${NSISDIR}\Contrib\Graphics\Checks\*.*"
