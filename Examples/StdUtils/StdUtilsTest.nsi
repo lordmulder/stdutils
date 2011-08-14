@@ -98,6 +98,26 @@ Section
 SectionEnd
 
 Section
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 sowie 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Hund sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+SectionEnd
+
+Section
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! Und 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+SectionEnd
+
+Section
 	InitPluginsDir
 	SetOutPath "$PLUGINSDIR\TestDirA"
 	File "${NSISDIR}\Contrib\Graphics\Checks\*.*"
@@ -114,15 +134,15 @@ Section
 SectionEnd
 
 Section
-	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 	
 	${StdUtils.SetVerbose} 1
-	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 	
 	${StdUtils.SetVerbose} 0
-	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirABC" $HWNDPARENT
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 SectionEnd
 

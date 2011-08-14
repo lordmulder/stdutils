@@ -194,6 +194,82 @@ NSISFUNC(ScanStr)
 	delete [] in;
 }
 
+NSISFUNC(ScanStr2)
+{
+	EXDLL_INIT();
+	TCHAR *fmt = new TCHAR[g_stringsize];
+	TCHAR *in = new TCHAR[g_stringsize];
+	int def2 = popint();
+	int def1 = popint();
+	popstringn(in, 0);
+	popstringn(fmt, 0);
+	int out1 = 0;
+	int out2 = 0;
+	int result = 0;
+
+#ifdef UNICODE
+	result = swscanf(in, fmt, &out1, &out2);
+#else
+	result = sscanf(in, fmt, &out1, &out2);
+#endif
+	
+	if(result != 2)
+	{
+		if(result != 1)
+		{
+			out1 = def1;
+		}
+		out2 = def2;
+	}
+
+	pushint(out2);
+	pushint(out1);
+	delete [] fmt;
+	delete [] in;
+}
+
+NSISFUNC(ScanStr3)
+{
+	EXDLL_INIT();
+	TCHAR *fmt = new TCHAR[g_stringsize];
+	TCHAR *in = new TCHAR[g_stringsize];
+	int def3 = popint();
+	int def2 = popint();
+	int def1 = popint();
+	popstringn(in, 0);
+	popstringn(fmt, 0);
+	int out1 = 0;
+	int out2 = 0;
+	int out3 = 0;
+	int result = 0;
+
+#ifdef UNICODE
+	result = swscanf(in, fmt, &out1, &out2, &out3);
+#else
+	result = sscanf(in, fmt, &out1, &out2, &out3);
+#endif
+	
+	if(result != 3)
+	{
+		if(result == 0)
+		{
+			out1 = def1;
+			out2 = def2;
+		}
+		else if(result == 1)
+		{
+			out2 = def2;
+		}
+		out3 = def3;
+	}
+
+	pushint(out3);
+	pushint(out2);
+	pushint(out1);
+	delete [] fmt;
+	delete [] in;
+}
+
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();
