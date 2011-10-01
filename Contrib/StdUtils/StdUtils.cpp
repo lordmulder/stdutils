@@ -1,4 +1,5 @@
 #include "StdUtils.h"
+#include "ShellExecAsUser.h"
 
 HANDLE g_hInstance;
 bool g_bVerbose;
@@ -345,6 +346,37 @@ NSISFUNC(SHFileCopy)
 
 	delete [] from;
 	delete [] to;
+}
+
+NSISFUNC(ExecShellAsUser)
+{
+	EXDLL_INIT();
+
+	TCHAR *file = new TCHAR[g_stringsize];
+	TCHAR *verb = new TCHAR[g_stringsize];
+	TCHAR *para = new TCHAR[g_stringsize];
+
+	popstringn(para, 0);
+	popstringn(verb, 0);
+	popstringn(file, 0);
+	
+	if(_tcslen(verb) < 1) { delete [] verb; verb = NULL; }
+	if(_tcslen(para) < 1) { delete [] para; para = NULL; }
+
+	int result = ShellExecAsUser(verb, file, para, hWndParent);
+	
+	switch(result)
+	{
+	case 1:
+		pushstring(_T("ok"));
+		break;
+	case 0:
+		pushstring(_T("fallback"));
+		break;
+	default:
+		pushstring(_T("error"));
+		break;
+	}
 }
 
 NSISFUNC(EnableVerboseMode)

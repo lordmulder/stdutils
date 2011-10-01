@@ -26,6 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANSI|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -117,13 +118,14 @@
       </PrecompiledHeader>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\unicode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>nsis_pluginapi_unicode.lib;msvcrt_vc6.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nsis_pluginapi_unicode.lib;msvcrt_vc6.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <DataExecutionPrevention>
@@ -152,13 +154,14 @@
       </PrecompiledHeader>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\ansi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>nsis_pluginapi_ansi.lib;msvcrt_vc6.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nsis_pluginapi_ansi.lib;msvcrt_vc6.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <DataExecutionPrevention>
@@ -172,12 +175,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ShellExecAsUser.cpp" />
     <ClCompile Include="StdUtils.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ShellExecAsUser.h" />
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

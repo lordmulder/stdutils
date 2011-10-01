@@ -2,21 +2,22 @@
 # StdUtils plug-in for NSIS #
 #############################
 
-!define StdUtils.Time       '!insertmacro _StdUtils_Time'        #time()
-!define StdUtils.Rand       '!insertmacro _StdUtils_Rand'        #rand()
-!define StdUtils.RandMax    '!insertmacro _StdUtils_RandMax'     #rand() with maximum
-!define StdUtils.RandMinMax '!insertmacro _StdUtils_RandMinMax'  #rand() with minimum/maximum
-!define StdUtils.RandList   '!insertmacro _StdUtils_RandList'    #rand() with list support
-!define StdUtils.FormatStr  '!insertmacro _StdUtils_FormatStr'   #sprintf() with one format tag (only %d supported!)
-!define StdUtils.FormatStr2 '!insertmacro _StdUtils_FormatStr2'  #sprintf() with two format tags (only %d supported!)
-!define StdUtils.FormatStr3 '!insertmacro _StdUtils_FormatStr3'  #sprintf() with three format tags (only %d supported!)
-!define StdUtils.ScanStr    '!insertmacro _StdUtils_ScanStr'     #sscanf() with one format tag (only %d supported!)
-!define StdUtils.ScanStr2   '!insertmacro _StdUtils_ScanStr2'    #sscanf() with two format tags (only %d supported!)
-!define StdUtils.ScanStr3   '!insertmacro _StdUtils_ScanStr3'    #sscanf() with three format tags (only %d supported!)
-!define StdUtils.SHFileMove '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
-!define StdUtils.SHFileCopy '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
-!define StdUtils.Unload     '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
-!define StdUtils.SetVerbose '!insertmacro _StdUtils_SetVerbose'  #Verbose mode (for debugging)
+!define StdUtils.Time            '!insertmacro _StdUtils_Time'        #time()
+!define StdUtils.Rand            '!insertmacro _StdUtils_Rand'        #rand()
+!define StdUtils.RandMax         '!insertmacro _StdUtils_RandMax'     #rand() with maximum
+!define StdUtils.RandMinMax      '!insertmacro _StdUtils_RandMinMax'  #rand() with minimum/maximum
+!define StdUtils.RandList        '!insertmacro _StdUtils_RandList'    #rand() with list support
+!define StdUtils.FormatStr       '!insertmacro _StdUtils_FormatStr'   #sprintf() with one format tag (only %d supported!)
+!define StdUtils.FormatStr2      '!insertmacro _StdUtils_FormatStr2'  #sprintf() with two format tags (only %d supported!)
+!define StdUtils.FormatStr3      '!insertmacro _StdUtils_FormatStr3'  #sprintf() with three format tags (only %d supported!)
+!define StdUtils.ScanStr         '!insertmacro _StdUtils_ScanStr'     #sscanf() with one format tag (only %d supported!)
+!define StdUtils.ScanStr2        '!insertmacro _StdUtils_ScanStr2'    #sscanf() with two format tags (only %d supported!)
+!define StdUtils.ScanStr3        '!insertmacro _StdUtils_ScanStr3'    #sscanf() with three format tags (only %d supported!)
+!define StdUtils.SHFileMove      '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
+!define StdUtils.SHFileCopy      '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
+!define StdUtils.ExecShellAsUser '!insertmacro _ExecShellAsUser'      #ShellExecute() with user context
+!define StdUtils.Unload          '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
+!define StdUtils.SetVerbose      '!insertmacro _StdUtils_SetVerbose'  #Verbose mode (for debugging)
 
 
 !macro _StdUtils_Time out
@@ -115,6 +116,14 @@
 	push '${to}'
 	push ${hwnd}
 	StdUtils::SHFileCopy /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _ExecShellAsUser out file verb args
+	push '${file}'
+	push '${verb}'
+	push '${args}'
+	StdUtils::ExecShellAsUser /NOUNLOAD
 	pop ${out}
 !macroend
 

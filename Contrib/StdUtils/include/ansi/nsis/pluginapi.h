@@ -7,6 +7,9 @@ extern "C" {
 
 #include "api.h"
 
+#undef _UNICODE
+#include "..\..\unicode\nsis\nsis_tchar.h"
+
 #ifndef NSISCALL
 #  define NSISCALL __stdcall
 #endif
