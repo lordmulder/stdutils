@@ -15,7 +15,7 @@
 !define StdUtils.ScanStr3        '!insertmacro _StdUtils_ScanStr3'    #sscanf() with three format tags (only %d supported!)
 !define StdUtils.SHFileMove      '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy      '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
-!define StdUtils.ExecShellAsUser '!insertmacro _ExecShellAsUser'      #ShellExecute() with user context
+!define StdUtils.ExecShellAsUser '!insertmacro _StdUtils_ExecShlUser' #ShellExecute() with user context (for elevated installers)
 !define StdUtils.Unload          '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
 !define StdUtils.SetVerbose      '!insertmacro _StdUtils_SetVerbose'  #Verbose mode (for debugging)
 
@@ -119,7 +119,7 @@
 	pop ${out}
 !macroend
 
-!macro _ExecShellAsUser out file verb args
+!macro _StdUtils_ExecShlUser out file verb args
 	push '${file}'
 	push '${verb}'
 	push '${args}'

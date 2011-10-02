@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////////////
+// StdUtils plug-in for NSIS
+// Copyright (C) 2004-2011 LoRd_MuldeR <MuldeR2@GMX.de>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+//
+// http://www.gnu.org/licenses/gpl-2.0.txt
+///////////////////////////////////////////////////////////////////////////////
+
 #include "StdUtils.h"
 #include "ShellExecAsUser.h"
 
@@ -354,16 +375,16 @@ NSISFUNC(ExecShellAsUser)
 
 	TCHAR *file = new TCHAR[g_stringsize];
 	TCHAR *verb = new TCHAR[g_stringsize];
-	TCHAR *para = new TCHAR[g_stringsize];
+	TCHAR *args = new TCHAR[g_stringsize];
 
-	popstringn(para, 0);
+	popstringn(args, 0);
 	popstringn(verb, 0);
 	popstringn(file, 0);
 	
 	if(_tcslen(verb) < 1) { delete [] verb; verb = NULL; }
-	if(_tcslen(para) < 1) { delete [] para; para = NULL; }
+	if(_tcslen(args) < 1) { delete [] args; args = NULL; }
 
-	int result = ShellExecAsUser(verb, file, para, hWndParent);
+	int result = ShellExecAsUser(verb, file, args, hWndParent, true);
 	
 	switch(result)
 	{
@@ -373,10 +394,20 @@ NSISFUNC(ExecShellAsUser)
 	case 0:
 		pushstring(_T("fallback"));
 		break;
-	default:
+	case -1:
 		pushstring(_T("error"));
 		break;
+	case -2:
+		pushstring(_T("timeout"));
+		break;
+	default:
+		pushstring(_T("unknown"));
+		break;
 	}
+
+	if(file) delete [] file;
+	if(verb) delete [] verb;
+	if(args) delete [] args;
 }
 
 NSISFUNC(EnableVerboseMode)

@@ -19,8 +19,32 @@
 // http://www.gnu.org/licenses/gpl-2.0.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOWS_
 #include <Windows.h>
-#endif
 
-int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND hwnd, const bool threaded = true);
+wchar_t *ansi_to_utf16(const char *input)
+{
+	wchar_t *Buffer;
+	int BuffSize, Result;
+	BuffSize = MultiByteToWideChar(CP_ACP, 0, input, -1, NULL, 0);
+	if(BuffSize > 0)
+	{
+		Buffer = new wchar_t[BuffSize];
+		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
+		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+	}
+	return NULL;
+}
+
+wchar_t *utf8_to_utf16(const char *input)
+{
+	wchar_t *Buffer;
+	int BuffSize, Result;
+	BuffSize = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
+	if(BuffSize > 0)
+	{
+		Buffer = new wchar_t[BuffSize];
+		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
+		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+	}
+	return NULL;
+}

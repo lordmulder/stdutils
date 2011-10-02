@@ -12,10 +12,19 @@ Caption "StdUtils Test-Suite"
 
 !include 'StdUtils.nsh'
 
-RequestExecutionLevel admin
+RequestExecutionLevel admin ;make sure our installer will get elevated on Vista+ with UAC enabled
 ShowInstDetails show
 
 Section
-	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" ""
-	DetailPrint "Result: $0"
+	DetailPrint 'ExecShell: "$SYSDIR\mspaint.exe"'
+	ExecShell "open" "$SYSDIR\mspaint.exe" ;this instance of MS Paint will be elevated too!
+	MessageBox MB_TOPMOST "Close Paint and click 'OK' to continue..."
+SectionEnd
+
+Section
+	DetailPrint 'ExecShellAsUser: "$SYSDIR\mspaint.exe"'
+	Sleep 1000
+	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" "" ;launch a *non-elevated* instance of MS Paint
+	DetailPrint "Result: $0" ;expected result is "ok" on UAC-enabled systems or "fallback" otherwise. Failure indicated by "error" or "timeout".
+	${StdUtils.Unload} ;please do not forget to unload!
 SectionEnd

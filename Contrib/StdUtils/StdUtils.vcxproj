@@ -180,11 +180,13 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
+    <ClCompile Include="UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShellExecAsUser.h" />
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="UnicodeSupport.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StdUtils.rc" />

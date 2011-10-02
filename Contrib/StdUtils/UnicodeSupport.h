@@ -19,8 +19,5 @@
 // http://www.gnu.org/licenses/gpl-2.0.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOWS_
-#include <Windows.h>
-#endif
-
-int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND hwnd, const bool threaded = true);
+wchar_t *ansi_to_utf16(const char *input);
+wchar_t *utf8_to_utf16(const char *input);
