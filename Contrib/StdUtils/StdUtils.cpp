@@ -410,6 +410,81 @@ NSISFUNC(ExecShellAsUser)
 	if(args) delete [] args;
 }
 
+NSISFUNC(ExecShellWait)
+{
+	EXDLL_INIT();
+
+	TCHAR *file = new TCHAR[g_stringsize];
+	TCHAR *verb = new TCHAR[g_stringsize];
+	TCHAR *args = new TCHAR[g_stringsize];
+
+	popstringn(args, 0);
+	popstringn(verb, 0);
+	popstringn(file, 0);
+
+	SHELLEXECUTEINFO shInfo;
+	memset(&shInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	shInfo.hwnd = hWndParent;
+	shInfo.fMask = SEE_MASK_NOASYNC | SEE_MASK_NOCLOSEPROCESS;
+	shInfo.lpFile = file;
+	shInfo.lpVerb = (_tcslen(verb) > 0) ? verb : NULL;
+	shInfo.lpParameters = (_tcslen(args) > 0) ? args : NULL;
+	shInfo.nShow = SW_SHOWNORMAL;
+
+	if(ShellExecuteEx(&shInfo))
+	{
+		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
+		{
+			TCHAR out[32];
+			#ifdef UNICODE
+				_snwprintf(out, 32, L"hProc:%08X", shInfo.hProcess);
+			#else
+				_snprintf(out, 32, "hProc:%08X", shInfo.hProcess);
+			#endif
+			pushstring(out);
+		}
+		else
+		{
+			pushstring(_T("no_wait"));
+		}
+	}
+	else
+	{
+		pushstring(_T("error"));
+	}
+
+	delete [] file;
+	delete [] verb;
+	delete [] args;
+}
+
+NSISFUNC(WaitForProc)
+{
+	EXDLL_INIT();
+	TCHAR *temp = new TCHAR[g_stringsize];
+	popstringn(temp, 0);
+
+	HANDLE hProc = NULL;
+
+#ifdef UNICODE
+	int result = swscanf(temp, L"hProc:%X", &hProc);
+#else
+	int result = sscanf(temp, "hProc:%X", &hProc);
+#endif
+
+	if(result == 1)
+	{
+		if(hProc != NULL)
+		{
+			WaitForSingleObject(hProc, INFINITE);
+			CloseHandle(hProc);
+		}
+	}
+
+	delete [] temp;
+}
+
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();

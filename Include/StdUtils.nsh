@@ -16,6 +16,8 @@
 !define StdUtils.SHFileMove      '!insertmacro _StdUtils_SHFileMove'  #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy      '!insertmacro _StdUtils_SHFileCopy'  #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser '!insertmacro _StdUtils_ExecShlUser' #ShellExecute() with user context (for elevated installers)
+!define StdUtils.ExecShellWait   '!insertmacro _StdUtils_ExecShlWait' #ShellExecuteEx() with process handle to wait for
+!define StdUtils.WaitForProc     '!insertmacro _StdUtils_WaitForProc' #WaitForSingleObject() to wait for process termination
 !define StdUtils.Unload          '!insertmacro _StdUtils_Unload'      #Unload DLL for proper clean-up (don't forget!)
 !define StdUtils.SetVerbose      '!insertmacro _StdUtils_SetVerbose'  #Verbose mode (for debugging)
 
@@ -125,6 +127,19 @@
 	push '${args}'
 	StdUtils::ExecShellAsUser /NOUNLOAD
 	pop ${out}
+!macroend
+
+!macro _StdUtils_ExecShlWait out file verb args
+	push '${file}'
+	push '${verb}'
+	push '${args}'
+	StdUtils::ExecShellWait /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_WaitForProc handle
+	push '${handle}'
+	StdUtils::ExecShellWait /NOUNLOAD
 !macroend
 
 !macro _StdUtils_Unload
