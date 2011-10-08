@@ -22,6 +22,7 @@
 #include "StdUtils.h"
 #include "ShellExecAsUser.h"
 #include "ParameterParser.h"
+#include "UnicodeSupport.h"
 
 HANDLE g_hInstance;
 bool g_bVerbose;
@@ -118,17 +119,10 @@ NSISFUNC(FormatStr)
 	int v = popint();
 	popstringn(fmt, 0);
 
-#ifdef UNICODE
-	if(_snwprintf(out, g_stringsize, fmt, v) < 0)
+	if(SNPRINTF(out, g_stringsize, fmt, v) < 0)
 	{
-		out[g_stringsize-1] = L'\0';
+		out[g_stringsize-1] = T('\0');
 	}
-#else
-	if(_snprintf(out, g_stringsize, fmt, v) < 0)
-	{
-		out[g_stringsize-1] = '\0';
-	}
-#endif
 
 	pushstring(out);
 	delete [] fmt;
@@ -145,17 +139,10 @@ NSISFUNC(FormatStr2)
 	int v1 = popint();
 	popstringn(fmt, 0);
 
-#ifdef UNICODE
-	if(_snwprintf(out, g_stringsize, fmt, v1, v2) < 0)
+	if(SNPRINTF(out, g_stringsize, fmt, v1, v2) < 0)
 	{
-		out[g_stringsize-1] = L'\0';
+		out[g_stringsize-1] = T('\0');
 	}
-#else
-	if(_snprintf(out, g_stringsize, fmt, v1, v2) < 0)
-	{
-		out[g_stringsize-1] = '\0';
-	}
-#endif
 
 	pushstring(out);
 	delete [] fmt;
@@ -173,17 +160,10 @@ NSISFUNC(FormatStr3)
 	int v1 = popint();
 	popstringn(fmt, 0);
 
-#ifdef UNICODE
-	if(_snwprintf(out, g_stringsize, fmt, v1, v2, v3) < 0)
+	if(SNPRINTF(out, g_stringsize, fmt, v1, v2, v3) < 0)
 	{
-		out[g_stringsize-1] = L'\0';
+		out[g_stringsize-1] = T('\0');
 	}
-#else
-	if(_snprintf(out, g_stringsize, fmt, v1, v2, v3) < 0)
-	{
-		out[g_stringsize-1] = '\0';
-	}
-#endif
 
 	pushstring(out);
 	delete [] fmt;
@@ -200,17 +180,10 @@ NSISFUNC(ScanStr)
 	popstringn(fmt, 0);
 	int out = 0;
 
-#ifdef UNICODE
-	if(swscanf(in, fmt, &out) != 1)
+	if(SSCANF(in, fmt, &out) != 1)
 	{
 		out = def;
 	}
-#else
-	if(sscanf(in, fmt, &out) != 1)
-	{
-		out = def;
-	}
-#endif
 
 	pushint(out);
 	delete [] fmt;
@@ -230,11 +203,7 @@ NSISFUNC(ScanStr2)
 	int out2 = 0;
 	int result = 0;
 
-#ifdef UNICODE
-	result = swscanf(in, fmt, &out1, &out2);
-#else
-	result = sscanf(in, fmt, &out1, &out2);
-#endif
+	result = SSCANF(in, fmt, &out1, &out2);
 	
 	if(result != 2)
 	{
@@ -291,6 +260,39 @@ NSISFUNC(ScanStr3)
 	pushint(out1);
 	delete [] fmt;
 	delete [] in;
+}
+
+NSISFUNC(TrimStr)
+{
+	EXDLL_INIT();
+	TCHAR *str = new TCHAR[g_stringsize];
+	
+	popstring(str);
+	pushstring(STRTRIM(str));
+
+	delete [] str;
+}
+
+NSISFUNC(TrimStrLeft)
+{
+	EXDLL_INIT();
+	TCHAR *str = new TCHAR[g_stringsize];
+	
+	popstring(str);
+	pushstring(STRTRIM(str, true, false));
+
+	delete [] str;
+}
+
+NSISFUNC(TrimStrRight)
+{
+	EXDLL_INIT();
+	TCHAR *str = new TCHAR[g_stringsize];
+	
+	popstring(str);
+	pushstring(STRTRIM(str, false, true));
+
+	delete [] str;
 }
 
 NSISFUNC(SHFileMove)

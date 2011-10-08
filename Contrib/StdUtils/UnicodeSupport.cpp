@@ -48,3 +48,37 @@ wchar_t *utf8_to_utf16(const char *input)
 	}
 	return NULL;
 }
+
+char *strtrim(char* input, bool trim_left, bool trim_right)
+{
+	size_t left = 0;
+
+	if(trim_right && (input[0] != '\0'))
+	{
+		size_t right = strlen(input) - 1;
+		while((right > 0) && (input[right] == ' ')) input[right--] = '\0';
+	}
+	if(trim_left)
+	{
+		while(input[left] == ' ') left++;
+	}
+
+	return &input[left];
+}
+
+wchar_t *wcstrim(wchar_t* input, bool trim_left, bool trim_right)
+{
+	size_t left = 0;
+
+	if(trim_right && (input[0] != L'\0'))
+	{
+		size_t right = wcslen(input) - 1;
+		while((right > 0) && (input[right] == L' ')) input[right--] = L'\0';
+	}
+	if(trim_left)
+	{
+		while(input[left] == L' ') left++;
+	}
+
+	return &input[left];
+}

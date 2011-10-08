@@ -147,5 +147,24 @@ Section
 SectionEnd
 
 Section
+	StrCpy $1 "        Some Text            "
+	
+	StrCpy $0 $1
+	DetailPrint "String: '$0'"
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+
+	StrCpy $0 $1
+	DetailPrint "String: '$0'"
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+
+	StrCpy $0 $1
+	DetailPrint "String: '$0'"
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+SectionEnd
+
+Section
 	${StdUtils.Unload}
 SectionEnd

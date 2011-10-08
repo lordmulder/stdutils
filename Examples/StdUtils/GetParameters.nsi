@@ -27,6 +27,7 @@ Section
 	Goto Finished
 
 	;'Installer.exe /Foobar=Foo' or 'Installer.exe "/Foobar=Foo Bar"'
+	${StdUtils.TrimStr} $R0
 	DetailPrint "Value of parameter /Foobar is: '$R0'"
 	
 	Finished:

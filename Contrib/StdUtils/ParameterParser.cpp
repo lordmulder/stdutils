@@ -32,7 +32,7 @@ static bool parse_parameter(const TCHAR *str, const size_t len, const TCHAR *arg
 
 	bool bSuccess = false;
 	
-	if((len > 1) && (str[0] == L'/'))
+	if((len > 1) && (str[0] == T('/')))
 	{
 		TCHAR *buffer = new TCHAR[len];
 		memset(buffer, 0, sizeof(TCHAR) * len);
@@ -41,28 +41,20 @@ static bool parse_parameter(const TCHAR *str, const size_t len, const TCHAR *arg
 		TCHAR *offset = STRCHR(buffer, T('='));
 		if(offset != NULL)
 		{
-			offset[0] = L'\0';
+			offset[0] = T('\0');
 			if(STRICMP(buffer, arg_name) == 0)
 			{
-				size_t right = STRLEN(&offset[1]);
-				while((right > 0) && (offset[right] == T(' ')))
-				{
-					offset[right] = '\0';
-					right--;
-				};
-				size_t left = 1;
-				while(offset[left] == T(' ')) left++;
-				STRNCPY(dest_buff, &offset[left], dest_size);
-				dest_buff[dest_size-1] = L'\0';
 				bSuccess = true;
+				STRNCPY(dest_buff, &offset[1], dest_size);
+				dest_buff[dest_size-1] = T('\0');
 			}
 		}
 		else
 		{
 			if(STRICMP(buffer, arg_name) == 0)
 			{
-				dest_buff[0] = L'\0';
 				bSuccess = true;
+				dest_buff[0] = T('\0');
 			}
 		}
 	
@@ -86,7 +78,7 @@ bool parse_commandline(const TCHAR *arg_name, TCHAR *dest_buff, size_t dest_size
 		bool flag = false;
 		for(size_t i = 0; i < cmd_len; i++)
 		{
-			if(cmd[i] == L'\"')
+			if(cmd[i] == T('\"'))
 			{
 				if(tok_pos != NULL)
 				{

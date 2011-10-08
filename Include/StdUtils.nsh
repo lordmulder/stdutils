@@ -13,6 +13,9 @@
 !define StdUtils.ScanStr         '!insertmacro _StdUtils_ScanStr'      #sscanf() with one format tag (only %d supported!)
 !define StdUtils.ScanStr2        '!insertmacro _StdUtils_ScanStr2'     #sscanf() with two format tags (only %d supported!)
 !define StdUtils.ScanStr3        '!insertmacro _StdUtils_ScanStr3'     #sscanf() with three format tags (only %d supported!)
+!define StdUtils.TrimStr         '!insertmacro _StdUtils_TrimStr'      #Remove whitspaces from string (left and right)
+!define StdUtils.TrimStrLeft     '!insertmacro _StdUtils_TrimStrLeft'  #Remove whitspaces from string (left side only)
+!define StdUtils.TrimStrRight    '!insertmacro _StdUtils_TrimStrRight' #Remove whitspaces from string (right side only)
 !define StdUtils.SHFileMove      '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy      '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
@@ -104,6 +107,24 @@
 	pop ${out1}
 	pop ${out2}
 	pop ${out3}
+!macroend
+
+!macro _StdUtils_TrimStr var
+	push ${var}
+	StdUtils::TrimStr /NOUNLOAD
+	pop ${var}
+!macroend
+
+!macro _StdUtils_TrimStrLeft var
+	push ${var}
+	StdUtils::TrimStrLeft /NOUNLOAD
+	pop ${var}
+!macroend
+
+!macro _StdUtils_TrimStrRight var
+	push ${var}
+	StdUtils::TrimStrRight /NOUNLOAD
+	pop ${var}
 !macroend
 
 !macro _StdUtils_SHFileMove out from to hwnd
