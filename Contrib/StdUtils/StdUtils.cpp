@@ -27,6 +27,10 @@
 HANDLE g_hInstance;
 bool g_bVerbose;
 
+#define MAKESTR(VAR,LEN) \
+	TCHAR *VAR = new TCHAR[LEN]; \
+	memset(VAR, 0, sizeof(TCHAR) * LEN)
+
 NSISFUNC(Time)
 {
 	EXDLL_INIT();
@@ -79,7 +83,7 @@ NSISFUNC(RandList)
 		{
 			MessageBoxW(NULL, L"RandList() was called with bad arguments!", L"StdUtils::RandList", MB_ICONERROR | MB_TASKMODAL);
 		}
-		pushstring(_T("EOL"));
+		pushstring(T("EOL"));
 		return;
 	}
 
@@ -100,7 +104,7 @@ NSISFUNC(RandList)
 		}
 	}
 
-	pushstring(_T("EOL"));
+	pushstring(T("EOL"));
 	for(int idx = max-1; idx >= 0; idx--)
 	{
 		if(list[idx])
@@ -113,9 +117,9 @@ NSISFUNC(RandList)
 NSISFUNC(FormatStr)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *out = new TCHAR[g_stringsize];
-	SecureZeroMemory(out, sizeof(TCHAR) * g_stringsize);
+	MAKESTR(fmt, g_stringsize);
+	MAKESTR(out, g_stringsize);
+
 	int v = popint();
 	popstringn(fmt, 0);
 
@@ -132,9 +136,9 @@ NSISFUNC(FormatStr)
 NSISFUNC(FormatStr2)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *out = new TCHAR[g_stringsize];
-	SecureZeroMemory(out, sizeof(TCHAR) * g_stringsize);
+	MAKESTR(fmt, g_stringsize);
+	MAKESTR(out, g_stringsize);
+
 	int v2 = popint();
 	int v1 = popint();
 	popstringn(fmt, 0);
@@ -152,9 +156,9 @@ NSISFUNC(FormatStr2)
 NSISFUNC(FormatStr3)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *out = new TCHAR[g_stringsize];
-	SecureZeroMemory(out, sizeof(TCHAR) * g_stringsize);
+	MAKESTR(fmt, g_stringsize);
+	MAKESTR(out, g_stringsize);
+
 	int v3 = popint();
 	int v2 = popint();
 	int v1 = popint();
@@ -173,8 +177,8 @@ NSISFUNC(FormatStr3)
 NSISFUNC(ScanStr)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *in = new TCHAR[g_stringsize];
+	MAKESTR(in, g_stringsize);
+	MAKESTR(fmt, g_stringsize);
 	int def = popint();
 	popstringn(in, 0);
 	popstringn(fmt, 0);
@@ -193,8 +197,8 @@ NSISFUNC(ScanStr)
 NSISFUNC(ScanStr2)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *in = new TCHAR[g_stringsize];
+	MAKESTR(in, g_stringsize);
+	MAKESTR(fmt, g_stringsize);
 	int def2 = popint();
 	int def1 = popint();
 	popstringn(in, 0);
@@ -223,8 +227,9 @@ NSISFUNC(ScanStr2)
 NSISFUNC(ScanStr3)
 {
 	EXDLL_INIT();
-	TCHAR *fmt = new TCHAR[g_stringsize];
-	TCHAR *in = new TCHAR[g_stringsize];
+	MAKESTR(in, g_stringsize);
+	MAKESTR(fmt, g_stringsize);
+
 	int def3 = popint();
 	int def2 = popint();
 	int def1 = popint();
@@ -235,11 +240,7 @@ NSISFUNC(ScanStr3)
 	int out3 = 0;
 	int result = 0;
 
-#ifdef UNICODE
-	result = swscanf(in, fmt, &out1, &out2, &out3);
-#else
-	result = sscanf(in, fmt, &out1, &out2, &out3);
-#endif
+	result = SSCANF(in, fmt, &out1, &out2, &out3);
 	
 	if(result != 3)
 	{
@@ -265,9 +266,9 @@ NSISFUNC(ScanStr3)
 NSISFUNC(TrimStr)
 {
 	EXDLL_INIT();
-	TCHAR *str = new TCHAR[g_stringsize];
+	MAKESTR(str, g_stringsize);
 	
-	popstring(str);
+	popstringn(str, 0);
 	pushstring(STRTRIM(str));
 
 	delete [] str;
@@ -276,9 +277,9 @@ NSISFUNC(TrimStr)
 NSISFUNC(TrimStrLeft)
 {
 	EXDLL_INIT();
-	TCHAR *str = new TCHAR[g_stringsize];
+	MAKESTR(str, g_stringsize);
 	
-	popstring(str);
+	popstringn(str, 0);
 	pushstring(STRTRIM(str, true, false));
 
 	delete [] str;
@@ -287,9 +288,9 @@ NSISFUNC(TrimStrLeft)
 NSISFUNC(TrimStrRight)
 {
 	EXDLL_INIT();
-	TCHAR *str = new TCHAR[g_stringsize];
+	MAKESTR(str, g_stringsize);
 	
-	popstring(str);
+	popstringn(str, 0);
 	pushstring(STRTRIM(str, false, true));
 
 	delete [] str;
@@ -298,23 +299,20 @@ NSISFUNC(TrimStrRight)
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();
-	
-	SHFILEOPSTRUCT fileop;
-	TCHAR *from = new TCHAR[g_stringsize + 1];
-	TCHAR *to = new TCHAR[g_stringsize + 1];
+	MAKESTR(from, g_stringsize);
+	MAKESTR(dest, g_stringsize);
 
+	SHFILEOPSTRUCT fileop;
 	SecureZeroMemory(&fileop, sizeof(SHFILEOPSTRUCT));
-	SecureZeroMemory(from, sizeof(TCHAR) * (g_stringsize + 1));
-	SecureZeroMemory(to, sizeof(TCHAR) * (g_stringsize + 1));
 
 	HWND hwnd = (HWND) popint();
-	popstring(to);
-	popstring(from);
+	popstringn(dest, 0);
+	popstringn(from, 0);
 
 	fileop.hwnd = hwnd;
 	fileop.wFunc = FO_MOVE;
 	fileop.pFrom = from;
-	fileop.pTo = to;
+	fileop.pTo = dest;
 	fileop.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 	if(hwnd == 0) fileop.fFlags |= FOF_SILENT;
 
@@ -330,29 +328,26 @@ NSISFUNC(SHFileMove)
 	}
 
 	delete [] from;
-	delete [] to;
+	delete [] dest;
 }
 
 NSISFUNC(SHFileCopy)
 {
 	EXDLL_INIT();
-	
-	SHFILEOPSTRUCT fileop;
-	TCHAR *from = new TCHAR[g_stringsize + 1];
-	TCHAR *to = new TCHAR[g_stringsize + 1];
+	MAKESTR(from, g_stringsize);
+	MAKESTR(dest, g_stringsize);
 
+	SHFILEOPSTRUCT fileop;
 	SecureZeroMemory(&fileop, sizeof(SHFILEOPSTRUCT));
-	SecureZeroMemory(from, sizeof(TCHAR) * (g_stringsize + 1));
-	SecureZeroMemory(to, sizeof(TCHAR) * (g_stringsize + 1));
 
 	HWND hwnd = (HWND) popint();
-	popstring(to);
-	popstring(from);
+	popstringn(dest, 0);
+	popstringn(from, 0);
 
 	fileop.hwnd = hwnd;
 	fileop.wFunc = FO_COPY;
 	fileop.pFrom = from;
-	fileop.pTo = to;
+	fileop.pTo = dest;
 	fileop.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 	if(hwnd == 0) fileop.fFlags |= FOF_SILENT;
 
@@ -367,18 +362,16 @@ NSISFUNC(SHFileCopy)
 		MessageBoxA(NULL, temp, "StdUtils::SHFileCopy", MB_TOPMOST|MB_ICONERROR);
 	}
 
-
 	delete [] from;
-	delete [] to;
+	delete [] dest;
 }
 
 NSISFUNC(ExecShellAsUser)
 {
 	EXDLL_INIT();
-
-	TCHAR *file = new TCHAR[g_stringsize];
-	TCHAR *verb = new TCHAR[g_stringsize];
-	TCHAR *args = new TCHAR[g_stringsize];
+	MAKESTR(file, g_stringsize);
+	MAKESTR(verb, g_stringsize);
+	MAKESTR(args, g_stringsize);
 
 	popstringn(args, 0);
 	popstringn(verb, 0);
@@ -416,11 +409,10 @@ NSISFUNC(ExecShellAsUser)
 NSISFUNC(ExecShellWait)
 {
 	EXDLL_INIT();
-
-	TCHAR *file = new TCHAR[g_stringsize];
-	TCHAR *verb = new TCHAR[g_stringsize];
-	TCHAR *args = new TCHAR[g_stringsize];
-
+	MAKESTR(file, g_stringsize);
+	MAKESTR(verb, g_stringsize);
+	MAKESTR(args, g_stringsize);
+	
 	popstringn(args, 0);
 	popstringn(verb, 0);
 	popstringn(file, 0);
@@ -465,16 +457,11 @@ NSISFUNC(ExecShellWait)
 NSISFUNC(WaitForProc)
 {
 	EXDLL_INIT();
-	TCHAR *temp = new TCHAR[g_stringsize];
+	MAKESTR(temp, g_stringsize);
 	popstringn(temp, 0);
 
 	HANDLE hProc = NULL;
-
-#ifdef UNICODE
-	int result = swscanf(temp, L"hProc:%X", &hProc);
-#else
-	int result = sscanf(temp, "hProc:%X", &hProc);
-#endif
+	int result = SSCANF(temp, T("hProc:%X"), &hProc);
 
 	if(result == 1)
 	{
@@ -491,9 +478,8 @@ NSISFUNC(WaitForProc)
 NSISFUNC(GetParameter)
 {
 	EXDLL_INIT();
-
-	TCHAR *aval = new TCHAR[g_stringsize];
-	TCHAR *name = new TCHAR[g_stringsize];
+	MAKESTR(aval, g_stringsize);
+	MAKESTR(name, g_stringsize);
 
 	popstringn(aval, 0);
 	popstringn(name, 0);
