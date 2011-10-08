@@ -30,7 +30,9 @@ if not "%ERRORLEVEL%"=="0" (
 	exit
 )
 REM -------------------------------------------------------------------------
+echo Built on %DATE%, at %TIME%. > "%~dp0\BUILD.tag"
 "%PATH_7ZIP%\7z.exe" a -tzip -r -xr@%~dp0\make_pack.lst "%~dp0\_pack.zip" "%~dp0\*.*"
 attrib +r "%~dp0\_pack.zip"
+del "%~dp0\BUILD.tag"
 REM -------------------------------------------------------------------------
 pause

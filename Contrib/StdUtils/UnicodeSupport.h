@@ -33,7 +33,8 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 	#define STRTRIM wcstrim
 	#define SNPRINTF _snwprintf
 	#define SSCANF swscanf
-	#define T(X) L##X
+	#define __T__(X) L##X
+	#define T(X) __T__(X)
 #else
 	#define STRLEN strlen
 	#define STRICMP _stricmp

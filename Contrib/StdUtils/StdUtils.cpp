@@ -317,7 +317,7 @@ NSISFUNC(SHFileMove)
 	if(hwnd == 0) fileop.fFlags |= FOF_SILENT;
 
 	int result = SHFileOperation(&fileop);
-	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? _T("ABORTED") : _T("OK")) : _T("ERROR"));
+	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? T("ABORTED") : T("OK")) : T("ERROR"));
 
 	if((result != 0) && g_bVerbose)
 	{
@@ -352,7 +352,7 @@ NSISFUNC(SHFileCopy)
 	if(hwnd == 0) fileop.fFlags |= FOF_SILENT;
 
 	int result = SHFileOperation(&fileop);
-	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? _T("ABORTED") : _T("OK")) : _T("ERROR"));
+	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? T("ABORTED") : T("OK")) : T("ERROR"));
 
 	if((result != 0) && g_bVerbose)
 	{
@@ -385,19 +385,19 @@ NSISFUNC(ExecShellAsUser)
 	switch(result)
 	{
 	case 1:
-		pushstring(_T("ok"));
+		pushstring(T("ok"));
 		break;
 	case 0:
-		pushstring(_T("fallback"));
+		pushstring(T("fallback"));
 		break;
 	case -1:
-		pushstring(_T("error"));
+		pushstring(T("error"));
 		break;
 	case -2:
-		pushstring(_T("timeout"));
+		pushstring(T("timeout"));
 		break;
 	default:
-		pushstring(_T("unknown"));
+		pushstring(T("unknown"));
 		break;
 	}
 
@@ -432,21 +432,17 @@ NSISFUNC(ExecShellWait)
 		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
 		{
 			TCHAR out[32];
-			#ifdef UNICODE
-				_snwprintf(out, 32, L"hProc:%08X", shInfo.hProcess);
-			#else
-				_snprintf(out, 32, "hProc:%08X", shInfo.hProcess);
-			#endif
+			SNPRINTF(out, 32, T("hProc:%08X"), shInfo.hProcess);
 			pushstring(out);
 		}
 		else
 		{
-			pushstring(_T("no_wait"));
+			pushstring(T("no_wait"));
 		}
 	}
 	else
 	{
-		pushstring(_T("error"));
+		pushstring(T("error"));
 	}
 
 	delete [] file;
