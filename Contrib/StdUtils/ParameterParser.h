@@ -19,19 +19,4 @@
 // http://www.gnu.org/licenses/gpl-2.0.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-wchar_t *ansi_to_utf16(const char *input);
-wchar_t *utf8_to_utf16(const char *input);
-
-#ifdef UNICODE
-	#define STRLEN wcslen	
-	#define STRICMP _wcsicmp
-	#define STRNCPY wcsncpy
-	#define STRCHR wcschr
-	#define T(X) L##X
-#else
-	#define STRLEN strlen
-	#define STRICMP _stricmp
-	#define STRNCPY strncpy
-	#define STRCHR strchr
-	#define T(X) X
-#endif
+bool parse_commandline(const TCHAR *arg_name, TCHAR *dest_buff, size_t dest_size);

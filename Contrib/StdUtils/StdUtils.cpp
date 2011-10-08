@@ -21,6 +21,7 @@
 
 #include "StdUtils.h"
 #include "ShellExecAsUser.h"
+#include "ParameterParser.h"
 
 HANDLE g_hInstance;
 bool g_bVerbose;
@@ -483,6 +484,22 @@ NSISFUNC(WaitForProc)
 	}
 
 	delete [] temp;
+}
+
+NSISFUNC(GetParameter)
+{
+	EXDLL_INIT();
+
+	TCHAR *aval = new TCHAR[g_stringsize];
+	TCHAR *name = new TCHAR[g_stringsize];
+
+	popstringn(aval, 0);
+	popstringn(name, 0);
+	parse_commandline(name, aval, g_stringsize);
+	pushstring(aval);
+
+	delete [] aval;
+	delete [] name;
 }
 
 NSISFUNC(EnableVerboseMode)

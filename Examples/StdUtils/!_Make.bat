@@ -14,7 +14,7 @@ if exist "%~dp0\StdUtilsTest-Unicode.exe" (
 	exit
 )
 REM ----------------------------------------------------------------------
-for %%i in (StdUtilsTest,ShellExecAsUser,ShellExecWait) do (
+for %%i in (StdUtilsTest,ShellExecAsUser,ShellExecWait,GetParameters) do (
 	"%NSIS_ANSI%\makensis.exe" "%~dp0\%%i.nsi"
 	"%NSIS_Unicode%\makensis.exe" "%~dp0\%%i.nsi"
 )
