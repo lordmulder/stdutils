@@ -24,7 +24,7 @@ Section
 	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for. Always check this!
 	
 	DetailPrint "Waiting for process. ZZZzzzZZZzzz..."
-	StdUtils::WaitForProc /NOUNLOAD $0
+	${StdUtils.WaitForProc} $0
 	DetailPrint "Process just terminated."
 	Goto WaitDone
 	

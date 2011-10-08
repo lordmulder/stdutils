@@ -161,7 +161,7 @@
 
 !macro _StdUtils_WaitForProc handle
 	push '${handle}'
-	StdUtils::ExecShellWait /NOUNLOAD
+	StdUtils::WaitForProc /NOUNLOAD
 !macroend
 
 !macro _StdUtils_GetParameter out name default
