@@ -31,4 +31,8 @@ Section
 	DetailPrint "Value of parameter /Foobar is: '$R0'"
 	
 	Finished:
+	${StdUtils.GetAllParameters} $R0 0
+	DetailPrint "Complete command-line: '$R0'"
+	${StdUtils.GetAllParameters} $R0 1
+	DetailPrint "Truncated command-line: '$R0'"
 SectionEnd

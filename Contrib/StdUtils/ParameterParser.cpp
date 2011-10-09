@@ -122,3 +122,31 @@ bool parse_commandline(const TCHAR *arg_name, TCHAR *dest_buff, size_t dest_size
 
 	return bSuccess;
 }
+
+const TCHAR *get_commandline_arguments(void)
+{
+	TCHAR *cmd = GetCommandLine();
+	static const TCHAR *error = T("error");
+
+	if(cmd)
+	{
+		size_t i = 0;
+		while(cmd[i] == T(' ')) i++;
+		if(cmd[i] == T('\"'))
+		{
+			i++;
+			while((cmd[i] != T('\0')) && (cmd[i] != T('\"'))) i++;
+			if(cmd[i] == T('\"')) i++;
+		}
+		else
+		{
+			while((cmd[i] != T('\0')) && (cmd[i] != T(' ')) && (cmd[i] != T('\"'))) i++;
+		}
+		while(cmd[i] == T(' ')) i++;
+		return &cmd[i];
+	}
+	else
+	{
+		return error;
+	}
+}

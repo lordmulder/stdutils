@@ -520,6 +520,23 @@ NSISFUNC(GetParameter)
 	delete [] name;
 }
 
+NSISFUNC(GetAllParameters)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	int truncate = popint();
+	const TCHAR *cmd = get_commandline_arguments();
+
+	if((STRLEN(cmd) < g_stringsize) || truncate)
+	{
+		pushstring(cmd);
+	}
+	else
+	{
+		pushstring(T("too_long"));
+	}
+}
+
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();

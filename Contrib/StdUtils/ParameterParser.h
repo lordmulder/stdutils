@@ -20,3 +20,4 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 bool parse_commandline(const TCHAR *arg_name, TCHAR *dest_buff, size_t dest_size);
+const TCHAR *get_commandline_arguments(void);
