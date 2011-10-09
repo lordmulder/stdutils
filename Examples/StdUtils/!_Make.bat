@@ -3,18 +3,23 @@ REM ----------------------------------------------------------------------
 set "NSIS_ANSI=E:\NSIS"
 set "NSIS_Unicode=E:\NSIS\_Unicode"
 REM ----------------------------------------------------------------------
-del "%~dp0\StdUtilsTest-ANSI.exe"
-if exist "%~dp0\StdUtilsTest-ANSI.exe" (
-	pause
-	exit
-)
-del "%~dp0\StdUtilsTest-Unicode.exe"
-if exist "%~dp0\StdUtilsTest-Unicode.exe" (
-	pause
-	exit
+set "NSIS_PROJECTS=StdUtilsTest,ShellExecAsUser,ShellExecWait,GetParameters"
+REM ----------------------------------------------------------------------
+REM
+for %%i in (%NSIS_PROJECTS%) do (
+	del "%~dp0\%%i-ANSI.exe"
+	del "%~dp0\%%i-Unicode.exe"
+	if exist "%~dp0\%%i-ANSI.exe" (
+		pause
+		exit
+	)
+	if exist "%~dp0\%%i-Unicode.exe" (
+		pause
+		exit
+	)
 )
 REM ----------------------------------------------------------------------
-for %%i in (StdUtilsTest,ShellExecAsUser,ShellExecWait,GetParameters) do (
+for %%i in (%NSIS_PROJECTS%) do (
 	"%NSIS_ANSI%\makensis.exe" "%~dp0\%%i.nsi"
 	"%NSIS_Unicode%\makensis.exe" "%~dp0\%%i.nsi"
 )

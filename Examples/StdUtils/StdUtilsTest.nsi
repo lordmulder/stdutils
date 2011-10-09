@@ -164,7 +164,3 @@ Section
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
 SectionEnd
-
-Section
-	${StdUtils.Unload}
-SectionEnd

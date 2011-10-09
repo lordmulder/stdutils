@@ -26,10 +26,14 @@
 #include "nsis\pluginapi.h"
 #include "msvc_utils.h"
 
-#ifndef UNICODE
-#define _T(X) X
-#endif
-
 #define NSISFUNC(name) extern "C" void __declspec(dllexport) name(HWND hWndParent, int string_size, TCHAR* variables, stack_t** stacktop, extra_parameters* extra)
+
+#define MAKESTR(VAR,LEN) \
+	TCHAR *VAR = new TCHAR[LEN]; \
+	memset(VAR, 0, sizeof(TCHAR) * LEN)
+
+#define REGSITER_CALLBACK(INST) \
+	if(!g_bCallbackRegistred) g_bCallbackRegistred = \
+	(extra->RegisterPluginCallback((HMODULE)INST, PluginCallback) == 0)
 
 #endif //__STDUTILS_H__

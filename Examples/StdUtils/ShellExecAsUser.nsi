@@ -26,5 +26,4 @@ Section
 	Sleep 1000
 	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" "" ;launch a *non-elevated* instance of MS Paint
 	DetailPrint "Result: $0" ;expected result is "ok" on UAC-enabled systems or "fallback" otherwise. Failure indicated by "error" or "timeout".
-	${StdUtils.Unload} ;please do not forget to unload!
 SectionEnd

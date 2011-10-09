@@ -37,5 +37,4 @@ Section
 	Goto WaitDone
 	
 	WaitDone:
-	${StdUtils.Unload} ;please do not forget to unload!
 SectionEnd

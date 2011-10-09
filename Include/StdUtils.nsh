@@ -22,7 +22,6 @@
 !define StdUtils.ExecShellWait   '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
 !define StdUtils.WaitForProc     '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter    '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
-!define StdUtils.Unload          '!insertmacro _StdUtils_Unload'       #Unload DLL for proper clean-up (don't forget!)
 !define StdUtils.SetVerbose      '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)
 
 
@@ -169,10 +168,6 @@
 	push '${default}'
 	StdUtils::GetParameter /NOUNLOAD
 	pop ${out}
-!macroend
-
-!macro _StdUtils_Unload
-	StdUtils::Unload
 !macroend
 
 !macro _StdUtils_SetVerbose on

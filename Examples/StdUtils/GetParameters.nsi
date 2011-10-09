@@ -31,5 +31,4 @@ Section
 	DetailPrint "Value of parameter /Foobar is: '$R0'"
 	
 	Finished:
-	${StdUtils.Unload} ;please do not forget to unload!
 SectionEnd

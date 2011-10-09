@@ -25,15 +25,28 @@
 #include "UnicodeSupport.h"
 
 HANDLE g_hInstance;
+bool g_bCallbackRegistred;
 bool g_bVerbose;
 
-#define MAKESTR(VAR,LEN) \
-	TCHAR *VAR = new TCHAR[LEN]; \
-	memset(VAR, 0, sizeof(TCHAR) * LEN)
+static UINT_PTR PluginCallback(enum NSPIM msg)
+{
+	switch(msg)
+	{
+	case NSPIM_UNLOAD:
+	case NSPIM_GUIUNLOAD:
+		break;
+	default:
+		MessageBoxA(NULL, "Unknown callback message. Take care!", "StdUtils", MB_ICONWARNING|MB_TOPMOST|MB_TASKMODAL);
+		break;
+	}
+
+	return 0;
+}
 
 NSISFUNC(Time)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	long t = time(NULL);
 	pushint(t);
 }
@@ -41,6 +54,7 @@ NSISFUNC(Time)
 NSISFUNC(Rand)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	int r = (rand() * RAND_MAX) + rand();
 	pushint(r);
 }
@@ -48,6 +62,7 @@ NSISFUNC(Rand)
 NSISFUNC(RandMax)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	int m = abs(popint()) + 1;
 	int r = (m > RAND_MAX) ? ((rand() * RAND_MAX) + rand()) : rand();
 	pushint(r % m);
@@ -56,6 +71,7 @@ NSISFUNC(RandMax)
 NSISFUNC(RandMinMax)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	int max = popint();
 	int min = popint();
 	
@@ -73,6 +89,7 @@ NSISFUNC(RandMinMax)
 NSISFUNC(RandList)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	int count = popint();
 	int max = popint() + 1;
 	int done = 0;
@@ -117,6 +134,7 @@ NSISFUNC(RandList)
 NSISFUNC(FormatStr)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -136,6 +154,7 @@ NSISFUNC(FormatStr)
 NSISFUNC(FormatStr2)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -156,6 +175,7 @@ NSISFUNC(FormatStr2)
 NSISFUNC(FormatStr3)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -177,8 +197,10 @@ NSISFUNC(FormatStr3)
 NSISFUNC(ScanStr)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
+
 	int def = popint();
 	popstringn(in, 0);
 	popstringn(fmt, 0);
@@ -197,8 +219,10 @@ NSISFUNC(ScanStr)
 NSISFUNC(ScanStr2)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
+
 	int def2 = popint();
 	int def1 = popint();
 	popstringn(in, 0);
@@ -227,6 +251,7 @@ NSISFUNC(ScanStr2)
 NSISFUNC(ScanStr3)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
 
@@ -266,6 +291,7 @@ NSISFUNC(ScanStr3)
 NSISFUNC(TrimStr)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -277,6 +303,7 @@ NSISFUNC(TrimStr)
 NSISFUNC(TrimStrLeft)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -288,6 +315,7 @@ NSISFUNC(TrimStrLeft)
 NSISFUNC(TrimStrRight)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -299,6 +327,7 @@ NSISFUNC(TrimStrRight)
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(from, g_stringsize);
 	MAKESTR(dest, g_stringsize);
 
@@ -334,6 +363,7 @@ NSISFUNC(SHFileMove)
 NSISFUNC(SHFileCopy)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(from, g_stringsize);
 	MAKESTR(dest, g_stringsize);
 
@@ -369,6 +399,7 @@ NSISFUNC(SHFileCopy)
 NSISFUNC(ExecShellAsUser)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(file, g_stringsize);
 	MAKESTR(verb, g_stringsize);
 	MAKESTR(args, g_stringsize);
@@ -409,6 +440,7 @@ NSISFUNC(ExecShellAsUser)
 NSISFUNC(ExecShellWait)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(file, g_stringsize);
 	MAKESTR(verb, g_stringsize);
 	MAKESTR(args, g_stringsize);
@@ -453,6 +485,7 @@ NSISFUNC(ExecShellWait)
 NSISFUNC(WaitForProc)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(temp, g_stringsize);
 	popstringn(temp, 0);
 
@@ -474,6 +507,7 @@ NSISFUNC(WaitForProc)
 NSISFUNC(GetParameter)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(aval, g_stringsize);
 	MAKESTR(name, g_stringsize);
 
@@ -489,24 +523,28 @@ NSISFUNC(GetParameter)
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	g_bVerbose = true;
 }
 
 NSISFUNC(DisableVerboseMode)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 	g_bVerbose = false;
 }
 
-NSISFUNC(Unload)
+NSISFUNC(Dummy)
 {
 	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
 }
 
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		g_bCallbackRegistred = false;
 		g_bVerbose = false;
 		srand(static_cast<unsigned int>(time(NULL)));
 	}
