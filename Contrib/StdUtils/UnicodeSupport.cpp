@@ -49,6 +49,16 @@ wchar_t *utf8_to_utf16(const char *input)
 	return NULL;
 }
 
+inline static bool is_whitespace(const char c)
+{
+	return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
+}
+
+inline static bool is_whitespace(const wchar_t c)
+{
+	return (c == L' ') || (c == L'\t') || (c == L'\n') || (c == L'\r');
+}
+
 char *strtrim(char* input, bool trim_left, bool trim_right)
 {
 	size_t left = 0;
@@ -56,11 +66,12 @@ char *strtrim(char* input, bool trim_left, bool trim_right)
 	if(trim_right && (input[0] != '\0'))
 	{
 		size_t right = strlen(input) - 1;
-		while((right > 0) && (input[right] == ' ')) input[right--] = '\0';
+		while((right > 0) && is_whitespace(input[right])) input[right--] = '\0';
+		if(is_whitespace(input[right])) input[right] = '\0';
 	}
-	if(trim_left)
+	if(trim_left && (input[0] != '\0'))
 	{
-		while(input[left] == ' ') left++;
+		while(is_whitespace(input[left])) left++;
 	}
 
 	return &input[left];
@@ -73,11 +84,12 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left, bool trim_right)
 	if(trim_right && (input[0] != L'\0'))
 	{
 		size_t right = wcslen(input) - 1;
-		while((right > 0) && (input[right] == L' ')) input[right--] = L'\0';
+		while((right > 0) && is_whitespace(input[right])) input[right--] = L'\0';
+		if(is_whitespace(input[right])) input[right] = L'\0';
 	}
-	if(trim_left)
+	if(trim_left && (input[0] != L'\0'))
 	{
-		while(input[left] == L' ') left++;
+		while(is_whitespace(input[left])) left++;
 	}
 
 	return &input[left];

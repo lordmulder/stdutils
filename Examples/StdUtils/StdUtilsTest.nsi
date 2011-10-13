@@ -10,6 +10,12 @@ Caption "StdUtils Test-Suite"
 	OutFile "StdUtilsTest-ANSI.exe"
 !endif
 
+!macro NextTest
+	Section
+		DetailPrint "--------------"
+	SectionEnd
+!macroend
+
 !include 'StdUtils.nsh'
 
 RequestExecutionLevel user
@@ -26,6 +32,8 @@ Section
 	DetailPrint "Time: $1"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.Rand} $1
 	DetailPrint "Random: $1"
@@ -41,6 +49,8 @@ Section
 	DetailPrint "Random: $1"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.RandMax} $1 42
 	DetailPrint "Random Max: $1"
@@ -55,6 +65,8 @@ Section
 	${StdUtils.RandMax} $1 42
 	DetailPrint "Random Max: $1"
 SectionEnd
+
+!insertmacro NextTest
 
 Section
 	${StdUtils.RandMinMax} $1 -4 -2
@@ -71,6 +83,8 @@ Section
 	DetailPrint "Random Min/Max: $1"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.FormatStr} $1 "Hello World is %05d woha!" 89
 	DetailPrint "FormatStr: $1"
@@ -82,6 +96,8 @@ Section
 	DetailPrint "FormatStr: $1"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.RandList} 50 100
 	Pop $1
@@ -90,12 +106,16 @@ Section
 	Goto -3
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
 	DetailPrint "ScanStr: $0"
 	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
 	DetailPrint "ScanStr: $0"
 SectionEnd
+
+!insertmacro NextTest
 
 Section
 	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 sowie 831 ist toll!" 42 43
@@ -105,6 +125,8 @@ Section
 	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Hund sagt 571 horch 831 ist toll!" 42 43
 	DetailPrint "ScanStr2: $0, $1"
 SectionEnd
+
+!insertmacro NextTest
 
 Section
 	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! Und 325" 42 43 44
@@ -116,6 +138,8 @@ Section
 	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
 	DetailPrint "ScanStr3: $0, $1, $2"
 SectionEnd
+
+!insertmacro NextTest
 
 Section
 	InitPluginsDir
@@ -133,6 +157,8 @@ Section
 	ExecShell "explore" "$PLUGINSDIR"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
@@ -146,21 +172,66 @@ Section
 	DetailPrint "SHFileCopy: $0"
 SectionEnd
 
+!insertmacro NextTest
+
 Section
-	StrCpy $1 "        Some Text            "
-	
+	StrCpy $1 "        Some Text        "
+	DetailPrint "String: '$1'"
 	StrCpy $0 $1
-	DetailPrint "String: '$0'"
 	${StdUtils.TrimStr} $0
 	DetailPrint "TrimStr: '$0'"
-
 	StrCpy $0 $1
-	DetailPrint "String: '$0'"
 	${StdUtils.TrimStrLeft} $0
 	DetailPrint "TrimStrLeft: '$0'"
-
 	StrCpy $0 $1
-	DetailPrint "String: '$0'"
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+	
+	StrCpy $1 "Some Text"
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+
+	StrCpy $1 ""
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+	
+	StrCpy $1 "   "
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+
+	StrCpy $1 "$\tFoobar$\r$\n"
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
 SectionEnd
