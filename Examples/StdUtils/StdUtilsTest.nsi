@@ -160,6 +160,8 @@ SectionEnd
 !insertmacro NextTest
 
 Section
+	MessageBox MB_ICONINFORMATION "The next three operations are going to fail!$\nBut only one will be verbose..."
+
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 	
@@ -235,3 +237,24 @@ Section
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
 SectionEnd
+
+!insertmacro NextTest
+
+Section
+	StrCpy $0 "ABC"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+	
+	StrCpy $0 "ABCD"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+
+	StrCpy $0 "Just a very long text with no specific meaning at all!"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+SectionEnd
+
+!insertmacro NextTest

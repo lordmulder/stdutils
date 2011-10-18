@@ -324,6 +324,30 @@ NSISFUNC(TrimStrRight)
 	delete [] str;
 }
 
+NSISFUNC(RevStr)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(str, g_stringsize);
+	
+	popstringn(str, 0);
+
+	if(str[0] != T('\0'))
+	{
+		size_t left = 0;
+		size_t right = STRLEN(str) - 1;
+		while(left < right)
+		{
+			TCHAR tmp = str[left];
+			str[left++] = str[right];
+			str[right--] = tmp;
+		}
+	}
+
+	pushstring(str);
+	delete [] str;
+}
+
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();

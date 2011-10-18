@@ -16,6 +16,7 @@
 !define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'      #Remove whitspaces from string (left and right)
 !define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'  #Remove whitspaces from string (left side only)
 !define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight' #Remove whitspaces from string (right side only)
+!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'       #Reverse a string
 !define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
@@ -124,6 +125,12 @@
 !macro _StdUtils_TrimStrRight var
 	push ${var}
 	StdUtils::TrimStrRight /NOUNLOAD
+	pop ${var}
+!macroend
+
+!macro _StdUtils_RevStr var
+	push ${var}
+	StdUtils::RevStr /NOUNLOAD
 	pop ${var}
 !macroend
 
