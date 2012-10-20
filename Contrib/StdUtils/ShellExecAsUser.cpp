@@ -30,39 +30,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _UNICODE
-	#define ALLOC_STRING(STR) SysAllocString(STR)
-#else
-	static inline BSTR ALLOC_STRING(const char *STR)
-	{
-		BSTR result = NULL;
-		wchar_t *temp = ansi_to_utf16(STR);
-		if(temp)
-		{
-			result = SysAllocString(temp);
-			delete [] temp;
-		}
-		return result;
-	}
-#endif
-
-class variant_t
-{
-public:
-	variant_t(void) { VariantInit(&data); }
-	variant_t(const TCHAR *str) { VariantInit(&data); if(str != NULL) setString(str); }
-	variant_t(const LONG value) { VariantInit(&data); setIValue(value); }
-	~variant_t(void) { VariantClear(&data); }
-	void setIValue(const LONG value) { VariantClear(&data); data.vt = VT_I4; data.lVal = value; }
-	void setString(const TCHAR *str) { VariantClear(&data); if(str != NULL) { setOleStr(ALLOC_STRING(str)); } }
-	operator const VARIANT&(void) const { return data; };
-	operator VARIANT*(void) { return &data; };
-	operator const BSTR(void) const { return data.bstrVal; };
-protected:
-	void setOleStr(const BSTR value) { if(value != NULL) { data.vt = VT_BSTR; data.bstrVal = value; } }
-private:
-	VARIANT data;
-};
+#include "VariantUtils.h"
 
 typedef struct
 {
@@ -76,12 +44,12 @@ threadParam_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static DWORD WINAPI ShellExecAsUser_ThreadHelperProc(LPVOID lpParameter)
+static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 {
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if((hr == S_OK) || (hr == S_FALSE))
 	{
-		threadParam_t *params = (threadParam_t*) lpParameter;
+		threadParam_t *params = (threadParam_t*) pArguments;
 		params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
 		CoUninitialize();
 	}
@@ -176,7 +144,7 @@ int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCH
 			if(threaded)
 			{
 				threadParam_t threadParams = {pcOperation, pcFileName, pcParameters, parentHwnd, -1};
-				HANDLE hThread = CreateThread(NULL, 0, ShellExecAsUser_ThreadHelperProc, &threadParams, 0, NULL);
+				HANDLE hThread = (HANDLE) _beginthreadex(NULL, 0, ShellExecAsUser_ThreadHelperProc, &threadParams, 0, NULL);
 				if((hThread != NULL) && (hThread != INVALID_HANDLE_VALUE))
 				{
 					DWORD status = WaitForSingleObject(hThread, 30000);

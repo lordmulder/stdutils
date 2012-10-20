@@ -175,6 +175,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InvokeShellVerb.cpp" />
     <ClCompile Include="ParameterParser.cpp" />
     <ClCompile Include="ShellExecAsUser.cpp" />
     <ClCompile Include="StdUtils.cpp">
@@ -184,11 +185,13 @@
     <ClCompile Include="UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InvokeShellVerb.h" />
     <ClInclude Include="ParameterParser.h" />
     <ClInclude Include="ShellExecAsUser.h" />
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="UnicodeSupport.h" />
+    <ClInclude Include="VariantUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StdUtils.rc" />

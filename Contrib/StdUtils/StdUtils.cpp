@@ -22,6 +22,7 @@
 #include "StdUtils.h"
 #include "ShellExecAsUser.h"
 #include "ParameterParser.h"
+#include "InvokeShellVerb.h"
 #include "UnicodeSupport.h"
 
 HANDLE g_hInstance;
@@ -459,6 +460,77 @@ NSISFUNC(ExecShellAsUser)
 	if(file) delete [] file;
 	if(verb) delete [] verb;
 	if(args) delete [] args;
+}
+
+NSISFUNC(InvokeShellVerb)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(file, g_stringsize);
+
+	int verb = popint();
+	popstringn(file, 0);
+	popstringn(path, 0);
+	
+	if(_tcslen(file) < 1) { delete [] file; file = NULL; }
+	if(_tcslen(path) < 1) { delete [] path; path = NULL; }
+
+	if(!(file && path))
+	{
+		pushstring(T("einval"));
+		if(file) delete [] file;
+		if(path) delete [] path;
+		return;
+	}
+
+	int result = MyInvokeShellVerb(path, file, verb, true);
+	
+	switch(result)
+	{
+	case 1:
+		pushstring(T("ok"));
+		break;
+	case 0:
+		pushstring(T("not_found"));
+		break;
+	case -1:
+		pushstring(T("unsupported_os"));
+		break;
+	case -2:
+		pushstring(T("timeout"));
+		break;
+	case -3:
+		pushstring(T("error_shell32"));
+		break;
+	case -4:
+		pushstring(T("error_ldstring"));
+		break;
+	case -5:
+		pushstring(T("error_dispatch"));
+		break;
+	case -6:
+		pushstring(T("error_folder"));
+		break;
+	case -7:
+		pushstring(T("error_item"));
+		break;
+	case -8:
+		pushstring(T("error_verbs"));
+		break;
+	case -9:
+		pushstring(T("error_verbcnt"));
+		break;
+	case -10:
+		pushstring(T("error_cominit"));
+		break;
+	default:
+		pushstring(T("unknown"));
+		break;
+	}
+
+	if(file) delete [] file;
+	if(path) delete [] path;
 }
 
 NSISFUNC(ExecShellWait)

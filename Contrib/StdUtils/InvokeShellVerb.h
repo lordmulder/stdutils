@@ -19,30 +19,8 @@
 // http://www.gnu.org/licenses/gpl-2.0.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MSVC_FUNC_H__
-#define __MSVC_FUNC_H__
-
-#ifdef __cplusplus
-extern "C" {
+#ifndef _WINDOWS_
+#include <Windows.h>
 #endif
 
-long time(long *time);
-int _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
-int _snprintf(char *buffer, size_t count, const char *format, ...);
-int sscanf(const char *input, const char * format, ...);
-int swscanf(const wchar_t *input, const wchar_t * format, ...);
-
-uintptr_t _beginthreadex( 
-	void *security,
-	unsigned stack_size,
-	unsigned (__stdcall *start_address)(void*),
-	void *arglist,
-	unsigned initflag,
-	unsigned *thrdaddr
-);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif //__MSVC_FUNC_H__
+int MyInvokeShellVerb(const TCHAR *pcDirectoryName, const TCHAR *pcFileName, const DWORD uiVerbId, const bool threaded = true);

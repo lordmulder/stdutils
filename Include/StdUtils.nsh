@@ -20,6 +20,7 @@
 !define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
+!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #To invoke a Shell Verb on an item
 !define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
 !define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
@@ -155,6 +156,14 @@
 	push '${verb}'
 	push '${args}'
 	StdUtils::ExecShellAsUser /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_InvkeShlVrb out path file verb_id
+	push "${path}"
+	push "${file}"
+	push ${verb_id}
+	StdUtils::InvokeShellVerb /NOUNLOAD
 	pop ${out}
 !macroend
 
