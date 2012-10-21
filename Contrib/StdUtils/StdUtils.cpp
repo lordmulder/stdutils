@@ -29,6 +29,20 @@ HANDLE g_hInstance;
 bool g_bCallbackRegistred;
 bool g_bVerbose;
 
+///////////////////////////////////////////////////////////////////////////////
+
+BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
+{
+	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
+	{
+		g_hInstance = hInst;
+		g_bCallbackRegistred = false;
+		g_bVerbose = false;
+		srand(static_cast<unsigned int>(time(NULL)));
+	}
+	return TRUE;
+}
+
 static UINT_PTR PluginCallback(enum NSPIM msg)
 {
 	switch(msg)
@@ -44,6 +58,8 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
 	return 0;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(Time)
 {
 	EXDLL_INIT();
@@ -51,6 +67,8 @@ NSISFUNC(Time)
 	long t = time(NULL);
 	pushint(t);
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 NSISFUNC(Rand)
 {
@@ -132,6 +150,8 @@ NSISFUNC(RandList)
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(FormatStr)
 {
 	EXDLL_INIT();
@@ -194,6 +214,8 @@ NSISFUNC(FormatStr3)
 	delete [] fmt;
 	delete [] out;
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 NSISFUNC(ScanStr)
 {
@@ -289,6 +311,8 @@ NSISFUNC(ScanStr3)
 	delete [] in;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(TrimStr)
 {
 	EXDLL_INIT();
@@ -325,6 +349,8 @@ NSISFUNC(TrimStrRight)
 	delete [] str;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(RevStr)
 {
 	EXDLL_INIT();
@@ -348,6 +374,8 @@ NSISFUNC(RevStr)
 	pushstring(str);
 	delete [] str;
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 NSISFUNC(SHFileMove)
 {
@@ -421,6 +449,8 @@ NSISFUNC(SHFileCopy)
 	delete [] dest;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(ExecShellAsUser)
 {
 	EXDLL_INIT();
@@ -461,6 +491,8 @@ NSISFUNC(ExecShellAsUser)
 	if(verb) delete [] verb;
 	if(args) delete [] args;
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 NSISFUNC(InvokeShellVerb)
 {
@@ -516,6 +548,8 @@ NSISFUNC(InvokeShellVerb)
 	if(file) delete [] file;
 	if(path) delete [] path;
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 NSISFUNC(ExecShellWait)
 {
@@ -584,6 +618,8 @@ NSISFUNC(WaitForProc)
 	delete [] temp;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(GetParameter)
 {
 	EXDLL_INIT();
@@ -617,6 +653,8 @@ NSISFUNC(GetAllParameters)
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();
@@ -631,20 +669,10 @@ NSISFUNC(DisableVerboseMode)
 	g_bVerbose = false;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(Dummy)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
-}
-
-BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
-{
-	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
-	{
-		g_hInstance = hInst;
-		g_bCallbackRegistred = false;
-		g_bVerbose = false;
-		srand(static_cast<unsigned int>(time(NULL)));
-	}
-	return TRUE;
 }

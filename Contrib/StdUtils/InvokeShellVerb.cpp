@@ -43,9 +43,12 @@ typedef struct
 	const TCHAR *pcDirectoryName;
 	const TCHAR *pcFileName;
 	DWORD uiVerbId;
+	HANDLE hSemaphore;
 	int returnValue;
 }
 threadParam_t;
+
+static const WCHAR *shell32 = L"shell32.dll";
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +59,8 @@ static unsigned __stdcall MyInvokeShellVerb_ThreadHelperProc(void* pArguments)
 	{
 		threadParam_t *params = (threadParam_t*) pArguments;
 		params->returnValue = MyInvokeShellVerb(params->pcDirectoryName, params->pcFileName, params->uiVerbId, false);
+		ReleaseSemaphore(params->hSemaphore, 1, NULL);
+		Sleep(8000);
 		CoUninitialize();
 	}
 	else
@@ -71,11 +76,17 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 {
 	int iSuccess = 0;
 
-	HMODULE hShellDll = LoadLibraryW(L"shell32.dll");
+	bool bUnloadDll = false;
+	HMODULE hShellDll = GetModuleHandleW(shell32); 
 	if(hShellDll == NULL)
 	{
-		iSuccess = -3;
-		return iSuccess;
+		bUnloadDll = true;
+		hShellDll = LoadLibraryW(shell32);
+		if(hShellDll == NULL)
+		{
+			iSuccess = -3;
+			return iSuccess;
+		}
 	}
 
 	WCHAR pcVerbName[128];
@@ -83,13 +94,20 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 	
 	if(LoadStringW(hShellDll, uiVerbId, pcVerbName, 128) < 1)
 	{
+		if(bUnloadDll)
+		{
+			FreeLibrary(hShellDll);
+			hShellDll = NULL;
+		}
 		iSuccess = -4;
-		FreeLibrary(hShellDll);
 		return iSuccess;
 	}
 
-	FreeLibrary(hShellDll);
-	hShellDll = NULL;
+	if(bUnloadDll)
+	{
+		FreeLibrary(hShellDll);
+		hShellDll = NULL;
+	}
 
 	// ----------------------------------- //
 
@@ -112,15 +130,20 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		return iSuccess;
 	}
 
+	pShellDispatch->Release();
+	pShellDispatch = NULL;
+
 	variant_t vaFileName(pcFileName);
 	hr = pFolder->ParseName(vaFileName, &pItem);
 	if(FAILED(hr) || (pItem == NULL))
 	{
 		iSuccess = -7;
 		pFolder->Release();
-		pShellDispatch->Release();
 		return iSuccess;
 	}
+
+	pFolder->Release();
+	pFolder = NULL;
 
 	// ----------------------------------- //
 
@@ -128,23 +151,21 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 	FolderItemVerbs *pVerbs = NULL;
 	
 	hr = pItem->Verbs(&pVerbs);
-	if(FAILED(hr) || pVerbs == NULL)
+	if(FAILED(hr) || (pVerbs == NULL))
 	{
 		iSuccess = -8;
 		pItem->Release();
-		pFolder->Release();
-		pShellDispatch->Release();
 		return iSuccess;
 	}
 
+	pItem->Release();
+	pItem = NULL;
+
 	hr = pVerbs->get_Count(&iVerbCount);
-	if(FAILED(hr))
+	if(FAILED(hr) || (iVerbCount < 1))
 	{
 		iSuccess = -9;
 		pVerbs->Release();
-		pItem->Release();
-		pFolder->Release();
-		pShellDispatch->Release();
 		return iSuccess;
 	}
 
@@ -185,13 +206,10 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		pCurrentVerb->Release();
 	}
 
-	// ----------------------------------- //
-
 	pVerbs->Release();
-	pItem->Release();
-	pFolder->Release();
-	pShellDispatch->Release();
 
+	// ----------------------------------- //
+	
 	return iSuccess;
 }
 
@@ -209,22 +227,27 @@ int MyInvokeShellVerb(const TCHAR *pcDirectoryName, const TCHAR *pcFileName, con
 		{
 			if(threaded)
 			{
-				threadParam_t threadParams = {pcDirectoryName, pcFileName, uiVerbId, 0};
-				HANDLE hThread = (HANDLE) _beginthreadex(NULL, 0, MyInvokeShellVerb_ThreadHelperProc, &threadParams, 0, NULL);
-				if((hThread != NULL) && (hThread != INVALID_HANDLE_VALUE))
+				HANDLE hSemaphore = CreateSemaphore(NULL, 0, 1, NULL);
+				if((hSemaphore != NULL) && (hSemaphore != INVALID_HANDLE_VALUE))
 				{
-					DWORD status = WaitForSingleObject(hThread, 30000);
-					if(status == WAIT_OBJECT_0)
+					threadParam_t threadParams = {pcDirectoryName, pcFileName, uiVerbId, hSemaphore, 0};
+					HANDLE hThread = (HANDLE) _beginthreadex(NULL, 0, MyInvokeShellVerb_ThreadHelperProc, &threadParams, 0, NULL);
+					if((hThread != NULL) && (hThread != INVALID_HANDLE_VALUE))
 					{
-						iSuccess = threadParams.returnValue;
+						DWORD status = WaitForSingleObject(hSemaphore, 30000);
+						if(status == WAIT_OBJECT_0)
+						{
+							iSuccess = threadParams.returnValue;
+						}
+						else if(status == WAIT_TIMEOUT)
+						{
+							iSuccess = -2;
+							TerminateThread(hThread, EXIT_FAILURE);
+						}
+						CloseHandle(hThread);
+						return iSuccess;
 					}
-					else if(status == WAIT_TIMEOUT)
-					{
-						iSuccess = -2;
-						TerminateThread(hThread, EXIT_FAILURE);
-					}
-					CloseHandle(hThread);
-					return iSuccess;
+
 				}
 			}
 			else

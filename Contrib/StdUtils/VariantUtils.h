@@ -47,6 +47,10 @@ public:
 	operator const VARIANT&(void) const { return data; };
 	operator VARIANT*(void) { return &data; };
 	operator const BSTR(void) const { return data.bstrVal; };
+#ifndef _UNICODE
+	variant_t(const WCHAR *str) { VariantInit(&data); if(str != NULL) setString(str); }
+	void setString(const WCHAR *str) { VariantClear(&data); if(str != NULL) { setOleStr(SysAllocString(str)); } }
+#endif
 protected:
 	void setOleStr(const BSTR value) { if(value != NULL) { data.vt = VT_BSTR; data.bstrVal = value; } }
 private:
