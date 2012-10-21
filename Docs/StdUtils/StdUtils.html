@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>StdUtils</title>
+		<style type="text/css">
+		<!--
+			pre { background-color: #ECECEC; }
+			tt { background-color: #F0F0F0; }
+		-->
+		</style>
+	</head>
+	<body>
+		<h1>StdUtils for NSIS</h1>
+		<p>This plug-in provides access to a number of "standard" functions from the <a href="http://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>, which programmers are used to from their C/C++ compilers (and other languages), but which are not available in NSIS by default. In order to keep the plug-in size as small as possible (~9 KB) and for maximum compatibility, the Visual C++ Run-Time v6.0 (MSVCRT.DLL), which is included with all versions of Windows (since Windows 2000), is used - instead of linking the Visual C++ Run-Time library into the plug-in DLL.</p>
+		<p>Additionally this plug-in provides wrappers for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function. Moreover it provides a method for launching programs in a non-elevated way (user context) from an elevated installer (admin mode) on UAC-enabled systems - see below for details! Last but not least, a version of ExecShell with "wait for process termination" feature, based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>, is provided.</p>
+		<p><b>ANSI and Unicode builds available. Support operating systems: Windows 2000 and later.</b><br>&nbsp;</p>
+		
+		<h2>Available Functions</h2>
+<pre>!define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
+!define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
+!define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
+!define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'   #rand() with minimum/maximum
+!define StdUtils.RandList         '!insertmacro _StdUtils_RandList'     #rand() with list support
+!define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'    #sprintf() with one format tag (only %d supported!)
+!define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'   #sprintf() with two format tags (only %d supported!)
+!define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'   #sprintf() with three format tags (only %d supported!)
+!define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'      #sscanf() with one format tag (only %d supported!)
+!define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'     #sscanf() with two format tags (only %d supported!)
+!define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'     #sscanf() with three format tags (only %d supported!)
+!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'      #Remove whitspaces from string (left and right)
+!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'  #Remove whitspaces from string (left side only)
+!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight' #Remove whitspaces from string (right side only)
+!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'       #Reverse a string
+!define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
+!define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
+!define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
+!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #Invokes a Shell Verb on the specified item
+!define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
+!define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
+!define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
+!define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
+!define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)</pre>
+		<br>
+
+		<h2>Installation</h2>
+		<p>Depending on whether you are using the Unicode or ANSI (non-Unicode) variant of NSIS (we highly recommend using the Unicode variant!), you must copy either <tt>StdUtils\Plugins\Release_Unicode\StdUtils.dll</tt> or <tt>StdUtils\Plugins\Release_ANSI\StdUtils.dll</tt> into the <tt>Plugins</tt> sub-directory inside your NSIS installation directory. Also, in both cases, you must copy <tt>StdUtils\Include\StdUtils.nsh</tt> into the <tt>Include</tt> sub-directory inside your NSIS installation directory. That's it!</p>
+		<br>
+
+		<h2>General Usage</h2>
+		<p>In order to use the StdUtils plug-in in your script, simply include <tt>StdUtils.nsh</tt> and then use the pre-defined <tt>${StdUtils.<i>FunctionName</i>}</tt> macros like this:</p>
+<pre>!include '<font style="color:darkred;font-weight:bold;">StdUtils.nsh</font>'
+
+Section
+	<font style="color:darkred;font-weight:bold;">${StdUtils.Rand}</font> $1
+	DetailPrint "Random number obtained via StdUtils::Rand is: $1"
+SectionEnd</pre>
+		<p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defind macros, which ensures that the plug-in functions are used in the "proper" way!</p>
+		<br>
+		
+		<h2>Example</h2>
+		<p>This self-explanatory example script tests miscellaneous functions of the StdUtils plug-in:</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.Time} $1
+	DetailPrint "Time: $1"
+	Sleep 500
+	${StdUtils.Time} $1
+	DetailPrint "Time: $1"
+	Sleep 500
+	${StdUtils.Time} $1
+	DetailPrint "Time: $1"
+SectionEnd
+
+Section
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+SectionEnd
+
+Section
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+SectionEnd
+
+Section
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+SectionEnd
+
+Section
+	${StdUtils.FormatStr} $1 "Hello World is %05d woha!" 89
+	DetailPrint "FormatStr: $1"
+	${StdUtils.FormatStr2} $1 "Hello World is %05d and %05d woha!" 89 384
+	DetailPrint "FormatStr: $1"
+	${StdUtils.FormatStr3} $1 "Hello World is %05d and %05d or even %05d woha!" 89 384 2384
+	DetailPrint "FormatStr: $1"
+	${StdUtils.FormatStr} $1 "Hello World is %09000d." 89
+	DetailPrint "FormatStr: $1"
+SectionEnd
+
+Section
+	${StdUtils.RandList} 50 100
+	Pop $1
+	StrCmp $1 EOL +3
+	DetailPrint "RandList: $1"
+	Goto -3
+SectionEnd
+
+Section
+	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+SectionEnd
+
+Section
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 sowie 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Hund sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+SectionEnd
+
+Section
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! Und 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+SectionEnd
+
+Section
+	InitPluginsDir
+	SetOutPath "$PLUGINSDIR\TestDirA"
+	File "${NSISDIR}\Contrib\Graphics\Checks\*.*"
+	SetOutPath "$PLUGINSDIR\TestDirA\SubDir"
+	File "${NSISDIR}\Contrib\Graphics\Header\*.*"
+	CreateDirectory "$PLUGINSDIR\SubDirX"
+	CreateDirectory "$PLUGINSDIR\SubDirY"
+	
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirX\TestDirB" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+	${StdUtils.SHFileMove} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirY\TestDirC" $HWNDPARENT
+	DetailPrint "SHFileMove: $0"
+	ExecShell "explore" "$PLUGINSDIR"
+SectionEnd
+
+Section
+	MessageBox MB_ICONINFORMATION "The next three operations are going to fail!$\nBut only one will be verbose..."
+
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+	
+	${StdUtils.SetVerbose} 1
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+	
+	${StdUtils.SetVerbose} 0
+	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
+	DetailPrint "SHFileCopy: $0"
+SectionEnd
+
+Section
+	StrCpy $1 "        Some Text        "
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+	
+	StrCpy $1 "Some Text"
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+
+	StrCpy $1 ""
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+	
+	StrCpy $1 "   "
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+
+	StrCpy $1 "$\tFoobar$\r$\n"
+	DetailPrint "String: '$1'"
+	StrCpy $0 $1
+	${StdUtils.TrimStr} $0
+	DetailPrint "TrimStr: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrLeft} $0
+	DetailPrint "TrimStrLeft: '$0'"
+	StrCpy $0 $1
+	${StdUtils.TrimStrRight} $0
+	DetailPrint "TrimStrRight: '$0'"
+SectionEnd
+
+Section
+	StrCpy $0 "ABC"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+	
+	StrCpy $0 "ABCD"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+
+	StrCpy $0 "Just a very long text with no specific meaning at all!"
+	DetailPrint "String: $0"
+	${StdUtils.RevStr} $0
+	DetailPrint "RevStr: $0"
+SectionEnd</pre>
+		<br>
+	
+		<h2>ExecShellAsUser</h2>
+		<p>The <tt>${StdUtils.ExecShellAsUser}</tt> function allows you to launch a process with normal user privileges (user level), directly from an elevated installer instance (admin level). This way it provides a simple/lightweight alternative to the UAC plug-in. If the function succeeded, it returns either "ok" or "fallback". The former means that the process was crated via COM interface (which is required to allow the new process to not be elevated), while the latter means that the normal ShellExecute was used instead. Note that "fallback" is the expected result on systems that do not support UAC (like Windows XP and older). If the function failed, it returns "error".</p>
+<pre>!include 'StdUtils.nsh'
+ 
+RequestExecutionLevel admin ;make sure our installer will get elevated on Vista+ with UAC enabled
+ShowInstDetails show
+ 
+Section
+	DetailPrint 'ExecShell: "$SYSDIR\mspaint.exe"'
+	ExecShell "open" "$SYSDIR\mspaint.exe" ;this instance of MS Paint will be elevated too!
+	MessageBox MB_TOPMOST "Close Paint and click 'OK' to continue..."
+SectionEnd
+ 
+Section
+	DetailPrint 'ExecShellAsUser: "$SYSDIR\mspaint.exe"'
+	Sleep 1000
+	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" "" ;launch a *non-elevated* instance of MS Paint
+	DetailPrint "Result: $0" ;expected result is "ok" on UAC-enabled systems or "fallback" otherwise. Failure indicated by "error" or "timeout".
+SectionEnd</pre>
+		<br>
+		
+		<h2>ExecShellWait</h2>
+		<p>The <tt>${StdUtils.ExecShellWait}</tt> function works like the built-in ExecShell command, except that you can wait for the process to terminate. If the function failed, it returns "error". If the function succeeded, it will either return a process handle or "no_wait". The latter means that we cannot wait for the process, because ShellExecuteEx did not create a new process (but pass the file/URL to a running instance). Only if a process handle was returned, you can call <tt>${StdUtils.WaitForProc}</tt> in order to wait until the process has terminated. </p>
+<pre>!include 'StdUtils.nsh'
+ 
+RequestExecutionLevel user
+ShowInstDetails show
+ 
+Section
+	DetailPrint 'ExecShellWait: "$SYSDIR\mspaint.exe"'
+	Sleep 1000
+	${StdUtils.ExecShellWait} $0 "$SYSDIR\mspaint.exe" "open" "" ;try to launch the process
+	DetailPrint "Result: $0" ;returns process handle. Might be "no_wait". Failure indicated by "error".
+	StrCmp $0 "error" WaitFailed ;check if process failed to create.
+	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for. Always check this!
+ 
+	DetailPrint "Waiting for process. ZZZzzzZZZzzz..."
+	${StdUtils.WaitForProc} $0
+	DetailPrint "Process just terminated."
+	Goto WaitDone
+ 
+	WaitFailed:
+	DetailPrint "Failed to create process !!!"
+	Goto WaitDone
+ 
+	WaitNotPossible:
+	DetailPrint "Can not wait for process."
+	Goto WaitDone
+ 
+	WaitDone:
+SectionEnd</pre>
+		<br>
+		
+		<h2>GetParameter / GetAllParameters</h2>
+		<p>With <tt>${StdUtils.GetParameter}</tt> you can check for the presence of a specific command-line parameter. If the parameter was specified with a (non-empty) value, then the parameter's value is return. If the parameter was specified without a value, then an empty string is return. If the parameter has not been specified, then the default value is returned.</p>
+		<p>
+			Parameters can be passed to the installer like this:
+			<ul>
+				<li><tt>Installer.exe /Foobar</tt>
+				<li><tt>Installer.exe /Foobar=SomeValue</tt>
+				<li><tt>Installer.exe "/Foobar=Some Value With Whitespaces"</tt>
+			</ul>
+		</p>
+		<p>Additionally you can use <tt>${StdUtils.GetAllParameters}</tt> to get the complete command-line string, but without the executable name. This is useful to forward all command-line parameters to an encapsulated installer, for example. The truncate parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With the parameter set to 1, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> (usually 1024 or 8192) characters, if necessary. With the parameter set to 0, the command-line will not be truncated. Instead the value "too_long" is returned, if the command-line doesn't fit into an NSIS string.</p>
+<pre>!include 'StdUtils.nsh'
+ 
+RequestExecutionLevel user
+ShowInstDetails show
+ 
+Section
+	${StdUtils.GetParameter} $R0 "Foobar" "<N/A>"
+ 
+	StrCmp "$R0" "<N/A>" 0 +3
+	DetailPrint "Parameter /Foobar is *not* specified!"
+	Goto Finished
+ 
+	StrCmp "$R0" "" 0 +3 ;'Installer.exe [...] /Foobar'
+	DetailPrint "Parameter /Foobar specified without a value." 
+	Goto Finished
+ 
+	;'Installer.exe /Foobar=Foo' or 'Installer.exe "/Foobar=Foo Bar"'
+	${StdUtils.TrimStr} $R0
+	DetailPrint "Value of parameter /Foobar is: '$R0'"
+ 
+	Finished:
+	${StdUtils.GetAllParameters} $R0 0
+	DetailPrint "Complete command-line: '$R0'"
+	${StdUtils.GetAllParameters} $R0 1
+	DetailPrint "Truncated command-line: '$R0'"
+SectionEnd</pre>
+		<br>
+		
+		<h2>InvokeShellVerb</h2>
+		<p>TODO</p>
+		<br>
+		
+		<h2>Acknowledgment</h2>
+		<p>This plug-in has partly been inspired by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>. This plug-in has partly been inspired by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
+		<p>Special thanks to <i>Afrow UK</i> for providing his excellent plug-ins (his code helped me to understand how to write NSIS plug-ins).</p>
+		<br>
+		
+		<h2>License</h2>
+<pre>StdUtils plug-in for NSIS
+Copyright (C) 2004-2012 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</pre>
+		<p>Please see <a href="http://www.gnu.org/licenses/gpl-2.0.html">http://www.gnu.org/licenses/gpl-2.0.html</a> for details!</p>
+		<br>
+		
+		<hr>
+		<p><a href="http://mulder.at.gg/">http://mulder.at.gg/</a> | <a href="http://mulder.googlecode.com/">http://mulder.googlecode.com/</a> | <a href="http://nsis.sourceforge.net/Category:Plugins">http://nsis.sourceforge.net/Category:Plugins</a></p>
+	</body>
+</html>
