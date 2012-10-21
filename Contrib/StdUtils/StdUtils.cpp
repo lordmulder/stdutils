@@ -641,10 +641,10 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		g_hInstance = hInst;
 		g_bCallbackRegistred = false;
 		g_bVerbose = false;
 		srand(static_cast<unsigned int>(time(NULL)));
 	}
-	g_hInstance = hInst;
 	return TRUE;
 }

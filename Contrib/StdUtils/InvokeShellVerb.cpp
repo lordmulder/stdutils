@@ -51,7 +51,7 @@ threadParam_t;
 
 static unsigned __stdcall MyInvokeShellVerb_ThreadHelperProc(void* pArguments)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	HRESULT hr = CoInitialize(NULL);
 	if((hr == S_OK) || (hr == S_FALSE))
 	{
 		threadParam_t *params = (threadParam_t*) pArguments;
@@ -104,7 +104,6 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 	}
 
 	variant_t vaDirectory(pcDirectoryName);
-
 	hr = pShellDispatch->NameSpace(vaDirectory, &pFolder);
 	if(FAILED(hr) || (pFolder == NULL))
 	{
@@ -113,14 +112,8 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		return iSuccess;
 	}
 
-#ifdef _UNICODE
-	WCHAR *wzFileName = const_cast<TCHAR*>(pcFileName);
-#else
-	WCHAR wzFileName[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, pcFileName, -1, wzFileName, MAX_PATH);
-#endif
-
-	hr = pFolder->ParseName(wzFileName, &pItem);
+	variant_t vaFileName(pcFileName);
+	hr = pFolder->ParseName(vaFileName, &pItem);
 	if(FAILED(hr) || (pItem == NULL))
 	{
 		iSuccess = -7;
@@ -164,7 +157,7 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		BSTR pcCurrentVerbName = NULL;
 
 		hr = pVerbs->Item(vaVariantIndex, &pCurrentVerb);
-		if (FAILED(hr) || pCurrentVerb == NULL)
+		if (FAILED(hr) || (pCurrentVerb == NULL))
 		{
 			continue;
 		}

@@ -46,7 +46,7 @@ threadParam_t;
 
 static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	HRESULT hr = CoInitialize(NULL);
 	if((hr == S_OK) || (hr == S_FALSE))
 	{
 		threadParam_t *params = (threadParam_t*) pArguments;
