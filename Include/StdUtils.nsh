@@ -2,6 +2,31 @@
 # StdUtils plug-in for NSIS #
 #############################
 
+#################################################################################
+# 
+# StdUtils plug-in for NSIS
+# Copyright (C) 2004-2012 LoRd_MuldeR <MuldeR2@GMX.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# http://www.gnu.org/licenses/gpl-2.0.txt
+#################################################################################
+
+
+### FUNCTION DECLARTIONS ###
+
 !define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
 !define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
 !define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
@@ -20,13 +45,15 @@
 !define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
-!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #To invoke a Shell Verb on an item
+!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #Invokes a Shell Verb on the specified item
 !define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
 !define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)
 
+
+### MACRO DEFINITIONS ###
 
 !macro _StdUtils_Time out
 	StdUtils::Time /NOUNLOAD
@@ -200,3 +227,9 @@
 		StdUtils::DisableVerboseMode /NOUNLOAD
 	!endif
 !macroend
+
+
+### MAGIC NUMBERS ###
+
+!define StdUtils.Const.ISV_PinToTaskbar 5386
+!define StdUtils.Const.ISV_UnpinFromTaskbar 5387

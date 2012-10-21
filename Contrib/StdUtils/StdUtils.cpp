@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // StdUtils plug-in for NSIS
-// Copyright (C) 2004-2011 LoRd_MuldeR <MuldeR2@GMX.de>
+// Copyright (C) 2004-2012 LoRd_MuldeR <MuldeR2@GMX.de>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -495,34 +495,18 @@ NSISFUNC(InvokeShellVerb)
 		pushstring(T("not_found"));
 		break;
 	case -1:
-		pushstring(T("unsupported_os"));
+		pushstring(T("unsupported"));
 		break;
 	case -2:
-		pushstring(T("timeout"));
-		break;
 	case -3:
-		pushstring(T("error_shell32"));
-		break;
 	case -4:
-		pushstring(T("error_ldstring"));
-		break;
 	case -5:
-		pushstring(T("error_dispatch"));
-		break;
 	case -6:
-		pushstring(T("error_folder"));
-		break;
 	case -7:
-		pushstring(T("error_item"));
-		break;
 	case -8:
-		pushstring(T("error_verbs"));
-		break;
 	case -9:
-		pushstring(T("error_verbcnt"));
-		break;
 	case -10:
-		pushstring(T("error_cominit"));
+		pushstring(T("error"));
 		break;
 	default:
 		pushstring(T("unknown"));

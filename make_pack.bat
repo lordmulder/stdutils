@@ -1,6 +1,6 @@
 @echo off
 REM -------------------------------------------------------------------------
-set "PATH_7ZIP=E:\7-Zip"
+set "PATH_7ZIP=C:\Program Files\7-Zip"
 set "PATH_MSVC=D:\Microsoft Visual Studio 10.0\VC"
 REM -------------------------------------------------------------------------
 call "%PATH_MSVC%\vcvarsall.bat" x86

@@ -19,13 +19,14 @@ Section
 	IfFileExists "$SYSDIR\mspaint.exe" +3
 	MessageBox MB_ICONSTOP 'File does not exist:$\n"$SYSDIR\mspaint.exe"$\n$\nExample cannot run!'
 	Quit
+	MessageBox MB_OK "Please make sure Paint isn't pinned to your Taskbar right now.$\nThen press 'OK' to begin test..."
 SectionEnd
 
 Section
 	DetailPrint "Going to pin MSPaint..."
 	
-	DetailPrint  'InvokeShellVerb: "$SYSDIR" "mspaint.exe" 5386'
-	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" 5386
+	DetailPrint  'InvokeShellVerb: "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_PinToTaskbar}'
+	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_PinToTaskbar}
 	DetailPrint "Result: $0"
 
 	StrCmp "$0" "ok" 0 +3
@@ -39,8 +40,8 @@ SectionEnd
 Section
 	DetailPrint "Going to un-pin MSPaint..."
 	
-	DetailPrint  'InvokeShellVerb: "$SYSDIR" "mspaint.exe" 5387'
-	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" 5387
+	DetailPrint  'InvokeShellVerb: "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_UnpinFromTaskbar}'
+	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_UnpinFromTaskbar}
 	DetailPrint "Result: $0"
 	
 	StrCmp "$0" "ok" 0 +3

@@ -1,7 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<title>StdUtils</title>
+		<title>StdUtils plug-in</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="pragma" content="no-cache">
 		<style type="text/css">
 		<!--
 			pre { background-color: #ECECEC; }
@@ -11,11 +15,30 @@
 	</head>
 	<body>
 		<h1>StdUtils for NSIS</h1>
-		<p>This plug-in provides access to a number of "standard" functions from the <a href="http://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>, which programmers are used to from their C/C++ compilers (and other languages), but which are not available in NSIS by default. In order to keep the plug-in size as small as possible (~9 KB) and for maximum compatibility, the Visual C++ Run-Time v6.0 (MSVCRT.DLL), which is included with all versions of Windows (since Windows 2000), is used - instead of linking the Visual C++ Run-Time library into the plug-in DLL.</p>
-		<p>Additionally this plug-in provides wrappers for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function. Moreover it provides a method for launching programs in a non-elevated way (user context) from an elevated installer (admin mode) on UAC-enabled systems - see below for details! Last but not least, a version of ExecShell with "wait for process termination" feature, based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>, is provided.</p>
-		<p><b>ANSI and Unicode builds available. Support operating systems: Windows 2000 and later.</b><br>&nbsp;</p>
+		<p>This plug-in provides access to a number of "standard" functions from the <a href="http://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>, which programmers are used to from their C/C++ compilers (and other languages), but which are not available in NSIS by default. In order to keep the plug-in size as small as possible (~15 KB) and for maximum compatibility, the Visual C++ Run-Time v6.0 (MSVCRT.DLL), which is included with all versions of Windows (since Windows 2000), is used - instead of linking the Visual C++ Run-Time library into the plug-in DLL.</p>
+		<p>Many additional functions, <i>not</i> directly related to the C Standard Library, have sneaked in over the years. For example, this plug-in provides a wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function. Moreover it provides a method for launching programs in a non-elevated way (user context) from an elevated installer (admin mode) on UAC-enabled systems (Vista and later) - see below for details! Last but not least, a version of <tt>ExecShell</tt> with "wait for process termination" feature (based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>) as well as a function to invoke "shell verbs" (e.g. for pinning items to the Taskbar in Windows 7) are provided. Overall I use this plug-in as my "Swiss army Army knife" for all the small things I needed in my NSIS-based installers but NSIS didn't provide out-of-the-box.</p>
+		<p><font style="color:darkred;">ANSI and Unicode builds available. Support operating systems: Windows 2000 and later.</font></p>
+		<br>
+		<b>Table of Contents:</b>
+		<ul>
+			<li><a href="#53826d99">Available Functions</a>
+			<li><a href="#e5717960">Installation</a>
+			<li><a href="#72a4075a">General Usage</a>
+			<li><a href="#66dd4753">Example</a>
+			<li><a href="#a3d3af46">ExecShellAsUser</a>
+			<li><a href="#0c74ed2a">ExecShellWait</a>
+			<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
+			<li><a href="#d452a779">InvokeShellVerb</a>
+			<li><a href="#b92197af">Acknowledgment</a>
+			<li><a href="#db579654">License</a>
+			<li><a href="#01efe0f2">Download and Sources</a>
+		</ul>
+		<br>
 		
-		<h2>Available Functions</h2>
+		<!-- ---------------- -->
+		
+		<a name="53826d99"></a><h2>Available Functions</h2>
+		<p>The following functions are provided by the StdUtils plug-in:
 <pre>!define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
 !define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
 !define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
@@ -40,24 +63,32 @@
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)</pre>
+		<p>Please see below for details!</p>
 		<br>
 
-		<h2>Installation</h2>
+		<!-- ---------------- -->
+
+		<a name="e5717960"></a><h2>Installation</h2>
 		<p>Depending on whether you are using the Unicode or ANSI (non-Unicode) variant of NSIS (we highly recommend using the Unicode variant!), you must copy either <tt>StdUtils\Plugins\Release_Unicode\StdUtils.dll</tt> or <tt>StdUtils\Plugins\Release_ANSI\StdUtils.dll</tt> into the <tt>Plugins</tt> sub-directory inside your NSIS installation directory. Also, in both cases, you must copy <tt>StdUtils\Include\StdUtils.nsh</tt> into the <tt>Include</tt> sub-directory inside your NSIS installation directory. That's it!</p>
 		<br>
 
-		<h2>General Usage</h2>
+		<!-- ---------------- -->
+
+		<a name="72a4075a"></a><h2>General Usage</h2>
 		<p>In order to use the StdUtils plug-in in your script, simply include <tt>StdUtils.nsh</tt> and then use the pre-defined <tt>${StdUtils.<i>FunctionName</i>}</tt> macros like this:</p>
-<pre>!include '<font style="color:darkred;font-weight:bold;">StdUtils.nsh</font>'
+<pre>!include '<span style="color:darkred;font-weight:bold;">StdUtils.nsh</span>'
 
 Section
-	<font style="color:darkred;font-weight:bold;">${StdUtils.Rand}</font> $1
+	<span style="color:darkred;font-weight:bold;">${StdUtils.Rand}</span> $1
 	DetailPrint "Random number obtained via StdUtils::Rand is: $1"
 SectionEnd</pre>
-		<p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defind macros, which ensures that the plug-in functions are used in the "proper" way!</p>
+		<p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defind macros, which ensures that the plug-in functions are used in the "proper" way.</p>
+		<p>For more details, please have a look at the example scripts located in the <tt>StdUtils\Examples\StdUtils</tt> directory!</p>
 		<br>
 		
-		<h2>Example</h2>
+		<!-- ---------------- -->
+
+		<a name="66dd4753"></a><h2>Example</h2>
 		<p>This self-explanatory example script tests miscellaneous functions of the StdUtils plug-in:</p>
 <pre>!include 'StdUtils.nsh'
 
@@ -276,8 +307,10 @@ Section
 	DetailPrint "RevStr: $0"
 SectionEnd</pre>
 		<br>
-	
-		<h2>ExecShellAsUser</h2>
+		
+		<!-- ---------------- -->
+		
+		<a name="a3d3af46"></a><h2>ExecShellAsUser</h2>
 		<p>The <tt>${StdUtils.ExecShellAsUser}</tt> function allows you to launch a process with normal user privileges (user level), directly from an elevated installer instance (admin level). This way it provides a simple/lightweight alternative to the UAC plug-in. If the function succeeded, it returns either "ok" or "fallback". The former means that the process was crated via COM interface (which is required to allow the new process to not be elevated), while the latter means that the normal ShellExecute was used instead. Note that "fallback" is the expected result on systems that do not support UAC (like Windows XP and older). If the function failed, it returns "error".</p>
 <pre>!include 'StdUtils.nsh'
  
@@ -298,8 +331,10 @@ Section
 SectionEnd</pre>
 		<br>
 		
-		<h2>ExecShellWait</h2>
-		<p>The <tt>${StdUtils.ExecShellWait}</tt> function works like the built-in ExecShell command, except that you can wait for the process to terminate. If the function failed, it returns "error". If the function succeeded, it will either return a process handle or "no_wait". The latter means that we cannot wait for the process, because ShellExecuteEx did not create a new process (but pass the file/URL to a running instance). Only if a process handle was returned, you can call <tt>${StdUtils.WaitForProc}</tt> in order to wait until the process has terminated. </p>
+		<!-- ---------------- -->
+
+		<a name="0c74ed2a"></a><h2>ExecShellWait</h2>
+		<p>The <tt>${StdUtils.ExecShellWait}</tt> function works like the built-in <tt>ExecShell</tt> command, except that you can wait for the process to terminate. If the function failed, it returns "error". If the function succeeded, it will either return a process handle or "no_wait". The latter means that we cannot wait for the process, because ShellExecuteEx did not create a new process (but pass the file/URL to a running instance). Only if a process handle was returned, you can call <tt>${StdUtils.WaitForProc}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the return value of <tt>${StdUtils.ExecShellWait}</tt> for "error" <i>and</i> for "no_wait" before you pass it on to <tt>${StdUtils.WaitForProc}</tt>! The behavior of <tt>${StdUtils.WaitForProc}</tt> is undefined if you pass something that isn't a valid process handle.</p>
 <pre>!include 'StdUtils.nsh'
  
 RequestExecutionLevel user
@@ -330,16 +365,16 @@ Section
 SectionEnd</pre>
 		<br>
 		
-		<h2>GetParameter / GetAllParameters</h2>
+		<!-- ---------------- -->
+
+		<a name="f24cc3f9"></a><h2>GetParameter / GetAllParameters</h2>
 		<p>With <tt>${StdUtils.GetParameter}</tt> you can check for the presence of a specific command-line parameter. If the parameter was specified with a (non-empty) value, then the parameter's value is return. If the parameter was specified without a value, then an empty string is return. If the parameter has not been specified, then the default value is returned.</p>
-		<p>
-			Parameters can be passed to the installer like this:
-			<ul>
-				<li><tt>Installer.exe /Foobar</tt>
-				<li><tt>Installer.exe /Foobar=SomeValue</tt>
-				<li><tt>Installer.exe "/Foobar=Some Value With Whitespaces"</tt>
-			</ul>
-		</p>
+		<p>Parameters can be passed to the installer like this:</p>
+		<ul>
+			<li><tt>Installer.exe /Foobar</tt>
+			<li><tt>Installer.exe /Foobar=SomeValue</tt>
+			<li><tt>Installer.exe "/Foobar=Some Value With Whitespaces"</tt>
+		</ul>
 		<p>Additionally you can use <tt>${StdUtils.GetAllParameters}</tt> to get the complete command-line string, but without the executable name. This is useful to forward all command-line parameters to an encapsulated installer, for example. The truncate parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With the parameter set to 1, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> (usually 1024 or 8192) characters, if necessary. With the parameter set to 0, the command-line will not be truncated. Instead the value "too_long" is returned, if the command-line doesn't fit into an NSIS string.</p>
 <pre>!include 'StdUtils.nsh'
  
@@ -347,9 +382,9 @@ RequestExecutionLevel user
 ShowInstDetails show
  
 Section
-	${StdUtils.GetParameter} $R0 "Foobar" "<N/A>"
+	${StdUtils.GetParameter} $R0 "Foobar" "&lt;N/A&gt;"
  
-	StrCmp "$R0" "<N/A>" 0 +3
+	StrCmp "$R0" "&lt;N/A&gt;" 0 +3
 	DetailPrint "Parameter /Foobar is *not* specified!"
 	Goto Finished
  
@@ -369,16 +404,54 @@ Section
 SectionEnd</pre>
 		<br>
 		
-		<h2>InvokeShellVerb</h2>
-		<p>TODO</p>
+		<!-- ---------------- -->
+
+		<a name="d452a779"></a><h2>InvokeShellVerb</h2>
+		<p>The <tt>${StdUtils.InvokeShellVerb}</tt> function can be used to invoke a so-called "Shell Verb" on an arbitary item. The most common use for this is pinning (or unpinning) an item to (from) the Taskbar on Windows 7. Despite the fact the Microsoft claimes that there is no API for this, the API <i>does</i> exist and is commonly used (e.g. Firefox' insatller makes use of it too). The function expects three arguments: The directory where the item (e.g. executable file) is located, the name of the item (e.g. executable file) and the <i>resource id</i> of the verbt o be invoked. We need the resource id of the verb, because the verb itself is <i>language-specific</i>, but we certainly do <i>no</i> want to adjust the installer for each system langauge. Resource id's are langauge-independant and you can use the pre-defined constants <tt>${StdUtils.Const.ISV_PinToTaskbar}</tt> or <tt>${StdUtils.Const.ISV_UnpinFromTaskbar}</tt> for convenience. Note that while this function works on Windows 7 (and later) only, it still is perfectly safe to call on older versions of Windows. If the function succeeded, then it returns "ok"; if the requested verb was not found for the specified item, then "not_found" will be returned (even if the specified file <i>was</i> found!); if this function is used on Windows versions prior to Windows 7 (e.g. Vista or XP), then it will return "unsupported"; and if the function failed for another reason (e.g. file not found), it will return "error".</p>
+		<p>Hint: If you are getting the "not_found" error for a verb that is supposed to exists, then it's probably because the action isn't currently available for the item (e.g. it could be that you are trying to pin an item that already is pinned).</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user ;no elevation needed for this test
+ShowInstDetails show
+
+Section
+	IfFileExists "$SYSDIR\mspaint.exe" +3
+	MessageBox MB_ICONSTOP 'File does not exist:$\n"$SYSDIR\mspaint.exe"$\n$\nExample cannot run!'
+	Quit
+SectionEnd
+
+Section
+	DetailPrint "Going to pin MSPaint..."
+	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_PinToTaskbar}
+	DetailPrint "Result: $0"
+
+	StrCmp "$0" "ok" 0 +3
+	MessageBox MB_TOPMOST "Paint should have been pinned to Taskbar now!"
+	Goto +2
+	MessageBox MB_TOPMOST "Failed to pin, see log for details!"
+SectionEnd
+
+Section
+	DetailPrint "Going to un-pin MSPaint..."
+	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ISV_UnpinFromTaskbar}
+	DetailPrint "Result: $0"
+	
+	StrCmp "$0" "ok" 0 +3
+	MessageBox MB_TOPMOST "Paint should have been un-pinned from Taskbar now!"
+	Goto +2
+	MessageBox MB_TOPMOST "Failed to un-pin, see log for details!"
+SectionEnd</pre>
 		<br>
 		
-		<h2>Acknowledgment</h2>
+		<!-- ---------------- -->
+
+		<a name="b92197af"></a><h2>Acknowledgment</h2>
+		<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;.</p>
 		<p>This plug-in has partly been inspired by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>. This plug-in has partly been inspired by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
 		<p>Special thanks to <i>Afrow UK</i> for providing his excellent plug-ins (his code helped me to understand how to write NSIS plug-ins).</p>
 		<br>
 		
-		<h2>License</h2>
+		<a name="db579654"></a><h2>License</h2>
 <pre>StdUtils plug-in for NSIS
 Copyright (C) 2004-2012 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
 
@@ -398,7 +471,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.<
 		<p>Please see <a href="http://www.gnu.org/licenses/gpl-2.0.html">http://www.gnu.org/licenses/gpl-2.0.html</a> for details!</p>
 		<br>
 		
+		<!-- ---------------- -->
+
+		<a name="01efe0f2"></a><h2>Download and Sources</h2>
+		<p>The source codes for the StdUtils plug-in are available from the SVN repository at:<br><a href="http://code.google.com/p/mulder/source/browse/trunk/Utils/nsis_stdutils/">http://code.google.com/p/mulder/source/browse/trunk/Utils/nsis_stdutils/</a></p>
+		<p>You can download pre-compiled binaries (i.e. ready-to-use DLL files) of plug-in here:<br><a href="http://code.google.com/p/mulder/downloads/list?can=1&amp;q=StdUtils">http://code.google.com/p/mulder/downloads/list?can=1&amp;q=StdUtils</a></p>
+		<br>
+		
 		<hr>
-		<p><a href="http://mulder.at.gg/">http://mulder.at.gg/</a> | <a href="http://mulder.googlecode.com/">http://mulder.googlecode.com/</a> | <a href="http://nsis.sourceforge.net/Category:Plugins">http://nsis.sourceforge.net/Category:Plugins</a></p>
+		<table width="100%">
+			<tr>
+				<td align="left"><a href="http://mulder.at.gg/">http://mulder.at.gg/</a> | <a href="http://mulder.googlecode.com/">http://mulder.googlecode.com/</a> | <a href="http://nsis.sourceforge.net/Category:Plugins">http://nsis.sourceforge.net/Category:Plugins</a></td>
+				<td align="right"><a href="http://www.youtube.com/watch?v=uKUYSl8c-90">Earth Heals Herself</a></td>
+			</tr>
+		</table>
 	</body>
 </html>
