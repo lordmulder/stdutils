@@ -49,9 +49,18 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 	HRESULT hr = CoInitialize(NULL);
 	if((hr == S_OK) || (hr == S_FALSE))
 	{
-		threadParam_t *params = (threadParam_t*) pArguments;
-		params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
+		if(threadParam_t *params = (threadParam_t*) pArguments)
+		{
+			params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
+		}
 		CoUninitialize();
+	}
+	else
+	{
+		if(threadParam_t *params = (threadParam_t*) pArguments)
+		{
+			params->returnValue = -1;
+		}
 	}
 
 	return EXIT_SUCCESS;

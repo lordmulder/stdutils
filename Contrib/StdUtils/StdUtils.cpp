@@ -463,8 +463,18 @@ NSISFUNC(ExecShellAsUser)
 	popstringn(verb, 0);
 	popstringn(file, 0);
 	
+	if(_tcslen(file) < 1) { delete [] file; file = NULL; }
 	if(_tcslen(verb) < 1) { delete [] verb; verb = NULL; }
 	if(_tcslen(args) < 1) { delete [] args; args = NULL; }
+
+	if(!(file))
+	{
+		pushstring(T("einval"));
+		if(file) delete [] file;
+		if(verb) delete [] verb;
+		if(args) delete [] args;
+		return;
+	}
 
 	int result = ShellExecAsUser(verb, file, args, hWndParent, true);
 	
@@ -530,14 +540,9 @@ NSISFUNC(InvokeShellVerb)
 		pushstring(T("unsupported"));
 		break;
 	case -2:
+		pushstring(T("timeout"));
+		break;
 	case -3:
-	case -4:
-	case -5:
-	case -6:
-	case -7:
-	case -8:
-	case -9:
-	case -10:
 		pushstring(T("error"));
 		break;
 	default:
