@@ -24,7 +24,7 @@
 			<li><a href="#53826d99">Available Functions</a>
 			<li><a href="#e5717960">Installation</a>
 			<li><a href="#72a4075a">General Usage</a>
-			<li><a href="#66dd4753">Example</a>
+			<li><a href="#66dd4753">Miscellaneous Functions</a>
 			<li><a href="#a3d3af46">ExecShellAsUser</a>
 			<li><a href="#0c74ed2a">ExecShellWait</a>
 			<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
@@ -63,7 +63,7 @@
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)</pre>
-		<p>Please see below for details!</p>
+		<p>Please see the descriptions below for details!</p>
 		<br>
 
 		<!-- ---------------- -->
@@ -88,8 +88,9 @@ SectionEnd</pre>
 		
 		<!-- ---------------- -->
 
-		<a name="66dd4753"></a><h2>Example</h2>
-		<p>This self-explanatory example script tests miscellaneous functions of the StdUtils plug-in:</p>
+		<a name="66dd4753"></a><h2>Miscellaneous Functions</h2>
+		<p><b><tt>${StdUtils.Time} <i>user_var(output)</i></tt></b></p>
+		<p>Returns the number of seconds that have elapsed since 00:00, Jan 1, 1970 UTC, just like the <a href="http://www.cplusplus.com/reference/clibrary/ctime/time/">time()</a> function:
 <pre>!include 'StdUtils.nsh'
 
 RequestExecutionLevel user
@@ -104,9 +105,10 @@ Section
 	Sleep 500
 	${StdUtils.Time} $1
 	DetailPrint "Time: $1"
-SectionEnd
-
-Section
+SectionEnd</pre>
+		<p><br><b><tt>${StdUtils.Rand} <i>user_var(output)</i><br>${StdUtils.RandMax} <i>user_var(output)</i> <i>max</i><br>${StdUtils.RandMinMax} <i>user_var(output)</i> <i>min</i> <i>max</i></tt></b></p>
+		<p>Returns a pseudo-random integral number, similar to the <a href="http://www.cplusplus.com/reference/clibrary/cstdlib/rand/">rand()</a> function, but without the need to call <tt>srand()</tt>. Optionally the <i>maximum</i> or the <i>minimum</i> and <i>maximum</i> can be specified:</p>
+<pre>Section
 	${StdUtils.Rand} $1
 	DetailPrint "Random: $1"
 	${StdUtils.Rand} $1
@@ -149,9 +151,10 @@ Section
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.FormatStr} <i>user_var(output)</i> <i>format_str</i> <i>val1</i><br>${StdUtils.FormatStr2} <i>user_var(output)</i> <i>format_str</i> <i>val1</i> <i>val2</i><br>${StdUtils.FormatStr3} <i>user_var(output)</i> <i>format_str</i> <i>val1</i> <i>val2</i> <i>val3</i></tt></b></p>
+	<p>Returns a formatted string, similar to the <a href="http://www.cplusplus.com/reference/clibrary/cstdio/sprintf/">sprintf()</a> function. Only the <tt>%d</tt> placeholder is currently supported. There are versions for one, two and three placeholders:</p>
+<pre>Section
 	${StdUtils.FormatStr} $1 "Hello World is %05d woha!" 89
 	DetailPrint "FormatStr: $1"
 	${StdUtils.FormatStr2} $1 "Hello World is %05d and %05d woha!" 89 384
@@ -160,17 +163,19 @@ Section
 	DetailPrint "FormatStr: $1"
 	${StdUtils.FormatStr} $1 "Hello World is %09000d." 89
 	DetailPrint "FormatStr: $1"
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.RandList} <i>count</i> <i>max</i></tt></b></p>
+	<p>Pushes a list of pseudo-random integral numbers onto the stack. The string "EOF" is pushed beforehand and thus will indicate the end of the list. The <i>count</i> and the <i>maximum</i> can be specified:</p>
+<pre>Section
 	${StdUtils.RandList} 50 100
 	Pop $1
 	StrCmp $1 EOL +3
 	DetailPrint "RandList: $1"
 	Goto -3
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.ScanStr} <i>user_var(output)</i> <i>format_str</i> <i>input</i> <i>default</i><br>${StdUtils.ScanStr2} <i>user_var(output1)</i> <i>user_var(output2)</i> <i>format_str</i> <i>input</i> <i>default1</i> <i>default2</i><br>${StdUtils.ScanStr3} <i>user_var(output1)</i> <i>user_var(output2)</i> <i>user_var(output3)</i> <i>format_str</i> <i>input</i> <i>default1</i> <i>default2</i> <i>default3</i></tt></b></p>
+	<p>Parses input from a string according to a format specification similar to the <a href="http://www.cplusplus.com/reference/clibrary/cstdio/sscanf/">sscanf()</a> function. Only the <tt>%d</tt> placeholder is currently supported. There are versions for one, two and three placeholders:</p>
+<pre>Section
 	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
 	DetailPrint "ScanStr: $0"
 	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
@@ -195,9 +200,10 @@ Section
 	DetailPrint "ScanStr3: $0, $1, $2"
 	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
 	DetailPrint "ScanStr3: $0, $1, $2"
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.SHFileMove} <i>user_var(output)</i> <i>from</i> <i>to</i> <i>hwnd</i><br>${StdUtils.SHFileCopy} <i>user_var(output)</i> <i>from</i> <i>to</i> <i>hwnd</i></tt></b></p>
+	<p>Copies or moves a file system object by using the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation()</a> function. Needs a window handle and usually <tt>$HWNDPARENT</tt> is used for this purpose:</p>
+<pre>Section
 	InitPluginsDir
 	SetOutPath "$PLUGINSDIR\TestDirA"
 	File "${NSISDIR}\Contrib\Graphics\Checks\*.*"
@@ -226,9 +232,10 @@ Section
 	${StdUtils.SetVerbose} 0
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.TrimStr} <i>user_var(input/output)</i><br>${StdUtils.TrimStrLeft} <i>user_var(input/output)</i><br>${StdUtils.TrimStrRight} <i>user_var(input/output)</i></tt></b></p>
+	<p>Trims a string by removing all leading and/or trailing whitspace (space, tabular, line feed, carriage return) characters <i>in-place</i>:</p>
+<pre>Section
 	StrCpy $1 "        Some Text        "
 	DetailPrint "String: '$1'"
 	StrCpy $0 $1
@@ -288,9 +295,10 @@ Section
 	StrCpy $0 $1
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
-SectionEnd
-
-Section
+SectionEnd</pre>
+	<p><br><b><tt>${StdUtils.RevStr} <i>user_var(input/output)</i></tt></b></p>
+	<p>Reverses the character order of a specified string <i>in-place</i>:</p>
+<pre>Section
 	StrCpy $0 "ABC"
 	DetailPrint "String: $0"
 	${StdUtils.RevStr} $0
@@ -411,7 +419,7 @@ SectionEnd</pre>
 
 		<a name="d452a779"></a><h2>InvokeShellVerb</h2>
 		<p><b><tt>${StdUtils.InvokeShellVerb} <i>user_var(output)</i> <i>path</i> <i>file</i> <i>verb_id</i></tt></b></p>
-		<p>The <tt>${StdUtils.InvokeShellVerb}</tt> function can be used to invoke a so-called "Shell Verb" on an arbitary item. The most common use for this is pinning (or unpinning) an item to (from) the Taskbar on Windows 7. Despite the fact the Microsoft claimes that there is no API for this, the API <i>does</i> exist and is commonly used (e.g. Firefox' insatller makes use of it too). The function expects three arguments: The directory where the item (e.g. executable file) is located, the name of the item (e.g. executable file) and the <i>resource id</i> of the verbt o be invoked. We need the resource id of the verb, because the verb itself is <i>language-specific</i>, but we certainly do <i>no</i> want to adjust the installer for each system langauge. Resource id's are langauge-independant and you can use the pre-defined constants <tt>${StdUtils.Const.ISV_PinToTaskbar}</tt> or <tt>${StdUtils.Const.ISV_UnpinFromTaskbar}</tt> for convenience. Note that while this function works on Windows 7 (and later) only, it still is perfectly safe to call on older versions of Windows. If the function succeeded, then it returns "ok"; if the function is called with invalid parameters, then it returns "einval"; if the requested verb was not found for the specified item, then "not_found" will be returned (even if the specified item iteself <i>was</i> found!); if this function is used on Windows versions prior to Windows 7 (e.g. Vista or XP), then it will return "unsupported"; and if the function failed for another reason (e.g. file not found), it will return "error".</p>
+		<p>The <tt>${StdUtils.InvokeShellVerb}</tt> function can be used to invoke a so-called "Shell Verb" on an arbitary item. The most common use for this is pinning (or unpinning) an item to (from) the Taskbar or Startmenu on Windows 7. Despite the fact the Microsoft claimes that there is no API for this, the API <i>does</i> exist and is commonly used (e.g. Firefox' insatller makes use of it too). The function expects three arguments: The directory where the item (e.g. executable file) is located, the name of the item (e.g. executable file) and the <i>resource id</i> of the verbt o be invoked. We need the resource id of the verb, because the verb itself is <i>language-specific</i>, but we certainly do <i>no</i> want to adjust the installer for each system langauge. Resource id's are langauge-independant and you can use the pre-defined constants <tt>${StdUtils.Const.ISV_PinToTaskbar}</tt>, <tt>${StdUtils.Const.ISV_UnpinFromTaskbar}</tt>, <tt>${StdUtils.Const.ISV_PinToStartmenu}</tt> or <tt>${StdUtils.Const.ISV_UnpinFromStartmenu}</tt> for convenience. Note that while this function works on Windows 7 (and later) only, it still is perfectly safe to call on older versions of Windows. If the function succeeded, then it returns "ok"; if the function is called with invalid parameters, then it returns "einval"; if the requested verb was not found for the specified item, then "not_found" will be returned (even if the specified item iteself <i>was</i> found!); if this function is used on Windows versions prior to Windows 7 (e.g. Vista or XP), then it will return "unsupported"; and if the function failed for another reason (e.g. file not found or invalid <i>verb_id</i>), then it will return "error".</p>
 		<p>Hint: If you are getting the "not_found" error for a verb that is supposed to exists, then it's probably because the desired action isn't currently available for the item (e.g. it could be that you are trying to pin an item that already is pinned).</p>
 <pre>!include 'StdUtils.nsh'
 
