@@ -175,6 +175,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ComUtils.cpp" />
     <ClCompile Include="InvokeShellVerb.cpp" />
     <ClCompile Include="ParameterParser.cpp" />
     <ClCompile Include="ShellExecAsUser.cpp" />
@@ -191,7 +192,7 @@
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="UnicodeSupport.h" />
-    <ClInclude Include="VariantUtils.h" />
+    <ClInclude Include="ComUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StdUtils.rc" />

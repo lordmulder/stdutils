@@ -30,7 +30,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VariantUtils.h"
+#include "ComUtils.h"
 
 typedef struct
 {
@@ -53,6 +53,7 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 		{
 			params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
 		}
+		DisptachPendingMessages(500); //Required to avoid potential crash on/after CoUninitialize() !!!
 		CoUninitialize();
 	}
 	else

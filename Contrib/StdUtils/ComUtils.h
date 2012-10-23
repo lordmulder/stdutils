@@ -56,3 +56,7 @@ protected:
 private:
 	VARIANT data;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+
+void DisptachPendingMessages(const DWORD uiDelay);

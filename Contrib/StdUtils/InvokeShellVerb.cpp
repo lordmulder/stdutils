@@ -36,7 +36,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "VariantUtils.h"
+#include "ComUtils.h"
 
 typedef struct
 {
@@ -53,13 +53,14 @@ static const WCHAR *shell32 = L"shell32.dll";
 
 static unsigned __stdcall MyInvokeShellVerb_ThreadHelperProc(void* pArguments)
 {
-	HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HRESULT hr = CoInitialize(NULL);
 	if((hr == S_OK) || (hr == S_FALSE))
 	{
 		if(threadParam_t *params = (threadParam_t*) pArguments)
 		{
 			params->returnValue = MyInvokeShellVerb(params->pcDirectoryName, params->pcFileName, params->uiVerbId, false);
 		}
+		DisptachPendingMessages(500); //Required to avoid potential crash on/after CoUninitialize() !!!
 		CoUninitialize();
 	}
 	else
@@ -169,6 +170,8 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		pVerbs->Release();
 		return iSuccess;
 	}
+
+	DisptachPendingMessages(5);
 
 	// ----------------------------------- //
 
