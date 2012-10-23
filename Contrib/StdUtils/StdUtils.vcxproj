@@ -175,7 +175,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ComUtils.cpp" />
     <ClCompile Include="InvokeShellVerb.cpp" />
     <ClCompile Include="ParameterParser.cpp" />
     <ClCompile Include="ShellExecAsUser.cpp" />

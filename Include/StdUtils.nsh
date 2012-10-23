@@ -233,3 +233,5 @@
 
 !define StdUtils.Const.ISV_PinToTaskbar 5386
 !define StdUtils.Const.ISV_UnpinFromTaskbar 5387
+!define StdUtils.Const.ISV_PinToStartmenu 5381
+!define StdUtils.Const.ISV_UnpinFromStartmenu 5382

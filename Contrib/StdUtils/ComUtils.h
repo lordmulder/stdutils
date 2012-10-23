@@ -57,6 +57,25 @@ private:
 	VARIANT data;
 };
 
-///////////////////////////////////////////////////////////////////////////////
+/*
+ * Each single-threaded apartment (STA) must have a message loop to handle calls from other processes and apartments within the same process!
+ * In order to avoid deadlock or crash, we use CoWaitForMultipleHandles() to dispatch the pending messages, as it will perform "message pumping" while waiting.
+ * Source: http://msdn.microsoft.com/en-us/library/windows/desktop/ms680112%28v=vs.85%29.aspx
+ */
+static void DispatchPendingMessages(const DWORD uiTimeout)
+{
+	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if(hEvent)
+	{
+		const DWORD nLoops = (uiTimeout / 100) + ((uiTimeout % 100) != 0);
+		for(DWORD i = 0; i < nLoops; i++)
+		{
+			DWORD uiIndex;
+			CoWaitForMultipleHandles(0, 100, 1, &hEvent, &uiIndex);
+			Sleep(0);
+		}
+		CloseHandle(hEvent);
+	}
+}
 
-void DisptachPendingMessages(const DWORD uiDelay);
+/*eof*/

@@ -53,7 +53,7 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 		{
 			params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
 		}
-		DisptachPendingMessages(500); //Required to avoid potential crash on/after CoUninitialize() !!!
+		DispatchPendingMessages(500); //Required to avoid potential deadlock or crash on CoUninitialize() !!!
 		CoUninitialize();
 	}
 	else
