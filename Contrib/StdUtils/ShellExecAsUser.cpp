@@ -53,7 +53,7 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 		{
 			params->returnValue = ShellExecAsUser(params->pcOperation, params->pcFileName, params->pcParameters, params->parentHwnd, false);
 		}
-		DispatchPendingMessages(500); //Required to avoid potential deadlock or crash on CoUninitialize() !!!
+		DispatchPendingMessages(1000); //Required to avoid potential deadlock or crash on CoUninitialize() !!!
 		CoUninitialize();
 	}
 	else
@@ -106,6 +106,7 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *pcOperation, const TCH
 									hr = pdisp->QueryInterface(IID_PPV_ARGS(&psd));
 									if(SUCCEEDED(hr))
 									{
+										DispatchPendingMessages(125);
 										variant_t verb(pcOperation);
 										variant_t file(pcFileName);
 										variant_t para(pcParameters);

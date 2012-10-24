@@ -60,7 +60,7 @@ static unsigned __stdcall MyInvokeShellVerb_ThreadHelperProc(void* pArguments)
 		{
 			params->returnValue = MyInvokeShellVerb(params->pcDirectoryName, params->pcFileName, params->uiVerbId, false);
 		}
-		DispatchPendingMessages(500); //Required to avoid potential deadlock or crash on CoUninitialize() !!!
+		DispatchPendingMessages(1000); //Required to avoid potential deadlock or crash on CoUninitialize() !!!
 		CoUninitialize();
 	}
 	else
@@ -171,7 +171,7 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		return iSuccess;
 	}
 
-	DispatchPendingMessages(100);
+	DispatchPendingMessages(125);
 
 	// ----------------------------------- //
 

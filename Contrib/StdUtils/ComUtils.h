@@ -67,11 +67,11 @@ static void DispatchPendingMessages(const DWORD uiTimeout)
 	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if(hEvent)
 	{
-		const DWORD nLoops = (uiTimeout / 100) + ((uiTimeout % 100) != 0);
+		const DWORD nLoops = (uiTimeout / 125) + ((uiTimeout % 125) != 0);
 		for(DWORD i = 0; i < nLoops; i++)
 		{
 			DWORD uiIndex;
-			CoWaitForMultipleHandles(0, 100, 1, &hEvent, &uiIndex);
+			CoWaitForMultipleHandles(0, 125, 1, &hEvent, &uiIndex);
 			Sleep(0);
 		}
 		CloseHandle(hEvent);
