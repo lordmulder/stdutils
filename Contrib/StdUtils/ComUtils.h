@@ -59,10 +59,14 @@ private:
 
 #define DISPATCH_MESSAGES do \
 { \
-	MSG _msg; \
-	while(PeekMessage(&_msg, NULL, 0, 0, PM_REMOVE)) \
+	for(int i = 0; i < 16; i++) \
 	{ \
-		DispatchMessage(&_msg); \
+		MSG _msg; bool _flag = false; \
+		while(PeekMessage(&_msg, NULL, 0, 0, PM_REMOVE)) \
+		{ \
+			DispatchMessage(&_msg); _flag = true; \
+		} \
+		if(_flag) Sleep(0); else break;\
 	} \
 } \
 while(0)
