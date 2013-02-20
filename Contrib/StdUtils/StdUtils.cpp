@@ -60,12 +60,59 @@ static UINT_PTR PluginCallback(enum NSPIM msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static const unsigned __int64 FTIME_SECOND = 10000000ui64;
+static const unsigned __int64 FTIME_MINUTE = 60ui64 * FTIME_SECOND;
+static const unsigned __int64 FTIME_HOUR   = 60ui64 * FTIME_MINUTE;
+static const unsigned __int64 FTIME_DAY    = 24ui64 * FTIME_HOUR;
+
+static unsigned __int64 getFileTime(void)
+{
+	SYSTEMTIME systime;
+	GetSystemTime(&systime);
+	
+	FILETIME filetime;
+	if(!SystemTimeToFileTime(&systime, &filetime))
+	{
+		return 0;
+	}
+
+	ULARGE_INTEGER uli;
+	uli.LowPart = filetime.dwLowDateTime;
+	uli.HighPart = filetime.dwHighDateTime;
+
+	return uli.QuadPart;
+}
+
 NSISFUNC(Time)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
 	long t = time(NULL);
 	pushint(t);
+}
+
+NSISFUNC(GetMinutes)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	unsigned __int64 ftime = getFileTime() / FTIME_MINUTE;
+	pushint(static_cast<int>(ftime));
+}
+
+NSISFUNC(GetHours)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	unsigned __int64 ftime = getFileTime() / FTIME_HOUR;
+	pushint(static_cast<int>(ftime));
+}
+
+NSISFUNC(GetDays)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	unsigned __int64 ftime = getFileTime() / FTIME_DAY;
+	pushint(static_cast<int>(ftime));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

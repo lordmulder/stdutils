@@ -27,6 +27,9 @@
 ### FUNCTION DECLARTIONS ###
 
 !define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
+!define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'   #GetSystemTimeAsFileTime() as number of minutes
+!define StdUtils.GetHours         '!insertmacro _StdUtils_GetHours'     #GetSystemTimeAsFileTime() as number of hours
+!define StdUtils.GetDays          '!insertmacro _StdUtils_GetDays'      #GetSystemTimeAsFileTime() as number of days
 !define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
 !define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
 !define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'   #rand() with minimum/maximum
@@ -56,6 +59,21 @@
 
 !macro _StdUtils_Time out
 	StdUtils::Time /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_GetMinutes out
+	StdUtils::GetMinutes /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_GetHours out
+	StdUtils::GetHours /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_GetDays out
+	StdUtils::GetDays /NOUNLOAD
 	pop ${out}
 !macroend
 
