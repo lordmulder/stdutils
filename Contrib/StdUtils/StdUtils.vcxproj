@@ -187,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="InvokeShellVerb.h" />
     <ClInclude Include="ParameterParser.h" />
+    <ClInclude Include="RandUtils.h" />
     <ClInclude Include="ShellExecAsUser.h" />
     <ClInclude Include="StdUtils.h" />
     <ClInclude Include="resource.h" />

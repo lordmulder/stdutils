@@ -34,8 +34,10 @@
 	TCHAR *VAR = new TCHAR[LEN]; \
 	memset(VAR, 0, sizeof(TCHAR) * LEN)
 
-#define REGSITER_CALLBACK(INST) \
-	if(!g_bCallbackRegistred) g_bCallbackRegistred = \
-	(extra->RegisterPluginCallback((HMODULE)INST, PluginCallback) == 0)
+#define REGSITER_CALLBACK(INST) do \
+{ \
+	if(!g_bCallbackRegistred) g_bCallbackRegistred = (extra->RegisterPluginCallback((HMODULE)INST, PluginCallback) == 0); \
+} \
+while(0)
 
 #endif //__STDUTILS_H__

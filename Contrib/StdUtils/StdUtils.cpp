@@ -29,9 +29,9 @@ HANDLE g_hInstance;
 bool g_bCallbackRegistred;
 bool g_bVerbose;
 
-///////////////////////////////////////////////////////////////////////////////
-
 RTL_CRITICAL_SECTION g_mutex;
+
+///////////////////////////////////////////////////////////////////////////////
 
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
@@ -41,7 +41,6 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 		g_hInstance = hInst;
 		g_bCallbackRegistred = false;
 		g_bVerbose = false;
-		srand(static_cast<unsigned int>(time(NULL)));
 	}
 	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
@@ -124,35 +123,7 @@ NSISFUNC(GetDays)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static bool s_secure_rand_init = false;
-typedef void (*secure_rand_t)(unsigned int* randomValue);
-static secure_rand_t s_secure_rand = NULL;
-
-static unsigned int next_rand(void)
-{
-	EnterCriticalSection(&g_mutex);
-	if(!s_secure_rand_init)
-	{
-		HMODULE msvcrt = GetModuleHandle(_T("msvcrt.dll"));
-		if(msvcrt)
-		{
-			s_secure_rand = reinterpret_cast<secure_rand_t>(GetProcAddress(msvcrt, "rand_s"));
-		}
-		s_secure_rand_init = true;
-	}
-	LeaveCriticalSection(&g_mutex);
-		
-	if(s_secure_rand)
-	{
-		unsigned int rnd;
-		s_secure_rand(&rnd);
-		return rnd;
-	}
-
-	unsigned int a = static_cast<unsigned int>(rand());
-	unsigned int b = static_cast<unsigned int>(rand());
-	return (a * RAND_MAX) + b;
-}
+#include "RandUtils.h"
 
 NSISFUNC(Rand)
 {
