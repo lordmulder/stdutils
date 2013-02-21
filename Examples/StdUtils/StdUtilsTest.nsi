@@ -47,6 +47,10 @@ Section
 	DetailPrint "Random: $1"
 	${StdUtils.Rand} $1
 	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
 SectionEnd
 
 !insertmacro NextTest
@@ -64,6 +68,18 @@ Section
 	DetailPrint "Random Max: $1"
 	${StdUtils.RandMax} $1 42
 	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
+	${StdUtils.RandMax} $1 42
+	DetailPrint "Random Max: $1"
 SectionEnd
 
 !insertmacro NextTest
@@ -78,6 +94,25 @@ Section
 	${StdUtils.RandMinMax} $1 -4 -2
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 -4 -2
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -4 -2
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"

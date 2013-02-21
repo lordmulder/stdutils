@@ -31,14 +31,21 @@ bool g_bVerbose;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+RTL_CRITICAL_SECTION g_mutex;
+
 BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		InitializeCriticalSection(&g_mutex);
 		g_hInstance = hInst;
 		g_bCallbackRegistred = false;
 		g_bVerbose = false;
 		srand(static_cast<unsigned int>(time(NULL)));
+	}
+	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
+	{
+		DeleteCriticalSection(&g_mutex);
 	}
 	return TRUE;
 }
@@ -117,11 +124,41 @@ NSISFUNC(GetDays)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static bool s_secure_rand_init = false;
+typedef void (*secure_rand_t)(unsigned int* randomValue);
+static secure_rand_t s_secure_rand = NULL;
+
+static unsigned int next_rand(void)
+{
+	EnterCriticalSection(&g_mutex);
+	if(!s_secure_rand_init)
+	{
+		HMODULE msvcrt = GetModuleHandle(_T("msvcrt.dll"));
+		if(msvcrt)
+		{
+			s_secure_rand = reinterpret_cast<secure_rand_t>(GetProcAddress(msvcrt, "rand_s"));
+		}
+		s_secure_rand_init = true;
+	}
+	LeaveCriticalSection(&g_mutex);
+		
+	if(s_secure_rand)
+	{
+		unsigned int rnd;
+		s_secure_rand(&rnd);
+		return rnd;
+	}
+
+	unsigned int a = static_cast<unsigned int>(rand());
+	unsigned int b = static_cast<unsigned int>(rand());
+	return (a * RAND_MAX) + b;
+}
+
 NSISFUNC(Rand)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
-	int r = (rand() * RAND_MAX) + rand();
+	unsigned int r = next_rand() % static_cast<unsigned int>(INT_MAX);
 	pushint(r);
 }
 
@@ -130,8 +167,8 @@ NSISFUNC(RandMax)
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
 	int m = abs(popint()) + 1;
-	int r = (m > RAND_MAX) ? ((rand() * RAND_MAX) + rand()) : rand();
-	pushint(r % m);
+	unsigned int r = next_rand() % static_cast<unsigned int>(m);
+	pushint(r);
 }
 
 NSISFUNC(RandMinMax)
@@ -148,8 +185,8 @@ NSISFUNC(RandMinMax)
 	}
 
 	int diff = abs(max - min) + 1;
-	int r = (diff > RAND_MAX) ? ((rand() * RAND_MAX) + rand()) : rand();
-	pushint((r % diff) + min);
+	unsigned int r = next_rand() % static_cast<unsigned int>(diff);
+	pushint(r + min);
 }
 
 NSISFUNC(RandList)
@@ -178,11 +215,10 @@ NSISFUNC(RandList)
 
 	while(done < count)
 	{
-		int rnd = (max > RAND_MAX) ? ((rand() * RAND_MAX) + rand()) : rand();
-		int idx = rnd % max;
-		if(!list[idx])
+		unsigned int rnd = next_rand() % static_cast<unsigned int>(max);
+		if(!list[rnd])
 		{
-			list[idx] = true;
+			list[rnd] = true;
 			done++;
 		}
 	}

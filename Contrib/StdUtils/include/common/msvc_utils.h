@@ -27,6 +27,7 @@ extern "C" {
 #endif
 
 #define RAND_MAX 0x7fff
+#define INT_MAX 2147483647
 
 long time(long *time);
 int rand(void);
