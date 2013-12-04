@@ -26,34 +26,34 @@
 
 ### FUNCTION DECLARTIONS ###
 
-!define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
-!define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'   #GetSystemTimeAsFileTime() as number of minutes
-!define StdUtils.GetHours         '!insertmacro _StdUtils_GetHours'     #GetSystemTimeAsFileTime() as number of hours
-!define StdUtils.GetDays          '!insertmacro _StdUtils_GetDays'      #GetSystemTimeAsFileTime() as number of days
-!define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
-!define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
-!define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'   #rand() with minimum/maximum
-!define StdUtils.RandList         '!insertmacro _StdUtils_RandList'     #rand() with list support
-!define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'    #sprintf() with one format tag (only %d supported!)
-!define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'   #sprintf() with two format tags (only %d supported!)
-!define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'   #sprintf() with three format tags (only %d supported!)
-!define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'      #sscanf() with one format tag (only %d supported!)
-!define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'     #sscanf() with two format tags (only %d supported!)
-!define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'     #sscanf() with three format tags (only %d supported!)
-!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'      #Remove whitspaces from string (left and right)
-!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'  #Remove whitspaces from string (left side only)
-!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight' #Remove whitspaces from string (right side only)
-!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'       #Reverse a string
-!define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
-!define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
-!define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
-!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #Invokes a Shell Verb on the specified item
-!define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
-!define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
-!define StdUtils.WaitForProcWithExitCode      '!insertmacro _StdUtils_WaitForProcWithExitCode'  #WaitForSingleObject() to wait for process termination
-!define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
-!define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
-!define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)
+!define StdUtils.Time             '!insertmacro _StdUtils_Time'          #time()
+!define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'    #GetSystemTimeAsFileTime() as number of minutes
+!define StdUtils.GetHours         '!insertmacro _StdUtils_GetHours'      #GetSystemTimeAsFileTime() as number of hours
+!define StdUtils.GetDays          '!insertmacro _StdUtils_GetDays'       #GetSystemTimeAsFileTime() as number of days
+!define StdUtils.Rand             '!insertmacro _StdUtils_Rand'          #rand()
+!define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'       #rand() with maximum
+!define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'    #rand() with minimum/maximum
+!define StdUtils.RandList         '!insertmacro _StdUtils_RandList'      #rand() with list support
+!define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'     #sprintf() with one format tag (only %d supported!)
+!define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'    #sprintf() with two format tags (only %d supported!)
+!define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'    #sprintf() with three format tags (only %d supported!)
+!define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'       #sscanf() with one format tag (only %d supported!)
+!define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'      #sscanf() with two format tags (only %d supported!)
+!define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'      #sscanf() with three format tags (only %d supported!)
+!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'       #Remove whitspaces from string (left and right)
+!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'   #Remove whitspaces from string (left side only)
+!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight'  #Remove whitspaces from string (right side only)
+!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'        #Reverse a string
+!define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'    #SHFileOperation with FO_MOVE
+!define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'    #SHFileOperation with FO_COPY
+!define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'   #ShellExecute() with user context (for elevated installers)
+!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'   #Invokes a Shell Verb on the specified item
+!define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'   #ShellExecuteEx() with process handle to wait for
+!define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'   #WaitForSingleObject() to wait for process termination
+!define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination, get exit code
+!define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
+!define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
+!define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
 
 
 ### MACRO DEFINITIONS ###
@@ -225,9 +225,9 @@
 	StdUtils::WaitForProc /NOUNLOAD
 !macroend
 
-!macro _StdUtils_WaitForProcWithExitCode out handle
+!macro _StdUtils_WaitForProcEx out handle
 	push '${handle}'
-	StdUtils::WaitForProcWithExitCode /NOUNLOAD
+	StdUtils::WaitForProcEx /NOUNLOAD
 	pop ${out}
 !macroend
 

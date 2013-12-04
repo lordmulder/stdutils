@@ -677,7 +677,7 @@ NSISFUNC(WaitForProc)
 	delete [] temp;
 }
 
-NSISFUNC(WaitForProcWithExitCode)
+NSISFUNC(WaitForProcEx)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
@@ -688,18 +688,28 @@ NSISFUNC(WaitForProcWithExitCode)
 	int result = SSCANF(temp, T("hProc:%X"), &hProc);
 
 	DWORD dwExitCode = 0;
+	bool success = false;
 
 	if(result == 1)
 	{
 		if(hProc != NULL)
 		{
-			WaitForSingleObject(hProc, INFINITE);
-			GetExitCodeProcess(hProc, &dwExitCode);
+			if(WaitForSingleObject(hProc, INFINITE) == WAIT_OBJECT_0)
+			{
+				success = (GetExitCodeProcess(hProc, &dwExitCode) != FALSE);
+			}
 			CloseHandle(hProc);
 		}
 	}
 
-	pushint(dwExitCode);
+	if(success)
+	{
+		pushint(dwExitCode);
+	}
+	else
+	{
+		pushstring(T("error"));
+	}
 
 	delete [] temp;
 }

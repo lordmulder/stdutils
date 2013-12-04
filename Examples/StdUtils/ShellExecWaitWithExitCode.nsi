@@ -24,8 +24,9 @@ Section
 	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for. Always check this!
 	
 	DetailPrint "Waiting for process. ZZZzzzZZZzzz..."
-	${StdUtils.WaitForProcWithExitCode} $1 $0
-	DetailPrint "Process just terminated with exit code: $1."
+	${StdUtils.WaitForProcEx} $1 $0
+	StrCmp $1 "error" ExitCodeFailed
+	DetailPrint "Process just terminated with exit code: $1"
 	Goto WaitDone
 	
 	WaitFailed:
@@ -34,6 +35,10 @@ Section
 
 	WaitNotPossible:
 	DetailPrint "Can not wait for process."
+	Goto WaitDone
+	
+	ExitCodeFailed:
+	DetailPrint "Failed to wait for process (exit code not available)"
 	Goto WaitDone
 	
 	WaitDone:
