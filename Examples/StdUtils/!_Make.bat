@@ -3,7 +3,7 @@ REM ----------------------------------------------------------------------
 set "NSIS_ANSI=D:\NSIS"
 set "NSIS_Unicode=D:\NSIS\_Unicode"
 REM ----------------------------------------------------------------------
-set "NSIS_PROJECTS=StdUtilsTest,ShellExecAsUser,InvokeShellVerb,ShellExecWait,GetParameters"
+set "NSIS_PROJECTS=StdUtilsTest,ShellExecAsUser,InvokeShellVerb,ShellExecWait,ShellExecWaitWithExitCode,GetParameters"
 REM ----------------------------------------------------------------------
 REM
 for %%i in (%NSIS_PROJECTS%) do (

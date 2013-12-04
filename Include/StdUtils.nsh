@@ -50,6 +50,7 @@
 !define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #Invokes a Shell Verb on the specified item
 !define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
 !define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
+!define StdUtils.WaitForProcWithExitCode      '!insertmacro _StdUtils_WaitForProcWithExitCode'  #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)
@@ -222,6 +223,12 @@
 !macro _StdUtils_WaitForProc handle
 	push '${handle}'
 	StdUtils::WaitForProc /NOUNLOAD
+!macroend
+
+!macro _StdUtils_WaitForProcWithExitCode out handle
+	push '${handle}'
+	StdUtils::WaitForProcWithExitCode /NOUNLOAD
+	pop ${out}
 !macroend
 
 !macro _StdUtils_GetParameter out name default
