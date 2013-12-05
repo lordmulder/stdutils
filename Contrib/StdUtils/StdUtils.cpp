@@ -658,28 +658,6 @@ NSISFUNC(ExecShellWaitEx)
 	delete [] args;
 }
 
-NSISFUNC(WaitForProc)
-{
-	EXDLL_INIT();
-	REGSITER_CALLBACK(g_hInstance);
-	MAKESTR(temp, g_stringsize);
-	popstringn(temp, 0);
-
-	HANDLE hProc = NULL;
-	int result = SSCANF(temp, T("hProc:%X"), &hProc);
-
-	if(result == 1)
-	{
-		if(hProc != NULL)
-		{
-			WaitForSingleObject(hProc, INFINITE);
-			CloseHandle(hProc);
-		}
-	}
-
-	delete [] temp;
-}
-
 NSISFUNC(WaitForProcEx)
 {
 	EXDLL_INIT();
