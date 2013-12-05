@@ -610,7 +610,7 @@ NSISFUNC(InvokeShellVerb)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-NSISFUNC(ExecShellWait)
+NSISFUNC(ExecShellWaitEx)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
@@ -632,21 +632,24 @@ NSISFUNC(ExecShellWait)
 	shInfo.lpParameters = (_tcslen(args) > 0) ? args : NULL;
 	shInfo.nShow = SW_SHOWNORMAL;
 
-	if(ShellExecuteEx(&shInfo))
+	if(ShellExecuteEx(&shInfo) != FALSE)
 	{
 		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
 		{
 			TCHAR out[32];
 			SNPRINTF(out, 32, T("hProc:%08X"), shInfo.hProcess);
 			pushstring(out);
+			pushstring(_T("ok"));
 		}
 		else
 		{
+			pushint(0);
 			pushstring(T("no_wait"));
 		}
 	}
 	else
 	{
+		pushint(GetLastError());
 		pushstring(T("error"));
 	}
 

@@ -39,30 +39,33 @@
 		
 		<a name="53826d99"></a><h2>Available Functions</h2>
 		<p>The following functions are provided by the StdUtils plug-in:
-<pre>!define StdUtils.Time             '!insertmacro _StdUtils_Time'         #time()
-!define StdUtils.Rand             '!insertmacro _StdUtils_Rand'         #rand()
-!define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'      #rand() with maximum
-!define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'   #rand() with minimum/maximum
-!define StdUtils.RandList         '!insertmacro _StdUtils_RandList'     #rand() with list support
-!define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'    #sprintf() with one format tag (only %d supported!)
-!define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'   #sprintf() with two format tags (only %d supported!)
-!define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'   #sprintf() with three format tags (only %d supported!)
-!define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'      #sscanf() with one format tag (only %d supported!)
-!define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'     #sscanf() with two format tags (only %d supported!)
-!define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'     #sscanf() with three format tags (only %d supported!)
-!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'      #Remove whitspaces from string (left and right)
-!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'  #Remove whitspaces from string (left side only)
-!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight' #Remove whitspaces from string (right side only)
-!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'       #Reverse a string
-!define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'   #SHFileOperation with FO_MOVE
-!define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'   #SHFileOperation with FO_COPY
-!define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'  #ShellExecute() with user context (for elevated installers)
-!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'  #Invokes a Shell Verb on the specified item
-!define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'  #ShellExecuteEx() with process handle to wait for
-!define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'  #WaitForSingleObject() to wait for process termination
-!define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter' #Get the value of a specific commandline paramater
-!define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams' #Get complete command-line, but without executable name
-!define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'   #Verbose mode (for debugging)</pre>
+<pre>!define StdUtils.Time             '!insertmacro _StdUtils_Time'          #time()
+!define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'    #GetSystemTimeAsFileTime() as number of minutes
+!define StdUtils.GetHours         '!insertmacro _StdUtils_GetHours'      #GetSystemTimeAsFileTime() as number of hours
+!define StdUtils.GetDays          '!insertmacro _StdUtils_GetDays'       #GetSystemTimeAsFileTime() as number of days
+!define StdUtils.Rand             '!insertmacro _StdUtils_Rand'          #rand()
+!define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'       #rand() with maximum
+!define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'    #rand() with minimum/maximum
+!define StdUtils.RandList         '!insertmacro _StdUtils_RandList'      #rand() with list support
+!define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'     #sprintf() with one format tag (only %d supported!)
+!define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'    #sprintf() with two format tags (only %d supported!)
+!define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'    #sprintf() with three format tags (only %d supported!)
+!define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'       #sscanf() with one format tag (only %d supported!)
+!define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'      #sscanf() with two format tags (only %d supported!)
+!define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'      #sscanf() with three format tags (only %d supported!)
+!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'       #Remove whitspaces from string (left and right)
+!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'   #Remove whitspaces from string (left side only)
+!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight'  #Remove whitspaces from string (right side only)
+!define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'        #Reverse a string
+!define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'    #SHFileOperation with FO_MOVE
+!define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'    #SHFileOperation with FO_COPY
+!define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'   #ShellExecute() with user context (for elevated installers)
+!define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'   #Invokes a Shell Verb on the specified item
+!define StdUtils.ExecShellWaitEx  '!insertmacro _StdUtils_ExecShlWaitEx' #ShellExecuteEx() with process handle to wait for
+!define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination
+!define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
+!define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
+!define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)</pre>
 		<p>Please see the descriptions below for details!</p>
 		<br>
 
@@ -343,8 +346,9 @@ SectionEnd</pre>
 		<!-- ---------------- -->
 
 		<a name="0c74ed2a"></a><h2>ExecShellWait</h2>
-		<p><b><tt>${StdUtils.ExecShellWait} <i>user_var(output)</i> <i>file</i> <i>verb</i> <i>args</i><br>${StdUtils.WaitForProc} <i>handle</i><br>${StdUtils.WaitForProcEx} <i>user_var(output)</i> <i>handle</i></tt></b></p>
-		<p>The <tt>${StdUtils.ExecShellWait}</tt> function works like the built-in <tt>ExecShell</tt> command, except that you can wait for the process to terminate. The function expects three arguments: The path to the file to be executed, the <i>verb</i> that shall be used to execute the file (e.g. "open") and the arguments to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). If the function failed, then it returns "error". If the function succeeded, then it will either return a process handle or "no_wait". The latter means that we cannot wait for the process, because <tt>ShellExecuteEx</tt> did not create a new process (but pass the file/URL to a running instance). Only if a process handle was returned, you can call <tt>${StdUtils.WaitForProc}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the return value of <tt>${StdUtils.ExecShellWait}</tt> for "error" <i>and</i> for "no_wait" before you pass it on to <tt>${StdUtils.WaitForProc}</tt>! The behavior of <tt>${StdUtils.WaitForProc}</tt> is undefined if you pass something that isn't a valid process handle. In addition, <tt>${StdUtils.WaitForProcEx}</tt> works just like <tt>${StdUtils.WaitForProc}</tt> but also returns the exit code after the process has terminated. It returns "error" if something went wrong.</p>
+		<p><b><tt>${StdUtils.ExecShellWaitEx} <i>user_var(output_1)</i> <i>user_var(output_2)</i> <i>file</i> <i>verb</i> <i>args</i><br>${StdUtils.WaitForProcEx} <i>user_var(output)</i> <i>handle</i></tt></b></p>
+		<p>The <tt>${StdUtils.ExecShellWaitEx}</tt> function works like the built-in <tt>ExecShell</tt> command, except that you can wait for the process to terminate. The function expects three arguments: The path to the file to be executed, the <i>verb</i> that shall be used to execute the file (e.g. "open") and the arguments to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). Furthermore, the function returns two values: The <i>first</i> value is either "ok", "no_wait" or "error", while the <i>second</i> value provides additional info. "ok" indicates that the process was created successfully and can be waited for, "no_wait" indicates that we cannot wait for the process (because <tt>ShellExecuteEx</tt> did not create a new process, but passed the file/URL to a running instance) and "error" indicates that something went wrong.</p>
+		<p>If the <i>first</i> return value is "ok", the <i>second</i> return value contains the handle of the new process. If the <i>first</i> return value is "error", the <i>second</i> return value contains the Win32 error code. And if the <i>first</i> return value is "no_wait", the <i>second</i> return value is zero. Only if "ok" <i>and</i> a process handle were returned, you can call <tt>${StdUtils.WaitForProcEx}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the <i>first</i> return value of <tt>${StdUtils.ExecShellWaitEx}</tt> before you pass the <i>second</i> return value to <tt>${StdUtils.WaitForProcEx}</tt>. The behavior of <tt>${StdUtils.WaitForProcEx}</tt> is undefined if you pass something that isn't a valid process handle! If successfull, <tt>${StdUtils.WaitForProcEx}</tt> returns the exit code of the process after it has terminated. The function returns "error" if something went wrong.</p>
 <pre>!include 'StdUtils.nsh'
  
 RequestExecutionLevel user
@@ -353,24 +357,28 @@ ShowInstDetails show
 Section
 	DetailPrint 'ExecShellWait: "$SYSDIR\mspaint.exe"'
 	Sleep 1000
-	${StdUtils.ExecShellWait} $0 "$SYSDIR\mspaint.exe" "open" "" ;try to launch the process
-	DetailPrint "Result: $0" ;returns process handle. Might be "no_wait". Failure indicated by "error".
-	StrCmp $0 "error" WaitFailed ;check if process failed to create.
-	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for. Always check this!
- 
+	${StdUtils.ExecShellWaitEx} $0 $1 "$SYSDIR\mspaint.exe" "open" "" ;try to launch the process
+
+	DetailPrint "Result: $0 -> $1" ;returns "ok", "no_wait" or "error".
+	StrCmp $0 "error" ExecFailed ;check if process failed to create
+	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for - always check this!
+	StrCmp $0 "ok" WaitForProc ;make sure process was created successfully
+	Abort
+	
+	WaitForProc:
 	DetailPrint "Waiting for process. ZZZzzzZZZzzz..."
-	${StdUtils.WaitForProc} $0
-	DetailPrint "Process just terminated."
+	${StdUtils.WaitForProcEx} $2 $1
+	DetailPrint "Process just terminated (exit code: $2)"
 	Goto WaitDone
- 
-	WaitFailed:
-	DetailPrint "Failed to create process !!!"
+	
+	ExecFailed:
+	DetailPrint "Failed to create process (error code: $1)"
 	Goto WaitDone
- 
+
 	WaitNotPossible:
 	DetailPrint "Can not wait for process."
 	Goto WaitDone
- 
+	
 	WaitDone:
 SectionEnd</pre>
 		<br>

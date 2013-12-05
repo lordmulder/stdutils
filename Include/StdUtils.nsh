@@ -48,9 +48,8 @@
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'    #SHFileOperation with FO_COPY
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'   #ShellExecute() with user context (for elevated installers)
 !define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'   #Invokes a Shell Verb on the specified item
-!define StdUtils.ExecShellWait    '!insertmacro _StdUtils_ExecShlWait'   #ShellExecuteEx() with process handle to wait for
-!define StdUtils.WaitForProc      '!insertmacro _StdUtils_WaitForProc'   #WaitForSingleObject() to wait for process termination
-!define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination, get exit code
+!define StdUtils.ExecShellWaitEx  '!insertmacro _StdUtils_ExecShlWaitEx' #ShellExecuteEx() with process handle to wait for
+!define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
@@ -212,17 +211,13 @@
 	pop ${out}
 !macroend
 
-!macro _StdUtils_ExecShlWait out file verb args
+!macro _StdUtils_ExecShlWaitEx out_res out_val file verb args
 	push '${file}'
 	push '${verb}'
 	push '${args}'
-	StdUtils::ExecShellWait /NOUNLOAD
-	pop ${out}
-!macroend
-
-!macro _StdUtils_WaitForProc handle
-	push '${handle}'
-	StdUtils::WaitForProc /NOUNLOAD
+	StdUtils::ExecShellWaitEx /NOUNLOAD
+	pop ${out_res}
+	pop ${out_val}
 !macroend
 
 !macro _StdUtils_WaitForProcEx out handle
