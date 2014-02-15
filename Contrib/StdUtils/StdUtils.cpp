@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // StdUtils plug-in for NSIS
-// Copyright (C) 2004-2013 LoRd_MuldeR <MuldeR2@GMX.de>
+// Copyright (C) 2004-2014 LoRd_MuldeR <MuldeR2@GMX.de>
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 #include "ShellExecAsUser.h"
 #include "ParameterParser.h"
 #include "InvokeShellVerb.h"
+#include "DetectOsVersion.h"
 #include "UnicodeSupport.h"
 
 HANDLE g_hInstance;
@@ -733,6 +734,28 @@ NSISFUNC(GetAllParameters)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+NSISFUNC(GetRealOsVersion)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	bool flag;
+	unsigned int version[2];
+
+	if(get_real_os_version(&version[0], &version[1], &flag))
+	{
+		pushint(version[1]);
+		pushint(version[0]);
+	}
+	else
+	{
+		pushstring(T("error"));
+		pushstring(T("error"));
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();
@@ -745,6 +768,15 @@ NSISFUNC(DisableVerboseMode)
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
 	g_bVerbose = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+NSISFUNC(GetLibVersion)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	pushstring(T(__TIMESTAMP__));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

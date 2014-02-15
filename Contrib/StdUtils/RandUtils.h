@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // StdUtils plug-in for NSIS
-// Copyright (C) 2004-2013 LoRd_MuldeR <MuldeR2@GMX.de>
+// Copyright (C) 2004-2014 LoRd_MuldeR <MuldeR2@GMX.de>
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,24 @@ typedef BOOLEAN (__stdcall *secure_rand_t)(PVOID RandomBuffer, ULONG RandomBuffe
 static bool s_secure_rand_init = false;
 static secure_rand_t s_secure_rand = NULL;
 
+/*RAII mutext locker class*/
+class MutexLocker
+{
+public:
+	MutexLocker(LPCRITICAL_SECTION mutex)
+	:
+		m_mutex(mutex)
+	{
+		EnterCriticalSection(m_mutex);
+	}
+	~MutexLocker(void)
+	{
+		LeaveCriticalSection(m_mutex);
+	}
+private:
+	LPCRITICAL_SECTION const m_mutex;
+};
+
 /* Robert Jenkins' 96 bit Mix Function */
 static unsigned int mix_function(const unsigned int x, const unsigned int y, const unsigned int z)
 {
@@ -46,7 +64,7 @@ static unsigned int mix_function(const unsigned int x, const unsigned int y, con
 
 static void init_rand(void)
 {
-	EnterCriticalSection(&g_mutex);
+	MutexLocker locker(&g_mutex);
 
 	if(!s_secure_rand_init)
 	{
@@ -60,8 +78,6 @@ static void init_rand(void)
 
 		s_secure_rand_init = true;
 	}
-
-	LeaveCriticalSection(&g_mutex);
 }
 
 static unsigned int next_rand(void)

@@ -52,6 +52,8 @@
 !define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
+!define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* operating system version, on Windows 8.1+
+!define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the StdUtils library version
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
 
 
@@ -236,6 +238,17 @@
 !macro _StdUtils_GetAllParams out truncate
 	push '${truncate}'
 	StdUtils::GetAllParameters /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_GetRealOSVer out_major out_minor
+	StdUtils::GetRealOsVersion /NOUNLOAD
+	pop ${out_major}
+	pop ${out_minor}
+!macroend
+
+!macro _StdUtils_GetLibVersion out
+	StdUtils::GetLibVersion /NOUNLOAD
 	pop ${out}
 !macroend
 

@@ -175,6 +175,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DetectOsVersion.cpp" />
     <ClCompile Include="InvokeShellVerb.cpp" />
     <ClCompile Include="ParameterParser.cpp" />
     <ClCompile Include="ShellExecAsUser.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DetectOsVersion.h" />
     <ClInclude Include="InvokeShellVerb.h" />
     <ClInclude Include="ParameterParser.h" />
     <ClInclude Include="RandUtils.h" />

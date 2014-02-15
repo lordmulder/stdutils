@@ -29,6 +29,7 @@
 			<li><a href="#0c74ed2a">ExecShellWait</a>
 			<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
 			<li><a href="#d452a779">InvokeShellVerb</a>
+			<li><a href="#f57ec206">GetRealOSVersion</a>
 			<li><a href="#b92197af">Acknowledgment</a>
 			<li><a href="#db579654">License</a>
 			<li><a href="#01efe0f2">Download and Sources</a>
@@ -465,6 +466,23 @@ SectionEnd</pre>
 		
 		<!-- ---------------- -->
 
+		<a name="f57ec206"></a><h2>GetRealOSVersion</h2>
+		<p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i></tt></b></p>
+		<p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> Windows NT version. Starting with Windows 8.1 (aka Windows NT 6.3), Microsoft has broken the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> API's. This has the fatal consequence that Windows 8.1 (and all future versions) will now identify itself as Windows 8.0! There exist various workarounds, such as adding certain GUID's to the application Manifest, which is only a <i>temporary</i> solution, or trying to read the Windows version from the Registry, which is unreliable. This function provides a method that works regardless of the application Manifest and should continue to work in future Windows versions - as long as Microsoft doesn't break even more API's. The function will return the <i>major</i> and the <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1), or "error" if something went wrong.</p>
+		<p>Note: This function uses an iterative approach: It first calls <tt>GetVersionEx()</tt> to get the "fake" version. Then it tries to increase that value, step by step, up to the "real" version, using <tt>VerifyVersionInfo()</tt>.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.GetRealOSVersion} $1 $2
+	DetailPrint "Real Windows NT Version: $1,$2"
+SectionEnd</pre>
+		<br>
+
+		<!-- ---------------- -->
+
 		<a name="b92197af"></a><h2>Acknowledgment</h2>
 		<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;.</p>
 		<p>This plug-in has partly been inspired by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>. This plug-in has partly been inspired by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
@@ -473,7 +491,7 @@ SectionEnd</pre>
 		
 		<a name="db579654"></a><h2>License</h2>
 <pre>StdUtils plug-in for NSIS
-Copyright (C) 2004-2013 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
+Copyright (C) 2004-2014 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

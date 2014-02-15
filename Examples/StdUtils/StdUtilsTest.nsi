@@ -21,6 +21,32 @@ Caption "StdUtils Test-Suite"
 RequestExecutionLevel user
 ShowInstDetails show
 
+# -----------------------------------------
+# GetRealOSVersion
+# -----------------------------------------
+
+Section
+	${StdUtils.GetLibVersion} $1
+	DetailPrint "Testing StdUtils library version: $1"
+SectionEnd
+
+!insertmacro NextTest
+
+# -----------------------------------------
+# GetRealOSVersion
+# -----------------------------------------
+
+Section
+	${StdUtils.GetRealOSVersion} $1 $2
+	DetailPrint "Real Windows NT Version: $1,$2"
+SectionEnd
+
+!insertmacro NextTest
+
+# -----------------------------------------
+# Time functions
+# -----------------------------------------
+
 Section
 	${StdUtils.Time} $1
 	DetailPrint "Time: $1"
@@ -33,6 +59,10 @@ Section
 SectionEnd
 
 !insertmacro NextTest
+
+# -----------------------------------------
+# PRNG functions
+# -----------------------------------------
 
 Section
 	${StdUtils.Rand} $1
@@ -143,38 +173,9 @@ SectionEnd
 
 !insertmacro NextTest
 
-Section
-	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
-	DetailPrint "ScanStr: $0"
-	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
-	DetailPrint "ScanStr: $0"
-SectionEnd
-
-!insertmacro NextTest
-
-Section
-	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 sowie 831 ist toll!" 42 43
-	DetailPrint "ScanStr2: $0, $1"
-	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 horch 831 ist toll!" 42 43
-	DetailPrint "ScanStr2: $0, $1"
-	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Hund sagt 571 horch 831 ist toll!" 42 43
-	DetailPrint "ScanStr2: $0, $1"
-SectionEnd
-
-!insertmacro NextTest
-
-Section
-	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! Und 325" 42 43 44
-	DetailPrint "ScanStr3: $0, $1, $2"
-	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! OMG 325" 42 43 44
-	DetailPrint "ScanStr3: $0, $1, $2"
-	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 horch 831 ist toll! OMG 325" 42 43 44
-	DetailPrint "ScanStr3: $0, $1, $2"
-	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
-	DetailPrint "ScanStr3: $0, $1, $2"
-SectionEnd
-
-!insertmacro NextTest
+# -----------------------------------------
+# SHFileCopy function
+# -----------------------------------------
 
 Section
 	InitPluginsDir
@@ -207,6 +208,43 @@ Section
 	${StdUtils.SetVerbose} 0
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
+SectionEnd
+
+!insertmacro NextTest
+
+# -----------------------------------------
+# String functions
+# -----------------------------------------
+
+Section
+	${StdUtils.ScanStr} $0 "Der Test sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+	${StdUtils.ScanStr} $0 "Der Hund sagt %d ist toll!" "Der Test sagt 571 ist toll!" 42
+	DetailPrint "ScanStr: $0"
+SectionEnd
+
+!insertmacro NextTest
+
+Section
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 sowie 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Test sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+	${StdUtils.ScanStr2} $0 $1 "Der Test sagt %d sowie %d ist toll!" "Der Hund sagt 571 horch 831 ist toll!" 42 43
+	DetailPrint "ScanStr2: $0, $1"
+SectionEnd
+
+!insertmacro NextTest
+
+Section
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! Und 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 sowie 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Test sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
+	${StdUtils.ScanStr3} $0 $1 $2 "Der Test sagt %d sowie %d ist toll! Und %d." "Der Hund sagt 571 horch 831 ist toll! OMG 325" 42 43 44
+	DetailPrint "ScanStr3: $0, $1, $2"
 SectionEnd
 
 !insertmacro NextTest
