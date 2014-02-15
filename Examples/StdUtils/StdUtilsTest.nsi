@@ -41,6 +41,19 @@ Section
 	DetailPrint "Real Windows NT Version: $1,$2"
 SectionEnd
 
+Section
+	${StdUtils.VerifyOSVersion} $1 5 1
+	DetailPrint "Check for Windows XP: $1"
+	${StdUtils.VerifyOSVersion} $1 6 0
+	DetailPrint "Check for Windows Vista: $1"
+	${StdUtils.VerifyOSVersion} $1 6 1
+	DetailPrint "Check for Windows 7: $1"
+	${StdUtils.VerifyOSVersion} $1 6 2
+	DetailPrint "Check for Windows 8.0: $1"
+	${StdUtils.VerifyOSVersion} $1 6 3
+	DetailPrint "Check for Windows 8.1: $1"
+SectionEnd
+
 !insertmacro NextTest
 
 # -----------------------------------------

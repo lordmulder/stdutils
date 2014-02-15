@@ -1,10 +1,6 @@
-#############################
-# StdUtils plug-in for NSIS #
-#############################
-
 #################################################################################
 # StdUtils plug-in for NSIS
-# Copyright (C) 2004-2013 LoRd_MuldeR <MuldeR2@GMX.de>
+# Copyright (C) 2004-2014 LoRd_MuldeR <MuldeR2@GMX.de>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -53,6 +49,7 @@
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* operating system version, on Windows 8.1+
+!define StdUtils.VerifyOSVersion  '!insertmacro _StdUtils_VrfyRealOSVer' #Compare *real* operating system to the expected version
 !define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the StdUtils library version
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
 
@@ -245,6 +242,13 @@
 	StdUtils::GetRealOsVersion /NOUNLOAD
 	pop ${out_major}
 	pop ${out_minor}
+!macroend
+
+!macro _StdUtils_VrfyRealOSVer out major minor
+	push '${major}'
+	push '${minor}'
+	StdUtils::VerifyRealOsVersion /NOUNLOAD
+	pop ${out}
 !macroend
 
 !macro _StdUtils_GetLibVersion out

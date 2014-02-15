@@ -479,6 +479,26 @@ Section
 	${StdUtils.GetRealOSVersion} $1 $2
 	DetailPrint "Real Windows NT Version: $1,$2"
 SectionEnd</pre>
+		<p><br><b><tt>${StdUtils.VerifyOSVersion} <i>user_var(out)</i> <i>expected_major</i> <i>expected_minor</i></tt></b></p>
+		<p><tt>${StdUtils.VerifyOSVersion}</tt> is a convenience function to compare the installed Windows version against some expected version. The expected Windows version, as a Windows NT version (e.g. "6.2" for Windows 8.0), is specified by the <tt>expected_major</tt> and <tt>expected_minor</tt> parameters. The function will retrun "ok" when the expected Windows version matches exactly; it returns "older" when the installed version is <i>older</i> than the expected one; it returns "newer" when the installed version is <i>newer</i> than the expected one; and it retruns "error" if something went wrong.</p>
+		<p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows version that we will compare against, so it will give the expected result on Windows 8.1 and later.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.VerifyOSVersion} $1 5 1
+	DetailPrint "Check for Windows XP: $1"
+	${StdUtils.VerifyOSVersion} $1 6 0
+	DetailPrint "Check for Windows Vista: $1"
+	${StdUtils.VerifyOSVersion} $1 6 1
+	DetailPrint "Check for Windows 7: $1"
+	${StdUtils.VerifyOSVersion} $1 6 2
+	DetailPrint "Check for Windows 8.0: $1"
+	${StdUtils.VerifyOSVersion} $1 6 3
+	DetailPrint "Check for Windows 8.1: $1"
+SectionEnd</pre>
 		<br>
 
 		<!-- ---------------- -->
