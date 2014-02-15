@@ -1,6 +1,5 @@
 @echo off
 REM -------------------------------------------------------------------------
-set "PATH_7ZIP=C:\Program Files\7-Zip"
 set "PATH_MSVC=D:\Microsoft Visual Studio 10.0\VC"
 REM -------------------------------------------------------------------------
 call "%PATH_MSVC%\vcvarsall.bat" x86
@@ -40,8 +39,15 @@ if not "%ERRORLEVEL%"=="0" (
 	exit
 )
 REM -------------------------------------------------------------------------
-echo Built on %DATE%, at %TIME%. > "%~dp0\BUILD.tag"
-"%PATH_7ZIP%\7z.exe" a -tzip -r -xr@%~dp0\make_pack.lst "%~dp0\StdUtils.%ISO_DATE%.zip" "%~dp0\*.*"
+echo StdUtils plug-in for NSIS > "%~dp0\BUILD.tag"
+echo Copyright (C) 2004-2014 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%~dp0\BUILD.tag"
+echo. >> "%~dp0\BUILD.tag"
+echo Built on %DATE%, at %TIME%. >> "%~dp0\BUILD.tag"
+REM -------------------------------------------------------------------------
+pushd "%~dp0"
+set "EXCLUDE_MASK=make_pack.* *.exe *.zip *.7z *.user *.old *.sdf *examples/*.exe */obj/* */ipch/*"
+"%~dp0\Contrib\StdUtils\utils\Zip.exe" -r -9 -z "%~dp0\StdUtils.%ISO_DATE%.zip" "*.*" -x %EXCLUDE_MASK% < "%~dp0\BUILD.tag"
+popd
 attrib +r "%~dp0\StdUtils.%ISO_DATE%.zip" 
 del "%~dp0\BUILD.tag"
 REM -------------------------------------------------------------------------
