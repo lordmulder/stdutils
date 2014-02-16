@@ -51,6 +51,7 @@
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* operating system version, on Windows 8.1+
+!define StdUtils.GetRealOSName    '!insertmacro _StdUtils_GetRealOSStr'  #Get the *real* operating system as "friendly" name
 !define StdUtils.VerifyOSVersion  '!insertmacro _StdUtils_VrfyRealOSVer' #Compare *real* operating system to the expected version
 !define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the StdUtils library version
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
@@ -246,6 +247,13 @@
 	StdUtils::GetRealOsVersion /NOUNLOAD
 	pop ${out_major}
 	pop ${out_minor}
+!macroend
+
+
+
+!macro _StdUtils_GetRealOSStr out
+	StdUtils::GetRealOsName /NOUNLOAD
+	pop ${out}
 !macroend
 
 !macro _StdUtils_VrfyRealOSVer out major minor

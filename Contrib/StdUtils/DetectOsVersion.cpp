@@ -19,10 +19,11 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "DetectOsVersion.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+#include "UnicodeSupport.h"
+#include "DetectOsVersion.h"
 
 //Forward declaration
 static bool verify_os_version(const DWORD major, const DWORD minor);
@@ -122,6 +123,42 @@ static bool verify_os_version(const DWORD major, const DWORD minor)
 	}
 
 	return (ret != FALSE);
+}
+
+/*
+ * Get friendly OS version name
+ */
+const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
+{
+	static const size_t NAME_COUNT = 8;
+
+	static const struct
+	{
+		const DWORD major;
+		const DWORD minor;
+		const TCHAR name[6];
+	}
+	s_names[NAME_COUNT] =
+	{
+		{ 4, 0, T("winnt") },
+		{ 5, 0, T("win2k") },
+		{ 5, 1, T("winxp") },
+		{ 5, 2, T("xpx64") },
+		{ 6, 0, T("vista") },
+		{ 6, 1, T("win70") },
+		{ 6, 2, T("win80") },
+		{ 6, 3, T("win81") }
+	};
+
+	for(size_t i = 0; i < NAME_COUNT; i++)
+	{
+		if((s_names[i].major == major) && (s_names[i].minor == minor))
+		{
+			return &s_names[i].name[0];
+		}
+	}
+
+	return T("unknown");
 }
 
 /*eof*/

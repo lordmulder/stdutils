@@ -29,7 +29,7 @@
 			<li><a href="#0c74ed2a">ExecShellWait</a>
 			<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
 			<li><a href="#d452a779">InvokeShellVerb</a>
-			<li><a href="#f57ec206">GetRealOSVersion / VerifyOSVersion</a>
+			<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion</a>
 			<li><a href="#14863bf9">Debugging Functions</a>
 			<li><a href="#b92197af">Acknowledgment</a>
 			<li><a href="#db579654">License</a>
@@ -67,6 +67,10 @@
 !define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject() to wait for process termination
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific commandline paramater
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
+!define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* operating system version, on Windows 8.1+
+!define StdUtils.GetRealOSName    '!insertmacro _StdUtils_GetRealOSStr'  #Get the *real* operating system as "friendly" name
+!define StdUtils.VerifyOSVersion  '!insertmacro _StdUtils_VrfyRealOSVer' #Compare *real* operating system to the expected version
+!define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the StdUtils library version
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)</pre>
 		<p>Please see the descriptions below for details!</p>
 		<br>
@@ -467,7 +471,7 @@ SectionEnd</pre>
 		
 		<!-- ---------------- -->
 
-		<a name="f57ec206"></a><h2>GetRealOSVersion / VerifyOSVersion</h2>
+		<a name="f57ec206"></a><h2>GetRealOSVersion / GetRealOSName / VerifyOSVersion</h2>
 		<p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i></tt></b></p>
 		<p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> Windows NT version. Starting with Windows 8.1 (aka Windows NT 6.3), Microsoft has broken the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> API's. This has the fatal consequence that Windows 8.1 (and all future versions) will now identify itself as Windows 8.0! There exist various workarounds, such as adding certain GUID's to the application Manifest, which is only a <i>temporary</i> solution, or trying to read the Windows version from the Registry, which is unreliable. This function provides a method that works regardless of the application Manifest and should continue to work in future Windows versions - as long as Microsoft doesn't break even more API's. The function will return the <i>major</i> and the <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1), or "error" if something went wrong.</p>
 		<p>Note: This function uses an iterative approach: It first calls <tt>GetVersionEx()</tt> to get the "fake" version. Then it tries to increase that value, step by step, up to the "real" version, using <tt>VerifyVersionInfo()</tt>.</p>
@@ -479,6 +483,18 @@ ShowInstDetails show
 Section
 	${StdUtils.GetRealOSVersion} $1 $2
 	DetailPrint "Real Windows NT Version: $1,$2"
+SectionEnd</pre>
+		<p><br><b><tt>${StdUtils.GetRealOSName} <i>user_var(out)</i></tt></b></p>
+		<p><tt>${StdUtils.GetRealOSName}</tt> is a convenience function that returns the installed Windows version as a friendly name. Currently the return value can be "winnt" (4.0), "win2k" (5.0), "winxp" (5.1), "xpx64" (5.2), "vista" (6.0), "win70" (6.1), "win80" (6.2) or "win81" (6.3). If an <i>unknown</i> Windows version is encountered (e.g. some future version that is not yet supported), the function will return "unknown". And it will return "error", if something went wrong.</p>
+		<p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows version that will be converted to a friendly name, so it will give the expected result on Windows 8.1 and later.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.GetRealOSName} $1
+	DetailPrint "Real Windows NT Friendly Name: $1"
 SectionEnd</pre>
 		<p><br><b><tt>${StdUtils.VerifyOSVersion} <i>user_var(out)</i> <i>expected_major</i> <i>expected_minor</i></tt></b></p>
 		<p><tt>${StdUtils.VerifyOSVersion}</tt> is a convenience function to compare the installed Windows version against some expected version. The expected Windows version, as a Windows NT version (e.g. "6.2" for Windows 8.0), is specified by the <tt>expected_major</tt> and <tt>expected_minor</tt> parameters. The function will retrun "ok" when the expected Windows version matches exactly; it returns "older" when the installed version is <i>older</i> than the expected one; it returns "newer" when the installed version is <i>newer</i> than the expected one; and it retruns "error" if something went wrong.</p>

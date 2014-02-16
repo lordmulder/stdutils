@@ -23,8 +23,8 @@
 #include "ShellExecAsUser.h"
 #include "ParameterParser.h"
 #include "InvokeShellVerb.h"
-#include "DetectOsVersion.h"
 #include "UnicodeSupport.h"
+#include "DetectOsVersion.h"
 
 HANDLE g_hInstance;
 bool g_bCallbackRegistred;
@@ -805,6 +805,23 @@ NSISFUNC(VerifyRealOsVersion)
 	}
 
 	pushstring(T("ok"));
+}
+
+NSISFUNC(GetRealOsName)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	bool flag;
+	unsigned int detectedVersion[2];
+
+	if(!get_real_os_version(&detectedVersion[0], &detectedVersion[1], &flag))
+	{
+		pushstring(T("error"));
+		return;
+	}
+
+	pushstring(get_os_friendly_name(detectedVersion[0], detectedVersion[1]));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
