@@ -29,7 +29,8 @@
 			<li><a href="#0c74ed2a">ExecShellWait</a>
 			<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
 			<li><a href="#d452a779">InvokeShellVerb</a>
-			<li><a href="#f57ec206">GetRealOSVersion</a>
+			<li><a href="#f57ec206">GetRealOSVersion / VerifyOSVersion</a>
+			<li><a href="#14863bf9">Debugging Functions</a>
 			<li><a href="#b92197af">Acknowledgment</a>
 			<li><a href="#db579654">License</a>
 			<li><a href="#01efe0f2">Download and Sources</a>
@@ -466,7 +467,7 @@ SectionEnd</pre>
 		
 		<!-- ---------------- -->
 
-		<a name="f57ec206"></a><h2>GetRealOSVersion</h2>
+		<a name="f57ec206"></a><h2>GetRealOSVersion / VerifyOSVersion</h2>
 		<p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i></tt></b></p>
 		<p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> Windows NT version. Starting with Windows 8.1 (aka Windows NT 6.3), Microsoft has broken the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> API's. This has the fatal consequence that Windows 8.1 (and all future versions) will now identify itself as Windows 8.0! There exist various workarounds, such as adding certain GUID's to the application Manifest, which is only a <i>temporary</i> solution, or trying to read the Windows version from the Registry, which is unreliable. This function provides a method that works regardless of the application Manifest and should continue to work in future Windows versions - as long as Microsoft doesn't break even more API's. The function will return the <i>major</i> and the <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1), or "error" if something went wrong.</p>
 		<p>Note: This function uses an iterative approach: It first calls <tt>GetVersionEx()</tt> to get the "fake" version. Then it tries to increase that value, step by step, up to the "real" version, using <tt>VerifyVersionInfo()</tt>.</p>
@@ -501,6 +502,16 @@ Section
 SectionEnd</pre>
 		<br>
 
+		<!-- ---------------- -->
+
+		<a name="14863bf9"></a><h2>Debugging Functions</h2>
+		<p><b><tt>${StdUtils.GetLibVersion} <i>user_var(out_ver)</i> <i>user_var(out_tst)</i></tt></b></p>
+		<p>The <tt>${StdUtils.GetLibVersion}</tt> function returns the version of the StdUtils library that is being used. The version string (in the "w.x.y.z" format) is returned in <tt>out_ver</tt>; the build time-stamp is returned in <tt>out_tst</tt>.</p>
+		<br style="margin: -0.5em">
+		<p><b><tt>${StdUtils.SetVerbose} <i>on</i></tt></b></p>
+		<p>The <tt>${StdUtils.SetVerbose}</tt> function enables or disables verbose error messages. Set <tt>on</tt> to '1' to <i>enable</i> verbose outputs or set it to '0' to <i>disable</i> verbose outputs. Verbose outputs are <i>disabled</i> by default. Do <b>not</b> enabled them for <i>release</i> versions of your installer!</p>
+		<br>
+		
 		<!-- ---------------- -->
 
 		<a name="b92197af"></a><h2>Acknowledgment</h2>

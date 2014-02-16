@@ -20,7 +20,9 @@
 #################################################################################
 
 
-### FUNCTION DECLARTIONS ###
+#################################################################################
+# FUNCTION DECLARTIONS
+#################################################################################
 
 !define StdUtils.Time             '!insertmacro _StdUtils_Time'          #time()
 !define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'    #GetSystemTimeAsFileTime() as number of minutes
@@ -54,7 +56,9 @@
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Verbose mode (for debugging)
 
 
-### MACRO DEFINITIONS ###
+#################################################################################
+# MACRO DEFINITIONS
+#################################################################################
 
 !macro _StdUtils_Time out
 	StdUtils::Time /NOUNLOAD
@@ -251,9 +255,10 @@
 	pop ${out}
 !macroend
 
-!macro _StdUtils_GetLibVersion out
+!macro _StdUtils_GetLibVersion out_ver out_tst
 	StdUtils::GetLibVersion /NOUNLOAD
-	pop ${out}
+	pop ${out_ver}
+	pop ${out_tst}
 !macroend
 
 !macro _StdUtils_SetVerbose on
@@ -265,7 +270,9 @@
 !macroend
 
 
-### MAGIC NUMBERS ###
+#################################################################################
+# MAGIC NUMBERS
+#################################################################################
 
 !define StdUtils.Const.ISV_PinToTaskbar 5386
 !define StdUtils.Const.ISV_UnpinFromTaskbar 5387

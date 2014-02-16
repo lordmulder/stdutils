@@ -827,11 +827,17 @@ NSISFUNC(DisableVerboseMode)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "resource.h"
+
+static const TCHAR *dllTimeStamp = T(__TIMESTAMP__);
+static const TCHAR *dllVerString = T(DLL_VERSION_STRING);
+
 NSISFUNC(GetLibVersion)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
-	pushstring(T(__TIMESTAMP__));
+	pushstring(dllTimeStamp);
+	pushstring(dllVerString);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

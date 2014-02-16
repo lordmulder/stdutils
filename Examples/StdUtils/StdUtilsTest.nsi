@@ -26,8 +26,9 @@ ShowInstDetails show
 # -----------------------------------------
 
 Section
-	${StdUtils.GetLibVersion} $1
-	DetailPrint "Testing StdUtils library version: $1"
+	${StdUtils.GetLibVersion} $1 $2
+	DetailPrint "Testing StdUtils library v$1"
+	DetailPrint "Library built: $2"
 SectionEnd
 
 !insertmacro NextTest
