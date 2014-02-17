@@ -74,6 +74,15 @@ Section
 	DetailPrint "Time: $1"
 SectionEnd
 
+Section
+	${StdUtils.GetMinutes} $1
+	DetailPrint "UTC time in minutes: $1"
+	${StdUtils.GetHours} $1
+	DetailPrint "UTC time in hours: $1"
+	${StdUtils.GetDays} $1
+	DetailPrint "UTC time in days: $1"
+SectionEnd
+
 !insertmacro NextTest
 
 # -----------------------------------------
