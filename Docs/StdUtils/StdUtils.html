@@ -212,7 +212,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.RandList} <i>count</i> <i>max</i></tt></b></p>
-<p>Pushes a list of pseudo-random integral numbers onto the stack. The string "EOF" is pushed beforehand and thus will indicate the end of the list. The <i>count</i> and the <i>maximum</i> can be specified:</p>
+<p>Pushes a list of pseudo-random numbers onto the stack. The string "EOL" is pushed beforehand and thus will indicate the end of the list when popping the numbers off the stack. The <tt>count</tt> of the random numbers and the <tt>max</tt> value can be specified; the minimum value is <i>zero</i>.</p>
 
 <pre>Section
 	${StdUtils.RandList} 50 100
@@ -338,7 +338,7 @@ SectionEnd</pre>
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.RevStr} <i>user_var(input/output)</i></tt></b></p>
-<p>Reverses the character order of a specified string <i>in-place</i>:</p>
+<p>Reverses the character order of a specified string <i>in-place</i>. For example, it converts "reverse me" to "em esrever", or vice versa.</p>
 
 <pre>Section
 	StrCpy $0 "ABC"
@@ -364,7 +364,7 @@ SectionEnd</pre>
 <a name="df333b53"></a><h2>Shell File Operation</h2>
 
 <p><b><tt>${StdUtils.SHFileMove} <i>user_var(output)</i> <i>from</i> <i>to</i> <i>hwnd</i><br>${StdUtils.SHFileCopy} <i>user_var(output)</i> <i>from</i> <i>to</i> <i>hwnd</i></tt></b></p>
-<p>Copies or moves a file system object by using the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation()</a> function. Needs a window handle and usually <tt>$HWNDPARENT</tt> is used for this purpose:</p>
+<p>Copies or moves a file system object (e.g. a <i>file</i> or a complete <i>folder</i>) from path <tt>from</tt> to path <tt>to</tt>, by using the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation()</a> function. The function requires a window handle <tt>hwnd</tt> and usually the NSIS variable <tt>$HWNDPARENT</tt> is used for this purpose.</p>
 
 <pre>Section
 	InitPluginsDir
@@ -404,24 +404,29 @@ SectionEnd</pre>
 <a name="a3d3af46"></a><h2>ExecShellAsUser</h2>
 
 <p><b><tt>${StdUtils.ExecShellAsUser} <i>user_var(output)</i> <i>file</i> <i>verb</i> <i>args</i></tt></b></p>
-<p>The <tt>${StdUtils.ExecShellAsUser}</tt> function allows you to launch a process with normal user privileges (user level), directly from an elevated installer instance (admin level). This way it provides a simple/lightweight alternative to the UAC plug-in. The function expects three arguments: The path to the file to be executed, the <i>verb</i> that shall be used to execute the file (e.g. "open") and the arguments to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). If the function succeeded, then it returns either "ok" or "fallback"; if the function failed, because it was called with invalid parameters, then it returns "einval"; and if the function failed for another reason, then it returns "error". Note that "ok" indicates that the process was crated via COM interface (which is required to allow the new process to <i>not</i> be elevated), while "fallback" indicates that the normal <tt>ShellExecute()</tt> method was used instead. Also note that "fallback" is the expected result on systems that do not support UAC (like Windows XP and older).</p>
+<p>The <tt>${StdUtils.ExecShellAsUser}</tt> function allows for launching a child process with normal user privileges (user level), directly from an elevated installer instance (admin level). This is in contrast to the built-in <tt>Exec</tt>, <tt>ExecWait</tt> and <tt>ExecShell</tt> instructions, which cause the child process to be elevated too. Consequently, the <tt>${StdUtils.ExecShellAsUser}</tt> function provides a simple and more lightweight alternative to the UAC plug-in. The function expects three arguments: The path to the <tt>file</tt> to be executed, the <tt>verb</tt> that shall be used to execute the file (e.g. "open") and the argument string <tt>args</tt> to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). If the function succeeded, then it returns either "ok" or "fallback". And if the function failed, then it returns either "einval", "timeout" or "error".</p>
+<p>Please note that "einval" indicates that the function was called with invalid parameters and "timeout" indicates that the function encountered a deadlock. Also note that "ok" indicates that the process has been created using the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb774138%28v=vs.85%29.aspx">IShellDispatch2</a> COM interface, which is the <i>default</i> behavior, because it allows the new process to <i>not</i> be elevated. Furthermore, note that "fallback" indicates that the normal <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx">ShellExecute()</a> method has been used instead of the COM interface. Finally, note that "fallback" is expected on systems <i>without</i> UAC support (e.g. Windows XP).</p>
 
 <pre>!include 'StdUtils.nsh'
  
-RequestExecutionLevel admin ;make sure our installer will get elevated on Vista+ with UAC enabled
+; make sure the installer will get elevated rights on UAC-enabled system (Vista+)
+RequestExecutionLevel <font color="darkred">admin </font>
 ShowInstDetails show
  
 Section
 	DetailPrint 'ExecShell: "$SYSDIR\mspaint.exe"'
-	ExecShell "open" "$SYSDIR\mspaint.exe" ;this instance of MS Paint will be elevated too!
+	; this instance of MS Paint will be *elevated*, just like the installer!
+	ExecShell "open" "$SYSDIR\mspaint.exe"
 	MessageBox MB_TOPMOST "Close Paint and click 'OK' to continue..."
 SectionEnd
  
 Section
 	DetailPrint 'ExecShellAsUser: "$SYSDIR\mspaint.exe"'
 	Sleep 1000
-	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" "" ;launch a *non-elevated* instance of MS Paint
-	DetailPrint "Result: $0" ;expected result is "ok" on UAC-enabled systems or "fallback" otherwise. Failure indicated by "error" or "timeout".
+	; now launch a *non-elevated* instance of MS Paint by using ExecShellAsUser
+	${StdUtils.ExecShellAsUser} $0 "$SYSDIR\mspaint.exe" "open" ""
+	; expected result is "ok" on UAC-enabled systems or "fallback" otherwise
+	DetailPrint "Result: $0"
 SectionEnd</pre>
 
 <br>
