@@ -56,8 +56,18 @@ bool get_real_os_version(unsigned int *major, unsigned int *minor, bool *pbOverr
 	}
 	else
 	{
-		/*fprintf(stderr, "Not running on Windows NT, unsupported operating system!\n");*/
-		return false;
+		//Workaround for Windows 9x comaptibility mode
+		if(verify_os_version(4, 0))
+		{
+			*pbOverride = true;
+			*major = 4;
+			*minor = 0;
+		}
+		else
+		{
+			//Not running on Windows NT
+			return false;
+		}
 	}
 
 	//Determine the real *major* version first
