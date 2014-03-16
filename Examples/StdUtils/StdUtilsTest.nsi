@@ -38,22 +38,41 @@ SectionEnd
 # -----------------------------------------
 
 Section
-	${StdUtils.GetRealOSVersion} $1 $2
-	DetailPrint "Real Windows NT Version: $1,$2"
+	${StdUtils.GetRealOSVersion} $1 $2 $3
+	DetailPrint "Real Windows NT Version: $1,$2 (Service Pack: $3)"
 	${StdUtils.GetRealOSName} $1
 	DetailPrint "Real Windows NT Friendly Name: $1"
 SectionEnd
 
 Section
-	${StdUtils.VerifyOSVersion} $1 5 1
+	${StdUtils.VerifyOSVersion} $1 5 1 0
 	DetailPrint "Check for Windows XP: $1"
-	${StdUtils.VerifyOSVersion} $1 6 0
+
+	${StdUtils.VerifyOSVersion} $1 5 1 1
+	DetailPrint "Check for Windows XP SP-1: $1"
+
+	${StdUtils.VerifyOSVersion} $1 5 1 2
+	DetailPrint "Check for Windows XP SP-2: $1"
+
+	${StdUtils.VerifyOSVersion} $1 5 1 3
+	DetailPrint "Check for Windows XP SP-3: $1"
+
+	${StdUtils.VerifyOSVersion} $1 6 0 0
 	DetailPrint "Check for Windows Vista: $1"
-	${StdUtils.VerifyOSVersion} $1 6 1
+
+	${StdUtils.VerifyOSVersion} $1 6 0 1
+	DetailPrint "Check for Windows Vista SP-1: $1"
+
+	${StdUtils.VerifyOSVersion} $1 6 1 0
 	DetailPrint "Check for Windows 7: $1"
-	${StdUtils.VerifyOSVersion} $1 6 2
+
+	${StdUtils.VerifyOSVersion} $1 6 1 1
+	DetailPrint "Check for Windows 7 SP-1: $1"
+
+	${StdUtils.VerifyOSVersion} $1 6 2 0
 	DetailPrint "Check for Windows 8.0: $1"
-	${StdUtils.VerifyOSVersion} $1 6 3
+
+	${StdUtils.VerifyOSVersion} $1 6 3 0
 	DetailPrint "Check for Windows 8.1: $1"
 SectionEnd
 

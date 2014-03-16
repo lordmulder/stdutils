@@ -566,7 +566,7 @@ SectionEnd</pre>
 
 <a name="f57ec206"></a><h2>GetRealOSVersion / GetRealOSName / VerifyOSVersion</h2>
 
-<p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i></tt></b></p>
+<p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i> <i>user_var(out_spack)</i></tt></b></p>
 <p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> <a href="#b26a3e82">Windows NT version</a> installed on the computer. Note that starting with Windows 8.1 (aka Windows NT 6.3), Microsoft has <i>broken</i> the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> functions! This has the fatal consequence that Windows 8.1 (and all future versions?) will now identify itself as Windows 8.0! There exist various workarounds, such as adding certain GUID's to the application Manifest, which probably is only a <i>temporary</i> solution, or trying to read the Windows version from the Registry, which is unreliable. At the same time, the <tt>${StdUtils.GetRealOSVersion}</tt> function reveals the <i>actual</i> Windows version on Windows 8.1 (and later), regardless of the application Manifest. Furthermore, this function will continue to work correctly in <i>future</i> Windows versions - provided that Microsoft doesn't break even more Win32 API functions. Finally, this function still returns the <i>correct</i> Windows version, when the installer is run in "comaptibility mode". The function will return the <i>major</i> and the <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1). It returns "error", if something went wrong.</p>
 <p>Note: This function uses an iterative approach: It first calls <tt>GetVersionEx()</tt> to get the "fake" Windows version. Then it tries to <i>increase</i> that value, step by step, using the <tt>VerifyVersionInfo()</tt> function - until the "real" version has been revealed.</p>
 
@@ -576,8 +576,8 @@ RequestExecutionLevel user
 ShowInstDetails show
 
 Section
-	${StdUtils.GetRealOSVersion} $1 $2
-	DetailPrint "Real Windows NT Version: $1,$2"
+	${StdUtils.GetRealOSVersion} $1 $2 $3
+	DetailPrint "Real Windows NT Version: $1,$2 (Service Pack: $3)"
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.GetRealOSName} <i>user_var(out)</i></tt></b></p>
@@ -594,7 +594,7 @@ Section
 	DetailPrint "Real Windows NT Friendly Name: $1"
 SectionEnd</pre>
 
-<p><br><b><tt>${StdUtils.VerifyOSVersion} <i>user_var(out)</i> <i>expected_major</i> <i>expected_minor</i></tt></b></p>
+<p><br><b><tt>${StdUtils.VerifyOSVersion} <i>user_var(out)</i> <i>expected_major</i> <i>expected_minor</i> <i>expected_spack</i></tt></b></p>
 <p><tt>${StdUtils.VerifyOSVersion}</tt> is a convenience function to compare the installed Windows version against some expected version. The expected <a href="#b26a3e82">Windows NT version</a> (e.g. "6.2" for Windows 8.0) is specified by the <tt>expected_major</tt> and <tt>expected_minor</tt> parameters. The function will retrun "ok" when the installed Windows version matches the expected one <i>exactly</i>; it returns "older" when the installed version is <i>older</i> than the expected one; it returns "newer" when the installed version is <i>newer</i> than the expected one; and it retruns "error" if something went wrong.</p>
 <p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows version that will be compared to the expected version, so it will give the expected result on Windows 8.1 and later.</p>
 
@@ -604,15 +604,17 @@ RequestExecutionLevel user
 ShowInstDetails show
 
 Section
-	${StdUtils.VerifyOSVersion} $1 5 1
+	${StdUtils.VerifyOSVersion} $1 5 1 0
 	DetailPrint "Check for Windows XP: $1"
-	${StdUtils.VerifyOSVersion} $1 6 0
+	${StdUtils.VerifyOSVersion} $1 6 0 0
 	DetailPrint "Check for Windows Vista: $1"
-	${StdUtils.VerifyOSVersion} $1 6 1
+	${StdUtils.VerifyOSVersion} $1 6 1 0
 	DetailPrint "Check for Windows 7: $1"
-	${StdUtils.VerifyOSVersion} $1 6 2
+	${StdUtils.VerifyOSVersion} $1 6 1 1
+	DetailPrint "Check for Windows 7 with SP-1: $1"
+	${StdUtils.VerifyOSVersion} $1 6 2 0
 	DetailPrint "Check for Windows 8.0: $1"
-	${StdUtils.VerifyOSVersion} $1 6 3
+	${StdUtils.VerifyOSVersion} $1 6 3 0
 	DetailPrint "Check for Windows 8.1: $1"
 SectionEnd</pre>
 

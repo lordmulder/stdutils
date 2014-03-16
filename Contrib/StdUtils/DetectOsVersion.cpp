@@ -26,14 +26,14 @@
 #include "DetectOsVersion.h"
 
 //Forward declaration
-static bool verify_os_version(const DWORD major, const DWORD minor);
+static bool verify_os_version(const DWORD major, const DWORD minor, const DWORD spack);
 
 /*
  * Determine the *real* Windows version
  */
-bool get_real_os_version(unsigned int *major, unsigned int *minor, bool *pbOverride)
+bool get_real_os_version(unsigned int *major, unsigned int *minor, unsigned int *spack, bool *pbOverride)
 {
-	*major = *minor = 0;
+	*major = *minor = *spack = 0;
 	*pbOverride = false;
 	
 	//Initialize local variables
@@ -53,45 +53,56 @@ bool get_real_os_version(unsigned int *major, unsigned int *minor, bool *pbOverr
 	{
 		*major = osvi.dwMajorVersion;
 		*minor = osvi.dwMinorVersion;
+		*spack = osvi.wServicePackMajor;
 	}
 	else
 	{
 		//Workaround for Windows 9x comaptibility mode
-		if(verify_os_version(4, 0))
+		if(verify_os_version(4, 0, 0))
 		{
 			*pbOverride = true;
 			*major = 4;
-			*minor = 0;
 		}
 		else
 		{
-			//Not running on Windows NT
+			//Really not running on Windows NT
 			return false;
 		}
 	}
 
 	//Determine the real *major* version first
-	for(;;)
+	for(DWORD nextMajor = (*major) + 1; nextMajor < 100; nextMajor++)
 	{
-		const DWORD nextMajor = (*major) + 1;
-		if(verify_os_version(nextMajor, 0))
+		if(verify_os_version(nextMajor, 0, 0))
 		{
-			*pbOverride = true;
 			*major = nextMajor;
-			*minor = 0;
+			*minor = *spack = 0;
+			*pbOverride = true;
 			continue;
 		}
 		break;
 	}
 
 	//Now also determine the real *minor* version
-	for(;;)
+	for(DWORD nextMinor = (*minor) + 1; nextMinor < 100; nextMinor++)
 	{
-		const DWORD nextMinor = (*minor) + 1;
-		if(verify_os_version((*major), nextMinor))
+		if(verify_os_version((*major), nextMinor, 0))
 		{
-			*pbOverride = true;
 			*minor = nextMinor;
+			*spack = 0;
+			*pbOverride = true;
+			continue;
+		}
+		break;
+	}
+
+	//Finally determine the real *servicepack* version
+	for(DWORD nextSpack = (*spack) + 1; nextSpack < 100; nextSpack++)
+	{
+		if(verify_os_version((*major), (*minor), nextSpack))
+		{
+			*spack = nextSpack;
+			*pbOverride = true;
 			continue;
 		}
 		break;
@@ -103,25 +114,29 @@ bool get_real_os_version(unsigned int *major, unsigned int *minor, bool *pbOverr
 /*
  * Verify a specific Windows version
  */
-static bool verify_os_version(const DWORD major, const DWORD minor)
+static bool verify_os_version(const DWORD major, const DWORD minor, const DWORD spack)
 {
 	OSVERSIONINFOEXW osvi;
 	DWORDLONG dwlConditionMask = 0;
 
 	//Initialize the OSVERSIONINFOEX structure
 	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
+
+	//Fille the OSVERSIONINFOEX structure
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-	osvi.dwMajorVersion = major;
-	osvi.dwMinorVersion = minor;
-	osvi.dwPlatformId = VER_PLATFORM_WIN32_NT;
+	osvi.dwMajorVersion      = major;
+	osvi.dwMinorVersion      = minor;
+	osvi.wServicePackMajor   = spack;
+	osvi.dwPlatformId        = VER_PLATFORM_WIN32_NT;
 
 	//Initialize the condition mask
-	VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-	VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-	VER_SET_CONDITION(dwlConditionMask, VER_PLATFORMID, VER_EQUAL);
+	VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION,     VER_GREATER_EQUAL);
+	VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION,     VER_GREATER_EQUAL);
+	VER_SET_CONDITION(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+	VER_SET_CONDITION(dwlConditionMask, VER_PLATFORMID,       VER_EQUAL);
 
 	// Perform the test
-	const BOOL ret = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_PLATFORMID, dwlConditionMask);
+	const BOOL ret = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_PLATFORMID, dwlConditionMask);
 
 	//Error checking
 	if(!ret)

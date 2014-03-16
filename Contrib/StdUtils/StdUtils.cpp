@@ -760,15 +760,17 @@ NSISFUNC(GetRealOsVersion)
 	REGSITER_CALLBACK(g_hInstance);
 
 	bool flag;
-	unsigned int version[2];
+	unsigned int version[3];
 
-	if(get_real_os_version(&version[0], &version[1], &flag))
+	if(get_real_os_version(&version[0], &version[1], &version[2], &flag))
 	{
+		pushint(version[2]);
 		pushint(version[1]);
 		pushint(version[0]);
 	}
 	else
 	{
+		pushstring(T("error"));
 		pushstring(T("error"));
 		pushstring(T("error"));
 	}
@@ -780,28 +782,32 @@ NSISFUNC(VerifyRealOsVersion)
 	REGSITER_CALLBACK(g_hInstance);
 
 	bool flag;
-	unsigned int expectedVersion[2];
-	unsigned int detectedVersion[2];
+	unsigned int expectedVersion[3];
+	unsigned int detectedVersion[3];
 
+	expectedVersion[2] = abs(popint());
 	expectedVersion[1] = abs(popint());
 	expectedVersion[0] = abs(popint());
 
-	if(!get_real_os_version(&detectedVersion[0], &detectedVersion[1], &flag))
+	if(!get_real_os_version(&detectedVersion[0], &detectedVersion[1], &detectedVersion[2], &flag))
 	{
 		pushstring(T("error"));
 		return;
 	}
 
-	if((detectedVersion[0] > expectedVersion[0]) || ((detectedVersion[0] == expectedVersion[0]) && (detectedVersion[1] > expectedVersion[1])))
+	//Majaor version
+	for(size_t i = 0; i < 3; i++)
 	{
-		pushstring(T("newer"));
-		return;
-	}
-	
-	if((detectedVersion[0] < expectedVersion[0]) || ((detectedVersion[0] == expectedVersion[0]) && (detectedVersion[1] < expectedVersion[1])))
-	{
-		pushstring(T("older"));
-		return;
+		if(detectedVersion[i] > expectedVersion[i])
+		{
+			pushstring(T("newer"));
+			return;
+		}
+		if(detectedVersion[i] < expectedVersion[i])
+		{
+			pushstring(T("older"));
+			return;
+		}
 	}
 
 	pushstring(T("ok"));
@@ -813,9 +819,9 @@ NSISFUNC(GetRealOsName)
 	REGSITER_CALLBACK(g_hInstance);
 
 	bool flag;
-	unsigned int detectedVersion[2];
+	unsigned int detectedVersion[3];
 
-	if(!get_real_os_version(&detectedVersion[0], &detectedVersion[1], &flag))
+	if(!get_real_os_version(&detectedVersion[0], &detectedVersion[1], &detectedVersion[2], &flag))
 	{
 		pushstring(T("error"));
 		return;

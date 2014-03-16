@@ -243,10 +243,11 @@
 	pop ${out}
 !macroend
 
-!macro _StdUtils_GetRealOSVer out_major out_minor
+!macro _StdUtils_GetRealOSVer out_major out_minor out_spack
 	StdUtils::GetRealOsVersion /NOUNLOAD
 	pop ${out_major}
 	pop ${out_minor}
+	pop ${out_spack}
 !macroend
 
 !macro _StdUtils_GetRealOSStr out
@@ -254,9 +255,10 @@
 	pop ${out}
 !macroend
 
-!macro _StdUtils_VrfyRealOSVer out major minor
+!macro _StdUtils_VrfyRealOSVer out major minor spack
 	push '${major}'
 	push '${minor}'
+	push '${spack}'
 	StdUtils::VerifyRealOsVersion /NOUNLOAD
 	pop ${out}
 !macroend
