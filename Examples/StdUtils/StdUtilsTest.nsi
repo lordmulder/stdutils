@@ -40,9 +40,15 @@ SectionEnd
 Section
 	${StdUtils.GetRealOSVersion} $1 $2 $3
 	DetailPrint "Real Windows NT Version: $1,$2 (Service Pack: $3)"
+
+	${StdUtils.GetRealOSBuildNo} $1
+	DetailPrint "Real Windows NT BuildNo: $1"
+
 	${StdUtils.GetRealOSName} $1
 	DetailPrint "Real Windows NT Friendly Name: $1"
 SectionEnd
+
+!insertmacro NextTest
 
 Section
 	${StdUtils.VerifyOSVersion} $1 5 1 0

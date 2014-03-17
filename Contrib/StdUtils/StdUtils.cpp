@@ -776,6 +776,24 @@ NSISFUNC(GetRealOsVersion)
 	}
 }
 
+NSISFUNC(GetRealOsBuildNo)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	bool flag;
+	unsigned int buildNumber;
+
+	if(get_real_os_build(&buildNumber, &flag))
+	{
+		pushint(buildNumber);
+	}
+	else
+	{
+		pushstring(T("error"));
+	}
+}
+
 NSISFUNC(VerifyRealOsVersion)
 {
 	EXDLL_INIT();
