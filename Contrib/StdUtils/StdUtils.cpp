@@ -784,7 +784,7 @@ NSISFUNC(GetRealOsBuildNo)
 	bool flag;
 	unsigned int buildNumber;
 
-	if(get_real_os_build(&buildNumber, &flag))
+	if(get_real_os_buildNo(&buildNumber, &flag))
 	{
 		pushint(buildNumber);
 	}
@@ -826,6 +826,37 @@ NSISFUNC(VerifyRealOsVersion)
 			pushstring(T("older"));
 			return;
 		}
+	}
+
+	pushstring(T("ok"));
+}
+
+NSISFUNC(VerifyRealOsBuildNo)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	bool flag;
+	unsigned int expectedBuildNo;
+	unsigned int detectedBuildNo;
+
+	expectedBuildNo = abs(popint());
+	
+	if(!get_real_os_buildNo(&detectedBuildNo, &flag))
+	{
+		pushstring(T("error"));
+		return;
+	}
+
+	if(detectedBuildNo > expectedBuildNo)
+	{
+		pushstring(T("newer"));
+		return;
+	}
+	if(detectedBuildNo < expectedBuildNo)
+	{
+		pushstring(T("older"));
+		return;
 	}
 
 	pushstring(T("ok"));

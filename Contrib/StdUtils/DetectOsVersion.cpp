@@ -125,7 +125,7 @@ bool get_real_os_version(unsigned int *major, unsigned int *minor, unsigned int 
 /*
  * Determine the *real* Windows build number
  */
-bool get_real_os_build(unsigned int *buildNo, bool *pbOverride)
+bool get_real_os_buildNo(unsigned int *buildNo, bool *pbOverride)
 {
 	*buildNo = 0;
 	*pbOverride = false;
@@ -163,12 +163,18 @@ bool get_real_os_build(unsigned int *buildNo, bool *pbOverride)
 	}
 
 	//Determine the real build number
-	for(DWORD nextBuildNo = (*buildNo) + 1; nextBuildNo < INT_MAX; nextBuildNo++)
+	DWORD stepSize = 4096;
+	for(DWORD nextBuildNo = (*buildNo); nextBuildNo < INT_MAX; nextBuildNo = (*buildNo) + stepSize)
 	{
 		if(verify_os_buildNo(nextBuildNo))
 		{
 			*buildNo = nextBuildNo;
 			*pbOverride = true;
+			continue;
+		}
+		if(stepSize > 1)
+		{
+			stepSize = stepSize / 2;
 			continue;
 		}
 		break;
