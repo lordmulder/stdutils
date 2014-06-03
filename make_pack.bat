@@ -1,6 +1,6 @@
 @echo off
 REM -------------------------------------------------------------------------
-set "PATH_MSVC=D:\Microsoft Visual Studio 10.0\VC"
+set "PATH_MSVC=c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\"
 REM -------------------------------------------------------------------------
 call "%PATH_MSVC%\vcvarsall.bat" x86
 if "%VCINSTALLDIR%"=="" (

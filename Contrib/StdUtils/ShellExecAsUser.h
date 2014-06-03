@@ -23,4 +23,14 @@
 #include <Windows.h>
 #endif
 
+typedef enum
+{
+	SHELLEXECASUSER_ERROR_SUCCESS  =  1,
+	SHELLEXECASUSER_ERROR_FALLBACK =  0,
+	SHELLEXECASUSER_ERROR_FAILED   = -1,
+	SHELLEXECASUSER_ERROR_TIMEOUT  = -2,
+	SHELLEXECASUSER_ERROR_NOTFOUND = -3
+}
+SHELLEXECASUSER_ERROR;
+
 int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND hwnd, const bool threaded = true);

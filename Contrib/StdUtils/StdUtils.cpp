@@ -547,17 +547,20 @@ NSISFUNC(ExecShellAsUser)
 	
 	switch(result)
 	{
-	case 1:
+	case SHELLEXECASUSER_ERROR_SUCCESS:
 		pushstring(T("ok"));
 		break;
-	case 0:
+	case SHELLEXECASUSER_ERROR_FALLBACK:
 		pushstring(T("fallback"));
 		break;
-	case -1:
+	case SHELLEXECASUSER_ERROR_FAILED:
 		pushstring(T("error"));
 		break;
-	case -2:
+	case SHELLEXECASUSER_ERROR_TIMEOUT:
 		pushstring(T("timeout"));
+		break;
+	case SHELLEXECASUSER_ERROR_NOTFOUND:
+		pushstring(T("not_found"));
 		break;
 	default:
 		pushstring(T("unknown"));
@@ -901,7 +904,7 @@ NSISFUNC(DisableVerboseMode)
 
 #include "resource.h"
 
-static const TCHAR *dllTimeStamp = T(__TIMESTAMP__);
+static const TCHAR *dllTimeStamp = T(__DATE__) T(", ") T(__TIME__);
 static const TCHAR *dllVerString = T(DLL_VERSION_STRING);
 
 NSISFUNC(GetLibVersion)
