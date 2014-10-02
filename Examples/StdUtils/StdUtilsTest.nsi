@@ -76,10 +76,13 @@ Section
 	DetailPrint "Check for Windows 7 (SP1): $1"
 
 	${StdUtils.VerifyOSVersion} $1 6 2 0
-	DetailPrint "Check for Windows 8.0: $1"
+	DetailPrint "Check for Windows 8: $1"
 
 	${StdUtils.VerifyOSVersion} $1 6 3 0
 	DetailPrint "Check for Windows 8.1: $1"
+
+	${StdUtils.VerifyOSVersion} $1 6 4 0
+	DetailPrint "Check for Windows 10: $1"
 SectionEnd
 
 !insertmacro NextTest

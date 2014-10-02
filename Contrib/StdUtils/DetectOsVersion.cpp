@@ -188,24 +188,25 @@ bool get_real_os_buildNo(unsigned int *buildNo, bool *pbOverride)
  */
 const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
 {
-	static const size_t NAME_COUNT = 8;
+	static const size_t NAME_COUNT = 9;
 
 	static const struct
 	{
 		const DWORD major;
 		const DWORD minor;
-		const TCHAR name[6];
+		const TCHAR name[20];
 	}
 	s_names[NAME_COUNT] =
 	{
-		{ 4, 0, T("winnt") },
-		{ 5, 0, T("win2k") },
-		{ 5, 1, T("winxp") },
-		{ 5, 2, T("xpx64") },
-		{ 6, 0, T("vista") },
-		{ 6, 1, T("win70") },
-		{ 6, 2, T("win80") },
-		{ 6, 3, T("win81") }
+		{ 4, 0, T("Windows NT 4.0"  ) },
+		{ 5, 0, T("Windows 2000"    ) },
+		{ 5, 1, T("Windows XP"      ) },
+		{ 5, 2, T("Windows XP (x64)") },
+		{ 6, 0, T("Windows Vista"   ) },
+		{ 6, 1, T("Windows 7"       ) },
+		{ 6, 2, T("Windows 8"       ) },
+		{ 6, 3, T("Windows 8.1"     ) },
+		{ 6, 4, T("Windows 10"      ) }
 	};
 
 	for(size_t i = 0; i < NAME_COUNT; i++)
