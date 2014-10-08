@@ -57,40 +57,23 @@ private:
 	VARIANT data;
 };
 
-#define DISPATCH_MESSAGES do \
-{ \
-	for(int i = 0; i < 16; i++) \
-	{ \
-		MSG _msg; bool _flag = false; \
-		while(PeekMessage(&_msg, NULL, 0, 0, PM_REMOVE)) \
-		{ \
-			DispatchMessage(&_msg); _flag = true; \
-		} \
-		if(_flag) Sleep(0); else break;\
-	} \
-} \
-while(0)
-
 /*
  * Each single-threaded apartment (STA) must have a message loop to handle calls from other processes and apartments within the same process!
- * In order to avoid deadlock or crash, we use CoWaitForMultipleHandles() to dispatch the pending messages, as it will perform "message pumping" while waiting.
+ * We post a quit message, which is generated only when the message queue is otherwise empty. http://blogs.msdn.com/b/oldnewthing/archive/2005/11/04/489028.aspx
+ * Then, we process all available messages.
  * Source: http://msdn.microsoft.com/en-us/library/windows/desktop/ms680112%28v=vs.85%29.aspx | http://msdn.microsoft.com/en-us/library/ms809971.aspx
  */
-static void DispatchPendingMessages(const DWORD dwTimeout)
+static void DispatchPendingMessages()
 {
-	DWORD dwMaxTicks = GetTickCount() + (10 * dwTimeout);
-	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if(hEvent)
+	MSG msg;
+
+	PostQuitMessage(0);
+
+	while(GetMessage(&msg, NULL, 0, 0))
 	{
-		for(;;)
-		{
-			DISPATCH_MESSAGES;
-			DWORD dwReturn = MsgWaitForMultipleObjects(1, &hEvent, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
-			if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks)) break;
-		}
-		CloseHandle(hEvent);
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
-	DISPATCH_MESSAGES;
 }
 
 /*eof*/
