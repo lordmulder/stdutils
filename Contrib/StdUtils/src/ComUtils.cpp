@@ -19,63 +19,50 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <exdisp.h>
-#include <Shobjidl.h>
-#include <Shlwapi.h>
-#include <SHLGUID.h>
+#include "ComUtils.h"
 
-#include "UnicodeSupport.h"
+static void DispatchPendingMessages_Helper(void)
+{
+	for(int i = 0; i < 16; i++)
+	{
+		MSG msg; bool flag = false;
+		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&msg);
+			flag = true;
+		}
+		if(flag) 
+		{
+			Sleep(0);
+			continue;
+		}
+		break;
+	}
+}
 
 /*
  * Each single-threaded apartment (STA) must have a message loop to handle calls from other processes and apartments within the same process!
  * In order to avoid deadlock or crash, we use CoWaitForMultipleHandles() to dispatch the pending messages, as it will perform "message pumping" while waiting.
  * Source: http://msdn.microsoft.com/en-us/library/windows/desktop/ms680112%28v=vs.85%29.aspx | http://msdn.microsoft.com/en-us/library/ms809971.aspx
  */
-void DispatchPendingMessages(const DWORD &dwTimeout);
-
-#ifdef _UNICODE
-	#define ALLOC_STRING(STR) SysAllocString(STR)
-#else
-	static inline BSTR ALLOC_STRING(const char *STR)
-	{
-		BSTR result = NULL;
-		wchar_t *temp = ansi_to_utf16(STR);
-		if(temp)
-		{
-			result = SysAllocString(temp);
-			delete [] temp;
-		}
-		return result;
-	}
-#endif
-
-class variant_t
+void DispatchPendingMessages(const DWORD &dwTimeout)
 {
-public:
-	variant_t(void) { VariantInit(&data); }
-	variant_t(const TCHAR *str) { VariantInit(&data); if(str != NULL) setString(str); }
-	variant_t(const LONG value) { VariantInit(&data); setIValue(value); }
-	~variant_t(void) { VariantClear(&data); }
-	void setIValue(const LONG value) { VariantClear(&data); data.vt = VT_I4; data.lVal = value; }
-	void setString(const TCHAR *str) { VariantClear(&data); if(str != NULL) { setOleStr(ALLOC_STRING(str)); } }
-	operator const VARIANT&(void) const { return data; };
-	operator VARIANT*(void) { return &data; };
-	operator const BSTR(void) const { return data.bstrVal; };
-#ifndef _UNICODE
-	variant_t(const WCHAR *str) { VariantInit(&data); if(str != NULL) setString(str); }
-	void setString(const WCHAR *str) { VariantClear(&data); if(str != NULL) { setOleStr(SysAllocString(str)); } }
-#endif
-protected:
-	void setOleStr(const BSTR value) { if(value != NULL) { data.vt = VT_BSTR; data.bstrVal = value; } }
-private:
-	VARIANT data;
-};
-
-#define RELEASE_OBJ(X) do \
-{ \
-	(X)->Release(); \
-	(X) = NULL; \
-} \
-while(0)
-
-/*eof*/
+#ifndef DISABLE_DISPATCH_DELAY
+	DWORD dwMaxTicks = GetTickCount() + (10 * dwTimeout);
+	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if(hEvent)
+	{
+		for(;;)
+		{
+			DispatchPendingMessages_Helper();
+			DWORD dwReturn = MsgWaitForMultipleObjects(1, &hEvent, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
+			if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks))
+			{
+				break; /*no more messages received*/
+			}
+		}
+		CloseHandle(hEvent);
+	}
+#endif //DISABLE_DISPATCH_DELAY
+	DispatchPendingMessages_Helper();
+}

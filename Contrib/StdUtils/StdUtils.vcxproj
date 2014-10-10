@@ -177,6 +177,7 @@
     <ResourceCompile Include="StdUtils.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ComUtils.cpp" />
     <ClCompile Include="src\DetectOsVersion.cpp" />
     <ClCompile Include="src\InvokeShellVerb.cpp" />
     <ClCompile Include="src\ParameterParser.cpp" />

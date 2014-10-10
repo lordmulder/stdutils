@@ -26,17 +26,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "InvokeShellVerb.h"
-#include "UnicodeSupport.h"
+#include "ComUtils.h"
 #include "msvc_utils.h"
 
-#include <exdisp.h>
-#include <Shobjidl.h>
-#include <Shlwapi.h>
-#include <SHLGUID.h>
-
 ///////////////////////////////////////////////////////////////////////////////
-
-#include "ComUtils.h"
 
 typedef struct
 {
