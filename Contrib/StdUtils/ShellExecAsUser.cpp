@@ -67,6 +67,18 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 	return EXIT_SUCCESS;
 }
 
+static void ShellExecAsUser_ShellDispatchProc_AllowSetForegroundWindow(const HWND &hwnd)
+{
+	DWORD dwProcessId = 0;
+	if(GetWindowThreadProcessId(hwnd, &dwProcessId))
+	{
+		if(dwProcessId != 0)
+		{
+			AllowSetForegroundWindow(dwProcessId);
+		}
+	}
+}
+
 static int ShellExecAsUser_ShellDispatchProc_ShellExecute(IDispatch *const pdispBackground, const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters)
 {
 	int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
@@ -131,6 +143,7 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *const pcOperation, con
 						HRESULT hr = psv->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&pdispBackground));
 						if(SUCCEEDED(hr))
 						{
+							ShellExecAsUser_ShellDispatchProc_AllowSetForegroundWindow(desktopHwnd);
 							iSuccess = ShellExecAsUser_ShellDispatchProc_ShellExecute(pdispBackground, pcOperation, pcFileName, pcParameters);
 							RELEASE_OBJ(pdispBackground);
 						}
