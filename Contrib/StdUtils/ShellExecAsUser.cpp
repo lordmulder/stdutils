@@ -67,34 +67,38 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 	return EXIT_SUCCESS;
 }
 
-static int ShellExecAsUser_ShellDispatchProc_ShellExecute(IShellFolderViewDual *const psfvd, const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters)
+static int ShellExecAsUser_ShellDispatchProc_ShellExecute(IDispatch *const pdispBackground, const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters)
 {
 	int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
-
-	IDispatch *pdisp = NULL;
-	HRESULT hr = psfvd->get_Application(&pdisp);
+	
+	IShellFolderViewDual *psfvd = NULL;
+	HRESULT hr = pdispBackground->QueryInterface(IID_PPV_ARGS(&psfvd));
 	if(SUCCEEDED(hr))
 	{
-		IShellDispatch2 *psd;
-		hr = pdisp->QueryInterface(IID_PPV_ARGS(&psd));
+		IDispatch *pdisp = NULL;
+		hr = psfvd->get_Application(&pdisp);
 		if(SUCCEEDED(hr))
 		{
-			DispatchPendingMessages(125);
-			variant_t vEmpty;
-			variant_t verb(pcOperation);
-			variant_t file(pcFileName);
-			variant_t para(pcParameters);
-			variant_t show(SW_SHOWNORMAL);
-			hr = psd->ShellExecute(file, para, vEmpty, verb, show);
+			IShellDispatch2 *psd;
+			hr = pdisp->QueryInterface(IID_PPV_ARGS(&psd));
 			if(SUCCEEDED(hr))
 			{
-				iSuccess = SHELLEXECASUSER_ERROR_SUCCESS;
+				DispatchPendingMessages(125);
+				variant_t vEmpty;
+				variant_t verb(pcOperation);
+				variant_t file(pcFileName);
+				variant_t para(pcParameters);
+				variant_t show(SW_SHOWNORMAL);
+				hr = psd->ShellExecute(file, para, vEmpty, verb, show);
+				if(SUCCEEDED(hr))
+				{
+					iSuccess = SHELLEXECASUSER_ERROR_SUCCESS;
+				}
+				RELEASE_OBJ(psd);
 			}
-			psd->Release();
-			psd = NULL;
+			RELEASE_OBJ(pdisp);
 		}
-		pdisp->Release();
-		pdisp = NULL;
+		RELEASE_OBJ(psfvd);
 	}
 
 	return iSuccess;
@@ -108,12 +112,12 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *const pcOperation, con
 	HRESULT hr = CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&psw));
 	if(SUCCEEDED(hr))
 	{
-		HWND hwnd = 0;
+		HWND desktopHwnd = 0;
 		IDispatch* pdisp = NULL;
 		variant_t vEmpty;
-		if(S_OK == psw->FindWindowSW(vEmpty, vEmpty, SWC_DESKTOP, (long*)&hwnd, SWFO_NEEDDISPATCH, &pdisp))
+		if(S_OK == psw->FindWindowSW(vEmpty, vEmpty, SWC_DESKTOP, (long*)&desktopHwnd, SWFO_NEEDDISPATCH, &pdisp))
 		{
-			if((hwnd != NULL) && (hwnd != INVALID_HANDLE_VALUE))
+			if((desktopHwnd != NULL) && (desktopHwnd != INVALID_HANDLE_VALUE))
 			{
 				IShellBrowser *psb;
 				hr = IUnknown_QueryService(pdisp, SID_STopLevelBrowser, IID_PPV_ARGS(&psb));
@@ -125,29 +129,19 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *const pcOperation, con
 					{
 						IDispatch *pdispBackground = NULL;
 						HRESULT hr = psv->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&pdispBackground));
-						if (SUCCEEDED(hr))
+						if(SUCCEEDED(hr))
 						{
-							IShellFolderViewDual *psfvd = NULL;
-							hr = pdispBackground->QueryInterface(IID_PPV_ARGS(&psfvd));
-							if(SUCCEEDED(hr))
-							{
-								iSuccess = ShellExecAsUser_ShellDispatchProc_ShellExecute(psfvd, pcOperation, pcFileName, pcParameters);
-							}
-							pdispBackground->Release();
-							pdispBackground = NULL;
+							iSuccess = ShellExecAsUser_ShellDispatchProc_ShellExecute(pdispBackground, pcOperation, pcFileName, pcParameters);
+							RELEASE_OBJ(pdispBackground);
 						}
-						psv->Release();
-						psv = NULL;
+						RELEASE_OBJ(psv);
 					}
-					psb->Release();
-					psb = NULL;
+					RELEASE_OBJ(psb);
 				}
 			}
-			pdisp->Release();
-			pdisp = NULL;
+			RELEASE_OBJ(pdisp);
 		}
-		psw->Release();
-		psw = NULL;
+		RELEASE_OBJ(psw);
 	}
 
 	return iSuccess;

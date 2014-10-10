@@ -128,24 +128,22 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 	if(FAILED(hr) || (pFolder == NULL))
 	{
 		iSuccess = -3;
-		pShellDispatch->Release();
+		RELEASE_OBJ(pShellDispatch);
 		return iSuccess;
 	}
 
-	pShellDispatch->Release();
-	pShellDispatch = NULL;
+	RELEASE_OBJ(pShellDispatch);
 
 	variant_t vaFileName(pcFileName);
 	hr = pFolder->ParseName(vaFileName, &pItem);
 	if(FAILED(hr) || (pItem == NULL))
 	{
 		iSuccess = -3;
-		pFolder->Release();
+		RELEASE_OBJ(pFolder);
 		return iSuccess;
 	}
 
-	pFolder->Release();
-	pFolder = NULL;
+	RELEASE_OBJ(pFolder);
 
 	// ----------------------------------- //
 
@@ -156,18 +154,17 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 	if(FAILED(hr) || (pVerbs == NULL))
 	{
 		iSuccess = -3;
-		pItem->Release();
+		RELEASE_OBJ(pItem);
 		return iSuccess;
 	}
 
-	pItem->Release();
-	pItem = NULL;
+	RELEASE_OBJ(pItem);
 
 	hr = pVerbs->get_Count(&iVerbCount);
 	if(FAILED(hr) || (iVerbCount < 1))
 	{
 		iSuccess = -3;
-		pVerbs->Release();
+		RELEASE_OBJ(pVerbs);
 		return iSuccess;
 	}
 
@@ -190,7 +187,7 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		hr = pCurrentVerb->get_Name(&pcCurrentVerbName);
 		if(FAILED(hr) || (pcCurrentVerbName == NULL))
 		{
-			pCurrentVerb->Release();
+			RELEASE_OBJ(pCurrentVerb);
 			continue;
 		}
 
@@ -204,11 +201,10 @@ static int MyInvokeShellVerb_ShellDispatchProc(const TCHAR *pcDirectoryName, con
 		}
 
 		SysFreeString(pcCurrentVerbName);
-		pCurrentVerb->Release();
+		RELEASE_OBJ(pCurrentVerb);
 	}
 
-	pVerbs->Release();
-	pVerbs = NULL;
+	RELEASE_OBJ(pVerbs);
 
 	// ----------------------------------- //
 	

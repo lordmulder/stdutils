@@ -57,6 +57,13 @@ private:
 	VARIANT data;
 };
 
+#define RELEASE_OBJ(X) do \
+{ \
+	(X)->Release(); \
+	(X) = NULL; \
+} \
+while(0)
+
 #define DISPATCH_MESSAGES do \
 { \
 	for(int i = 0; i < 16; i++) \
