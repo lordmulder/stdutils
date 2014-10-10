@@ -86,16 +86,11 @@ while(0)
 static void DispatchPendingMessages(const DWORD dwTimeout)
 {
 	DWORD dwMaxTicks = GetTickCount() + (10 * dwTimeout);
-	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if(hEvent)
+	for(;;)
 	{
-		for(;;)
-		{
-			DISPATCH_MESSAGES;
-			DWORD dwReturn = MsgWaitForMultipleObjects(1, &hEvent, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
-			if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks)) break;
-		}
-		CloseHandle(hEvent);
+		DISPATCH_MESSAGES;
+		DWORD dwReturn = MsgWaitForMultipleObjects(0, NULL, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
+		if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks)) break;
 	}
 	DISPATCH_MESSAGES;
 }
