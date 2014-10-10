@@ -654,7 +654,7 @@ NSISFUNC(ExecShellWaitEx)
 
 	if(ShellExecuteEx(&shInfo) != FALSE)
 	{
-		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
+		if(shInfo.hProcess != NULL)
 		{
 			TCHAR out[32];
 			SNPRINTF(out, 32, T("hProc:%08X"), shInfo.hProcess);
