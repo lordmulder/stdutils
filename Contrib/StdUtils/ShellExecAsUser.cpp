@@ -67,7 +67,40 @@ static unsigned __stdcall ShellExecAsUser_ThreadHelperProc(void* pArguments)
 	return EXIT_SUCCESS;
 }
 
-static int ShellExecAsUser_ShellDispatchProc(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND parentHwnd)
+static int ShellExecAsUser_ShellDispatchProc_ShellExecute(IShellFolderViewDual *const psfvd, const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters)
+{
+	int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
+
+	IDispatch *pdisp = NULL;
+	HRESULT hr = psfvd->get_Application(&pdisp);
+	if(SUCCEEDED(hr))
+	{
+		IShellDispatch2 *psd;
+		hr = pdisp->QueryInterface(IID_PPV_ARGS(&psd));
+		if(SUCCEEDED(hr))
+		{
+			DispatchPendingMessages(125);
+			variant_t vEmpty;
+			variant_t verb(pcOperation);
+			variant_t file(pcFileName);
+			variant_t para(pcParameters);
+			variant_t show(SW_SHOWNORMAL);
+			hr = psd->ShellExecute(file, para, vEmpty, verb, show);
+			if(SUCCEEDED(hr))
+			{
+				iSuccess = SHELLEXECASUSER_ERROR_SUCCESS;
+			}
+			psd->Release();
+			psd = NULL;
+		}
+		pdisp->Release();
+		pdisp = NULL;
+	}
+
+	return iSuccess;
+}
+
+static int ShellExecAsUser_ShellDispatchProc(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &parentHwnd)
 {
 	int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
 
@@ -96,32 +129,9 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *pcOperation, const TCH
 						{
 							IShellFolderViewDual *psfvd = NULL;
 							hr = pdispBackground->QueryInterface(IID_PPV_ARGS(&psfvd));
-							if (SUCCEEDED(hr))
+							if(SUCCEEDED(hr))
 							{
-								IDispatch *pdisp = NULL;
-								hr = psfvd->get_Application(&pdisp);
-								if (SUCCEEDED(hr))
-								{
-									IShellDispatch2 *psd;
-									hr = pdisp->QueryInterface(IID_PPV_ARGS(&psd));
-									if(SUCCEEDED(hr))
-									{
-										DispatchPendingMessages(125);
-										variant_t verb(pcOperation);
-										variant_t file(pcFileName);
-										variant_t para(pcParameters);
-										variant_t show(SW_SHOWNORMAL);
-										hr = psd->ShellExecute(file, para, vEmpty, verb, show);
-										if(SUCCEEDED(hr))
-										{
-											iSuccess = SHELLEXECASUSER_ERROR_SUCCESS;
-										}
-										psd->Release();
-										psd = NULL;
-									}
-									pdisp->Release();
-									pdisp = NULL;
-								}
+								iSuccess = ShellExecAsUser_ShellDispatchProc_ShellExecute(psfvd, pcOperation, pcFileName, pcParameters);
 							}
 							pdispBackground->Release();
 							pdispBackground = NULL;
@@ -143,7 +153,7 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *pcOperation, const TCH
 	return iSuccess;
 }
 
-int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND parentHwnd, const bool threaded)
+int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &parentHwnd, const bool &threaded)
 {
 	//Make sure the destination file exists
 	if(GetFileAttributes(pcFileName) == INVALID_FILE_ATTRIBUTES)

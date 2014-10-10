@@ -33,4 +33,4 @@ typedef enum
 }
 SHELLEXECASUSER_ERROR;
 
-int ShellExecAsUser(const TCHAR *pcOperation, const TCHAR *pcFileName, const TCHAR *pcParameters, const HWND hwnd, const bool threaded = true);
+int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &hwnd, const bool &threaded = true);
