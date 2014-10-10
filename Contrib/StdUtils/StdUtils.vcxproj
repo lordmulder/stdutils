@@ -174,29 +174,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DetectOsVersion.cpp" />
-    <ClCompile Include="InvokeShellVerb.cpp" />
-    <ClCompile Include="ParameterParser.cpp" />
-    <ClCompile Include="ShellExecAsUser.cpp" />
-    <ClCompile Include="StdUtils.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
-    </ClCompile>
-    <ClCompile Include="UnicodeSupport.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DetectOsVersion.h" />
-    <ClInclude Include="InvokeShellVerb.h" />
-    <ClInclude Include="ParameterParser.h" />
-    <ClInclude Include="RandUtils.h" />
-    <ClInclude Include="ShellExecAsUser.h" />
-    <ClInclude Include="StdUtils.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="UnicodeSupport.h" />
-    <ClInclude Include="ComUtils.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="StdUtils.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DetectOsVersion.cpp" />
+    <ClCompile Include="src\InvokeShellVerb.cpp" />
+    <ClCompile Include="src\ParameterParser.cpp" />
+    <ClCompile Include="src\ShellExecAsUser.cpp" />
+    <ClCompile Include="src\StdUtils.cpp" />
+    <ClCompile Include="src\UnicodeSupport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ComUtils.h" />
+    <ClInclude Include="src\DetectOsVersion.h" />
+    <ClInclude Include="src\InvokeShellVerb.h" />
+    <ClInclude Include="src\ParameterParser.h" />
+    <ClInclude Include="src\RandUtils.h" />
+    <ClInclude Include="src\Resource.h" />
+    <ClInclude Include="src\ShellExecAsUser.h" />
+    <ClInclude Include="src\StdUtils.h" />
+    <ClInclude Include="src\UnicodeSupport.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
