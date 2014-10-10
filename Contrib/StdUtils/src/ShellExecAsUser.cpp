@@ -209,5 +209,5 @@ int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileNam
 		}
 	}
 
-	return SHELLEXECASUSER_ERROR_FAILED;
+	return iSuccess;
 }
