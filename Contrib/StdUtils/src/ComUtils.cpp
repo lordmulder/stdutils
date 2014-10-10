@@ -48,20 +48,15 @@ static void DispatchPendingMessages_Helper(void)
 void DispatchPendingMessages(const DWORD &dwTimeout)
 {
 #ifndef DISABLE_DISPATCH_DELAY
-	DWORD dwMaxTicks = GetTickCount() + (10 * dwTimeout);
-	HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	if(hEvent)
+	const DWORD dwMaxTicks = GetTickCount() + (10 * dwTimeout);
+	for(;;)
 	{
-		for(;;)
+		DispatchPendingMessages_Helper();
+		const DWORD dwReturn = MsgWaitForMultipleObjects(0, NULL, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
+		if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks))
 		{
-			DispatchPendingMessages_Helper();
-			DWORD dwReturn = MsgWaitForMultipleObjects(1, &hEvent, FALSE, dwTimeout, QS_ALLINPUT | QS_ALLPOSTMESSAGE);
-			if((dwReturn == WAIT_TIMEOUT) || (dwReturn == WAIT_FAILED) || (GetTickCount() > dwMaxTicks))
-			{
-				break; /*no more messages received*/
-			}
+			break; /*no more messages received*/
 		}
-		CloseHandle(hEvent);
 	}
 #endif //DISABLE_DISPATCH_DELAY
 	DispatchPendingMessages_Helper();
