@@ -162,16 +162,17 @@ int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileNam
 		return SHELLEXECASUSER_ERROR_NOTFOUND;
 	}
 
+	int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
+
 	OSVERSIONINFO osVersion;
 	memset(&osVersion, 0, sizeof(OSVERSIONINFO));
 	osVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	
+
 	//Use IShellDispatch2 on supported platforms
 	if(GetVersionEx(&osVersion))
 	{
 		if((osVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) && (osVersion.dwMajorVersion >= 6))
 		{
-			int iSuccess = SHELLEXECASUSER_ERROR_FAILED;
 			if(threaded)
 			{
 				threadParam_t threadParams = {pcOperation, pcFileName, pcParameters, parentHwnd, -1};
@@ -195,15 +196,17 @@ int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileNam
 			{
 				iSuccess = ShellExecAsUser_ShellDispatchProc(pcOperation, pcFileName, pcParameters, parentHwnd);
 			}
-			return iSuccess;
 		}
 	}
 	
 	//Fallback mode
-	HINSTANCE hInst = ShellExecute(parentHwnd, pcOperation, pcFileName, pcParameters, NULL, SW_SHOWNORMAL);
-	if(((int)hInst) > 32)
+	if(iSuccess == SHELLEXECASUSER_ERROR_FAILED)
 	{
-		return SHELLEXECASUSER_ERROR_FALLBACK;
+		HINSTANCE hInst = ShellExecute(parentHwnd, pcOperation, pcFileName, pcParameters, NULL, SW_SHOWNORMAL);
+		if(((int)hInst) > 32)
+		{
+			iSuccess = SHELLEXECASUSER_ERROR_FALLBACK;
+		}
 	}
 
 	return SHELLEXECASUSER_ERROR_FAILED;
