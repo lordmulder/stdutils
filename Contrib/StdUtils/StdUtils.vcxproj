@@ -195,6 +195,7 @@
     <ClInclude Include="src\ShellExecAsUser.h" />
     <ClInclude Include="src\StdUtils.h" />
     <ClInclude Include="src\UnicodeSupport.h" />
+    <ClInclude Include="src\WinUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

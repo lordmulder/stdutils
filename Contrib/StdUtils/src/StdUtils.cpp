@@ -25,6 +25,7 @@
 #include "InvokeShellVerb.h"
 #include "UnicodeSupport.h"
 #include "DetectOsVersion.h"
+#include "WinUtils.h"
 
 HANDLE g_hInstance;
 bool g_bCallbackRegistred;
@@ -654,7 +655,7 @@ NSISFUNC(ExecShellWaitEx)
 
 	if(ShellExecuteEx(&shInfo) != FALSE)
 	{
-		if((shInfo.hProcess != NULL) && (shInfo.hProcess != INVALID_HANDLE_VALUE))
+		if(VALID_HANDLE(shInfo.hProcess))
 		{
 			TCHAR out[32];
 			SNPRINTF(out, 32, T("hProc:%08X"), shInfo.hProcess);

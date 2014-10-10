@@ -27,6 +27,7 @@
 
 #include "InvokeShellVerb.h"
 #include "ComUtils.h"
+#include "WinUtils.h"
 #include "msvc_utils.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -220,7 +221,7 @@ int MyInvokeShellVerb(const TCHAR *pcDirectoryName, const TCHAR *pcFileName, con
 			{
 				threadParam_t threadParams = {pcDirectoryName, pcFileName, uiVerbId, 0};
 				HANDLE hThread = (HANDLE) _beginthreadex(NULL, 0, MyInvokeShellVerb_ThreadHelperProc, &threadParams, 0, NULL);
-				if((hThread != NULL) && (hThread != INVALID_HANDLE_VALUE))
+				if(VALID_HANDLE(hThread))
 				{
 					DWORD status = WaitForSingleObject(hThread, 30000);
 					if(status == WAIT_OBJECT_0)

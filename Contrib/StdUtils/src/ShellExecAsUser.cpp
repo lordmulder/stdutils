@@ -21,6 +21,7 @@
 
 #include "ShellExecAsUser.h"
 #include "ComUtils.h"
+#include "WinUtils.h"
 #include "msvc_utils.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ static int ShellExecAsUser_ShellDispatchProc(const TCHAR *const pcOperation, con
 		variant_t vEmpty;
 		if(S_OK == psw->FindWindowSW(vEmpty, vEmpty, SWC_DESKTOP, (long*)&desktopHwnd, SWFO_NEEDDISPATCH, &pdisp))
 		{
-			if((desktopHwnd != NULL) && (desktopHwnd != INVALID_HANDLE_VALUE))
+			if(VALID_HANDLE(desktopHwnd))
 			{
 				IShellBrowser *psb;
 				hr = IUnknown_QueryService(pdisp, SID_STopLevelBrowser, IID_PPV_ARGS(&psb));
@@ -175,7 +176,7 @@ int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileNam
 			{
 				threadParam_t threadParams = {pcOperation, pcFileName, pcParameters, parentHwnd, -1};
 				HANDLE hThread = (HANDLE) _beginthreadex(NULL, 0, ShellExecAsUser_ThreadHelperProc, &threadParams, 0, NULL);
-				if((hThread != NULL) && (hThread != INVALID_HANDLE_VALUE))
+				if(VALID_HANDLE(hThread))
 				{
 					DWORD status = WaitForSingleObject(hThread, 30000);
 					if(status == WAIT_OBJECT_0)
