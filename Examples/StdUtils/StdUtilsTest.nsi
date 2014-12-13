@@ -103,6 +103,13 @@ SectionEnd
 
 !insertmacro NextTest
 
+Section
+	${StdUtils.GetOSEdition} $1
+	DetailPrint "Operating System Edition: $1"
+SectionEnd
+
+!insertmacro NextTest
+
 # -----------------------------------------
 # Time functions
 # -----------------------------------------

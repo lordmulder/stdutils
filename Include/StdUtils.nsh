@@ -53,6 +53,7 @@
 !define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* Windows version number, even on Windows 8.1+
 !define StdUtils.GetRealOSBuildNo '!insertmacro _StdUtils_GetRealOSBld'  #Get the *real* Windows build number, even on Windows 8.1+
 !define StdUtils.GetRealOSName    '!insertmacro _StdUtils_GetRealOSStr'  #Get the *real* Windows version, as a "friendly" name
+!define StdUtils.GetOSEdition     '!insertmacro _StdUtils_GetOSEdition'  #Get the *real* Windows version, as a "friendly" name
 !define StdUtils.VerifyOSVersion  '!insertmacro _StdUtils_VrfyRealOSVer' #Compare *real* operating system to an expected version number
 !define StdUtils.VerifyOSBuildNo  '!insertmacro _StdUtils_VrfyRealOSBld' #Compare *real* operating system to an expected build number
 !define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the current StdUtils library version (for debugging)
@@ -273,6 +274,11 @@
 !macro _StdUtils_VrfyRealOSBld out build
 	push '${build}'
 	StdUtils::VerifyRealOsBuildNo /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_GetOSEdition out
+	StdUtils::GetOsEdition /NOUNLOAD
 	pop ${out}
 !macroend
 

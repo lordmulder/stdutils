@@ -883,6 +883,21 @@ NSISFUNC(GetRealOsName)
 	pushstring(get_os_friendly_name(detectedVersion[0], detectedVersion[1]));
 }
 
+NSISFUNC(GetOsEdition)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	bool isServerEdition;
+	if(!get_os_server_edition(isServerEdition))
+	{
+		pushstring(T("error"));
+		return;
+	}
+
+	pushstring(isServerEdition ? T("server") : T("workstation"));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // FOR DEBUGGING
 ///////////////////////////////////////////////////////////////////////////////

@@ -221,6 +221,39 @@ const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
 }
 
 /*
+ * Checks whether OS is a "server" (or "workstation") edition
+ */
+bool get_os_server_edition(bool &bIsServer)
+{
+	bIsServer = false;
+	bool success = false;
+
+	//Initialize local variables
+	OSVERSIONINFOEXW osvi;
+	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+
+	//Check for server/workstation edition
+	if(GetVersionExW((LPOSVERSIONINFOW)&osvi) != FALSE)
+	{
+		switch(osvi.wProductType)
+		{
+		case VER_NT_SERVER:
+		case VER_NT_DOMAIN_CONTROLLER:
+			success = true;
+			bIsServer = true;
+			break;
+		case VER_NT_WORKSTATION:
+			success = true;
+			bIsServer = false;
+			break;
+		}
+	}
+
+	return success;
+}
+
+/*
  * Verify a specific Windows version
  */
 static bool verify_os_version(const DWORD major, const DWORD minor, const DWORD spack)

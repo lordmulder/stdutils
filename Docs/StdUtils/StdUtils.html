@@ -40,7 +40,7 @@
 	<li><a href="#0c74ed2a">ExecShellWait</a>
 	<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
 	<li><a href="#d452a779">InvokeShellVerb</a>
-	<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion</a>
+	<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 	<li><a href="#14863bf9">Debugging Functions</a>
 	<li><a href="#b92197af">Acknowledgment</a>
 	<li><a href="#db579654">License</a>
@@ -564,7 +564,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="f57ec206"></a><h2>GetRealOSVersion / GetRealOSName / VerifyOSVersion</h2>
+<a name="f57ec206"></a><h2>GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</h2>
 
 <p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i> <i>user_var(out_spack)</i></tt></b></p>
 <p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> <a href="#b26a3e82">Windows NT version</a> installed on the computer. Note that starting with Windows 8.1 (Windows NT 6.3), Microsoft has <u>broken</u> the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> functions! This has the consequence that Windows 8.1 (and all future versions?) will now identify itself as Windows 8.0! Various workarounds exist, such as adding certain GUID's to the application Manifest, which is only a <i>temporary</i> solution, or trying to read the Windows version from the Registry, which is unreliable. At the same time, the <tt>${StdUtils.GetRealOSVersion}</tt> function reveals the <i>actual</i> Windows version on Windows 8.1 (and later), regardless of the application Manifest. Furthermore, it will continue to work correctly in <i>future</i> Windows versions - provided that Microsoft doesn't break more Win32 API functions. Finally, this function still returns the <i>correct</i> Windows version, when the installer runs in "comaptibility mode". The function will return the <i>major</i> and <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1) plus the Service Pack <i>spack</i>. It returns "error", if something went wrong.</p>
@@ -658,6 +658,19 @@ Section
 
 	${StdUtils.VerifyOSBuildNo} $1 9600
 	DetailPrint "Check for Build #9600, Windows 8.1: $1"
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.GetOSEdition} <i>user_var(out)</i></tt></b></p>
+<p><tt>${StdUtils.GetOSEdition}</tt> returns the Windows edition, i.e. either "workstation" or "server". It retruns "error" if something went wrong.</p>
+
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.GetOSEdition} $1
+	DetailPrint "Windows Edition is: $1"
 SectionEnd</pre>
 
 <br>
