@@ -81,7 +81,7 @@ Section
 	${StdUtils.VerifyOSVersion} $1 6 3 0
 	DetailPrint "Check for Windows 8.1: $1"
 
-	${StdUtils.VerifyOSVersion} $1 6 4 0
+	${StdUtils.VerifyOSVersion} $1 10 0 0
 	DetailPrint "Check for Windows 10: $1"
 SectionEnd
 
@@ -96,6 +96,9 @@ Section
 
 	${StdUtils.VerifyOSBuildNo} $1 7601
 	DetailPrint "Check for Build #7601, Windows 7 (SP1): $1"
+
+	${StdUtils.VerifyOSBuildNo} $1 9200
+	DetailPrint "Check for Build #9200, Windows 8: $1"
 
 	${StdUtils.VerifyOSBuildNo} $1 9600
 	DetailPrint "Check for Build #9600, Windows 8.1: $1"

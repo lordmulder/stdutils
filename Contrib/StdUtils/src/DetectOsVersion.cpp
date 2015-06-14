@@ -242,15 +242,15 @@ const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
 	}
 	s_names[NAME_COUNT] =
 	{
-		{ 4, 0, T("Windows NT 4.0"  ) },
-		{ 5, 0, T("Windows 2000"    ) },
-		{ 5, 1, T("Windows XP"      ) },
-		{ 5, 2, T("Windows XP (x64)") },
-		{ 6, 0, T("Windows Vista"   ) },
-		{ 6, 1, T("Windows 7"       ) },
-		{ 6, 2, T("Windows 8"       ) },
-		{ 6, 3, T("Windows 8.1"     ) },
-		{ 6, 4, T("Windows 10"      ) }
+		{  4, 0, T("Windows NT 4.0"  ) },
+		{  5, 0, T("Windows 2000"    ) },
+		{  5, 1, T("Windows XP"      ) },
+		{  5, 2, T("Windows XP (x64)") },
+		{  6, 0, T("Windows Vista"   ) },
+		{  6, 1, T("Windows 7"       ) },
+		{  6, 2, T("Windows 8"       ) },
+		{  6, 3, T("Windows 8.1"     ) },
+		{ 10, 0, T("Windows 10"      ) }
 	};
 
 	for(size_t i = 0; i < NAME_COUNT; i++)
