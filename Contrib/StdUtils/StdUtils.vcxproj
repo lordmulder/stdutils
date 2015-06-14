@@ -89,7 +89,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>nsis_pluginapi_unicode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nsis_pluginapi_unicode.lib;Shlwapi.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DataExecutionPrevention>
@@ -124,7 +124,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>nsis_pluginapi_unicode.lib;msvcrt_vc6.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nsis_pluginapi_unicode.lib;msvcrt_vc6.lib;Shlwapi.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <DataExecutionPrevention>
@@ -160,7 +160,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>nsis_pluginapi_ansi.lib;msvcrt_vc6.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nsis_pluginapi_ansi.lib;msvcrt_vc6.lib;Shlwapi.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <DataExecutionPrevention>

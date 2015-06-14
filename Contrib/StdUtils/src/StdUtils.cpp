@@ -27,11 +27,11 @@
 #include "DetectOsVersion.h"
 #include "WinUtils.h"
 
-HANDLE g_hInstance;
-bool g_bCallbackRegistred;
-bool g_bVerbose;
+bool g_bStdUtilsVerbose = false;
 
-RTL_CRITICAL_SECTION g_mutex;
+static HANDLE g_hInstance;
+static RTL_CRITICAL_SECTION g_mutex;
+static bool g_bCallbackRegistred;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DLL MAIN
@@ -44,7 +44,7 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 		InitializeCriticalSection(&g_mutex);
 		g_hInstance = hInst;
 		g_bCallbackRegistred = false;
-		g_bVerbose = false;
+		g_bStdUtilsVerbose = false;
 	}
 	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
@@ -178,7 +178,7 @@ NSISFUNC(RandList)
 
 	if(count > max)
 	{
-		if(g_bVerbose)
+		if(g_bStdUtilsVerbose)
 		{
 			MessageBoxW(NULL, L"RandList() was called with bad arguments!", L"StdUtils::RandList", MB_ICONERROR | MB_TASKMODAL);
 		}
@@ -467,7 +467,7 @@ NSISFUNC(SHFileMove)
 	int result = SHFileOperation(&fileop);
 	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? T("ABORTED") : T("OK")) : T("ERROR"));
 
-	if((result != 0) && g_bVerbose)
+	if((result != 0) && g_bStdUtilsVerbose)
 	{
 		char temp[1024];
 		_snprintf(temp, 1024, "Failed with error code: 0x%X", result);
@@ -503,7 +503,7 @@ NSISFUNC(SHFileCopy)
 	int result = SHFileOperation(&fileop);
 	pushstring((result == 0) ? (fileop.fAnyOperationsAborted ? T("ABORTED") : T("OK")) : T("ERROR"));
 
-	if((result != 0) && g_bVerbose)
+	if((result != 0) && g_bStdUtilsVerbose)
 	{
 		char temp[1024];
 		_snprintf(temp, 1024, "Failed with error code: 0x%X", result);
@@ -906,14 +906,14 @@ NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
-	g_bVerbose = true;
+	g_bStdUtilsVerbose = true;
 }
 
 NSISFUNC(DisableVerboseMode)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
-	g_bVerbose = false;
+	g_bStdUtilsVerbose = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

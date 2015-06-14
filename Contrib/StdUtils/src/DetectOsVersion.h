@@ -19,8 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-bool get_real_os_version(unsigned int *major, unsigned int *minor, unsigned int *spack, bool *pbOverride);
-bool get_real_os_buildNo(unsigned int *buildNo, bool *pbOverride);
+bool get_real_os_version(unsigned int *const major, unsigned int *const minor, unsigned int *const spack, bool *const pbOverride);
+bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride);
 const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor);
 bool get_os_server_edition(bool &bIsServer);
 
