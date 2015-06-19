@@ -44,6 +44,7 @@
 !define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'        #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'    #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'    #SHFileOperation(), using the FO_COPY operation
+!define StdUtils.AppendToFile     '!insertmacro _StdUtils_AppendToFile'  #Append contents of an existing file to another file
 !define StdUtils.ExecShellAsUser  '!insertmacro _StdUtils_ExecShlUser'   #ShellExecute() as NON-elevated user from elevated installer
 !define StdUtils.InvokeShellVerb  '!insertmacro _StdUtils_InvkeShlVrb'   #Invokes a "shell verb", e.g. for pinning items to the taskbar
 !define StdUtils.ExecShellWaitEx  '!insertmacro _StdUtils_ExecShlWaitEx' #ShellExecuteEx(), returns the handle of the new process
@@ -199,6 +200,15 @@
 	push '${to}'
 	push ${hwnd}
 	StdUtils::SHFileCopy /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_AppendToFile out from dest offset maxlen
+	push '${from}'
+	push '${dest}'
+	push ${offset}
+	push ${maxlen}
+	StdUtils::AppendToFile /NOUNLOAD
 	pop ${out}
 !macroend
 

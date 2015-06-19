@@ -27,3 +27,16 @@
  * Source: http://blogs.msdn.com/b/oldnewthing/archive/2004/03/02/82639.aspx
  */
 #define VALID_HANDLE(H) (((H) != NULL) && ((H) != INVALID_HANDLE_VALUE))
+
+/*
+ * Misc Utilities
+ */
+template<class T> static const T &MAX_VAL(const T &a, const T &b)
+{
+	return (a > b) ? a : b;
+}
+
+template<class T> static const T &MIN_VAL(const T &a, const T &b)
+{
+	return (a < b) ? a : b;
+}

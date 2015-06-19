@@ -36,6 +36,7 @@
 	<li><a href="#dc3f60d9">Pseudorandom Number Generator (PRNG)</a>
 	<li><a href="#23711935">String Functions</a>
 	<li><a href="#df333b53">Shell File Operation</a>
+	<li><a href="#18e9c5cb">AppendToFile</a>
 	<li><a href="#a3d3af46">ExecShellAsUser</a>
 	<li><a href="#0c74ed2a">ExecShellWait</a>
 	<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
@@ -76,6 +77,7 @@
 !define StdUtils.RevStr           #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.SHFileMove       #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       #SHFileOperation(), using the FO_COPY operation
+!define StdUtils.AppendToFile     #Append contents of an existing file to another file
 !define StdUtils.ExecShellAsUser  #ShellExecute() as NON-elevated user from elevated installer
 !define StdUtils.InvokeShellVerb  #Invokes a "shell verb", e.g. for pinning items to the taskbar
 !define StdUtils.ExecShellWaitEx  #ShellExecuteEx(), returns the handle of the new process
@@ -396,6 +398,24 @@ Section
 	${StdUtils.SetVerbose} 0
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
+SectionEnd</pre>
+
+<br>
+
+<!-- ---------------- -->
+
+<a name="18e9c5cb"></a><h2>AppendToFile</h2>
+
+<p><b><tt>${StdUtils.AppendToFile} <i>user_var(output)</i> <i>from</i> <i>dest</i> <i>offset</i> <i>maxlen</i></tt></b></p>
+<p>Appends the contents of the existing <i>source</i> file specified by <tt>from</tt> to the <i>output</i> file specified by <tt>dest</tt>. If the output file does <i>not</i> exist yet, it will be created; otherwise the data is appended to the back-end of the existing file. Furthermore, <tt>offset</tt> specifies the number of bytes to be skipped in the source file, before the copying begins. If the <tt>offset</tt> is equal to or greater than the size of the source file, then <i>no</i> data is copied, which is <i>not</i> considered an error. Specify an <tt>offset</tt> of <b>0</b> in order to start copying right at the beginning of the source file. Finally, <tt>maxlen</tt> specifies the <i>maximum</i> number of bytes to be copied. Copying will stop when either the end of the source file is reached or when the specified maximum number of bytes have been copied. Set <tt>maxlen</tt> to <b>0</b>, if you want to copy the source file all the way to the end. If the function succeeds, it will return the number of bytes that have actually been copied. Note, however, that if more than <b>MAX_INT</b> (2,147,483,647) bytes have been copied, the return value will still be at most <b>MAX_INT</b>. If anything went wrong, e.g. a file could not be opened or a read/write operation failed, "error" is returned.</p>
+<p>Note: This function is implemented via native Win32 file I/O functions. It also uses a sufficiently large buffer (currently 8 KB) to speed up the copying process. This should be a lot faster than copying the data "byte by byte", using the built-in <i>FileReadByte</i> and <i>FileWriteByte</i> functions.</p>
+
+<pre>Section
+	${StdUtils.AppendToFile} $0 "$EXEDIR\SourceFile1.bin" "$OUTDIR\OutputFile.bin" 0 0
+	DetailPrint "AppendToFile: $0"
+	
+	${StdUtils.AppendToFile} $0 "$EXEDIR\SourceFile2.bin" "$OUTDIR\OutputFile.bin" 0 0
+	DetailPrint "AppendToFile: $0"
 SectionEnd</pre>
 
 <br>
@@ -762,6 +782,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.<
 <a name="53c38996"></a><h2>Version History</h2>
 
 <ul>
+	<li><b>Version 1.07, not yet released</b>
+	<ul>
+		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another.
+	</ul>
 	<li><b>Version 1.06, released 2015-06-14</b>
 	<ul>
 		<li>Added new workaround to make the <tt>GetRealOSVersion</tt>, <tt>GetRealOSName</tt> and <tt>VerifyOSVersion</tt> functions work correctly on Windows 10<br>
