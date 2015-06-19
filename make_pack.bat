@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 REM -------------------------------------------------------------------------
 set "PATH_MSVC=c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\"
 REM -------------------------------------------------------------------------
@@ -27,16 +28,12 @@ if exist "%~dp0\StdUtils.%ISO_DATE%.zip" (
 	exit
 )
 REM -------------------------------------------------------------------------
-MSBuild.exe /property:Configuration=Release_ANSI    /property:Platform=Win32 /target:Rebuild /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
-if not "%ERRORLEVEL%"=="0" (
-	pause
-	exit
-)
-REM -------------------------------------------------------------------------
-MSBuild.exe /property:Configuration=Release_Unicode /property:Platform=Win32 /target:Rebuild /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
-if not "%ERRORLEVEL%"=="0" (
-	pause
-	exit
+for %%c in (Debug,Release_ANSI,Release_Unicode) do (
+	MSBuild.exe /property:Configuration=%%c /property:Platform=Win32 /target:Rebuild /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
+	if not "!ERRORLEVEL!"=="0" (
+		pause
+		exit
+	)
 )
 REM -------------------------------------------------------------------------
 echo StdUtils plug-in for NSIS > "%~dp0\BUILD.tag"
