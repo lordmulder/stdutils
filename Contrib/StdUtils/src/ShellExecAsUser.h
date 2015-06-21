@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif

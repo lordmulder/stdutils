@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 typedef BOOLEAN (__stdcall *secure_rand_t)(PVOID RandomBuffer, ULONG RandomBufferLength);
 
 static bool s_secure_rand_init = false;

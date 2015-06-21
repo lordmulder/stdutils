@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 bool get_real_os_version(unsigned int *const major, unsigned int *const minor, unsigned int *const spack, bool *const pbOverride);
 bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride);
 const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor);

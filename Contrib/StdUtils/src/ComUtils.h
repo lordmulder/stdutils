@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #include <exdisp.h>
 #include <Shobjidl.h>
 #include <Shlwapi.h>

@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma warning(disable:4996)
+
 #include <Windows.h>
 #include "UnicodeSupport.h"
 

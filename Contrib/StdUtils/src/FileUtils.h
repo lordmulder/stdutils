@@ -21,29 +21,6 @@
 
 #pragma once
 
-wchar_t *ansi_to_utf16(const char *input);
-wchar_t *utf8_to_utf16(const char *input);
+#include "StdUtils.h"
 
-char *strtrim(char* input, bool trim_left = true, bool trim_right = true);
-wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
-
-#ifdef UNICODE
-	#define STRLEN wcslen	
-	#define STRICMP _wcsicmp
-	#define STRNCPY wcsncpy
-	#define STRCHR wcschr
-	#define STRTRIM wcstrim
-	#define SNPRINTF _snwprintf
-	#define SSCANF swscanf
-	#define __T__(X) L##X
-	#define T(X) __T__(X)
-#else
-	#define STRLEN strlen
-	#define STRICMP _stricmp
-	#define STRNCPY strncpy
-	#define STRCHR strchr
-	#define STRTRIM strtrim
-	#define SNPRINTF _snprintf
-	#define SSCANF sscanf
-	#define T(X) X
-#endif
+bool AppendToFile(const TCHAR *const from, const TCHAR *const dest, DWORD offset, DWORD maxlen, unsigned long long *bytesCopied);

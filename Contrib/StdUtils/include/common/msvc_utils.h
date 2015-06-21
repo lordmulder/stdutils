@@ -26,13 +26,16 @@
 extern "C" {
 #endif
 
+
 #define RAND_MAX 0x7fff
 #define INT_MAX 2147483647
 
+#ifndef _INC_STDLIB
 long time(long *time);
 int rand(void);
 void srand(unsigned int _Seed);
 int abs(_In_ int _X);
+#endif //_INC_STDLIB
 
 int _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
 int _snprintf(char *buffer, size_t count, const char *format, ...);
