@@ -37,7 +37,7 @@ for %%c in (Debug,Release_ANSI,Release_Unicode) do (
 )
 REM -------------------------------------------------------------------------
 echo StdUtils plug-in for NSIS > "%~dp0\BUILD.tag"
-echo Copyright (C) 2004-2014 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%~dp0\BUILD.tag"
+echo Copyright (C) 2004-2015 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%~dp0\BUILD.tag"
 echo. >> "%~dp0\BUILD.tag"
 echo Built on %DATE%, at %TIME%. >> "%~dp0\BUILD.tag"
 REM -------------------------------------------------------------------------
