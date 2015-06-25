@@ -708,7 +708,7 @@ SectionEnd</pre>
 	<tr><td>Windows 7</td><td>Windows Server 2008 R2</td><td><tt>6.1</tt></td><td><tt>7600</tt> - <tt>7601</tt></td></tr>
 	<tr><td>Windows 8</td><td>Windows Server 2012</td><td><tt>6.2</tt></td><td><tt>9200</tt></td></tr>
 	<tr><td>Windows 8.1</td><td>Windows Server 2012 R2</td><td><tt>6.3</tt></td><td><tt>9600</tt></td></tr>
-	<tr><td>Windows 10</td><td>?</td><td><tt>6.4</tt></td><td><tt>9841</tt></td></tr>
+	<tr><td>Windows 10</td><td>?</td><td><tt>10.0</tt></td><td><tt>10130(?)</tt></td></tr>
 </table>
 
 <br><br>
@@ -768,9 +768,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.<
 <p>The source codes for the StdUtils plug-in are available from the code repository at:</p>
 
 <ul>
-	<li><a href="https://github.com/lordmulder/stdutils.git">https://github.com/lordmulder/stdutils.git</a> (<a href="https://github.com/lordmulder/stdutils">Browse</a>) (<a href="https://github.com/lordmulder/stdutils/commits/master">History</a>)
-	<li><a href="https://git.gitorious.org/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis.git">https://git.gitorious.org/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis.git</a> (<a href="https://gitorious.org/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/source/master:">Browse</a>) (<a href="https://gitorious.org/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/commits/">History</a>)
-	<li><a href="https://bitbucket.org/lord_mulder/stdutils.git">https://bitbucket.org/lord_mulder/stdutils.git</a> (<a href="https://bitbucket.org/lord_mulder/stdutils/src">Browse</a>) (<a href="https://bitbucket.org/lord_mulder/stdutils/commits">History</a>)
+	<li><tt>https://github.com/lordmulder/stdutils.git</tt> (<a href="https://github.com/lordmulder/stdutils">Browse</a> | <a href="https://github.com/lordmulder/stdutils/commits/master">History</a>)
+	<li><tt>https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis.git</tt> (<a href="https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/tree/master">Browse</a> | <a href="https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/commits/master">History</a>)
+	<li><tt>https://bitbucket.org/lord_mulder/stdutils.git</tt> (<a href="https://bitbucket.org/lord_mulder/stdutils/src">Browse</a> | <a href="https://bitbucket.org/lord_mulder/stdutils/commits">History</a>)
 </ul>
 
 <p>You can download pre-compiled binaries (i.e. ready-to-use DLL files) of the plug-in here:<br><a href="https://github.com/lordmulder/stdutils/releases/latest">https://github.com/lordmulder/stdutils/releases/latest</a></p>
@@ -784,7 +784,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.<
 <ul>
 	<li><b>Version 1.07, not yet released</b>
 	<ul>
-		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another.
+		<li>Added new functions <tt>ValidFileName</tt> and <tt>ValidPathSpec</tt>, which can be used to test if a string is a valid file name or a valid full path
+		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another (existing) file.
 	</ul>
 	<li><b>Version 1.06, released 2015-06-14</b>
 	<ul>

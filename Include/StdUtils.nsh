@@ -42,6 +42,8 @@
 !define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'   #Remove whitspaces from string, left side only
 !define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight'  #Remove whitspaces from string, right side only
 !define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'        #Reverse a string, e.g. "reverse me" <-> "em esrever"
+!define StdUtils.ValidFileName    '!insertmacro _StdUtils_ValidFileName' #Test whether string is a valid file name - no paths allowed
+!define StdUtils.ValidPathSpec    '!insertmacro _StdUtils_ValidPathSpec' #Test whether string is a valid full(!) path specification
 !define StdUtils.SHFileMove       '!insertmacro _StdUtils_SHFileMove'    #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       '!insertmacro _StdUtils_SHFileCopy'    #SHFileOperation(), using the FO_COPY operation
 !define StdUtils.AppendToFile     '!insertmacro _StdUtils_AppendToFile'  #Append contents of an existing file to another file
@@ -184,6 +186,18 @@
 !macro _StdUtils_RevStr var
 	push ${var}
 	StdUtils::RevStr /NOUNLOAD
+	pop ${var}
+!macroend
+
+!macro _StdUtils_ValidFileName out test
+	push '${test}'
+	StdUtils::ValidFileName /NOUNLOAD
+	pop ${var}
+!macroend
+
+!macro _StdUtils_ValidPathSpec out test
+	push '${test}'
+	StdUtils::ValidPathSpec /NOUNLOAD
 	pop ${var}
 !macroend
 

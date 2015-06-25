@@ -35,6 +35,8 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 	#define STRTRIM wcstrim
 	#define SNPRINTF _snwprintf
 	#define SSCANF swscanf
+	#define ISCNTRL iswcntrl
+	#define ISALPHA iswalpha
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
 #else
@@ -45,5 +47,7 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 	#define STRTRIM strtrim
 	#define SNPRINTF _snprintf
 	#define SSCANF sscanf
+	#define ISCNTRL iscntrl
+	#define ISALPHA isalpha
 	#define T(X) X
 #endif

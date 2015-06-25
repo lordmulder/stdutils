@@ -441,6 +441,95 @@ NSISFUNC(RevStr)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+NSISFUNC(ValidFileName)
+{
+	static const TCHAR *const RESERVED = T("<>:\"/\\|?*");
+
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(str, g_stringsize);
+
+	popstringn(str, 0);
+
+	bool flag = true;
+	TCHAR last = 0x0;
+
+	for(size_t i = 0; str[i]; i++)
+	{
+		if(ISCNTRL(str[i]))
+		{
+			flag = false;
+			goto exit209;
+		}
+		for(size_t j = 0; RESERVED[j]; j++)
+		{
+			if(str[i] == RESERVED[j])
+			{
+				flag = false;
+				goto exit209;
+			}
+		}
+		last = str[i];
+	}
+
+	if((last == T(' ')) || (last == T('.')))
+	{
+		flag = false;
+	}
+
+exit209:
+	pushstring(flag ? T("ok") : T("invalid"));
+	delete [] str;
+}
+
+NSISFUNC(ValidPathSpec)
+{
+	static const TCHAR *const RESERVED = T("<>\"|?*");
+
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(str, g_stringsize);
+
+	popstringn(str, 0);
+
+	bool flag = true;
+	TCHAR last = 0x0;
+
+	for(size_t i = 0; str[i]; i++)
+	{
+		if(ISCNTRL(str[i]))
+		{
+			flag = false;
+			goto exit209;
+		}
+		for(size_t j = 0; RESERVED[j]; j++)
+		{
+			if(str[i] == RESERVED[j])
+			{
+				flag = false;
+				goto exit209;
+			}
+		}
+		if(((i == 0) && (!ISALPHA(str[i]))) || ((i == 1) && (str[i] != T(':'))) || ((i != 1) && (str[i] == T(':'))))
+		{
+			flag = false;
+			goto exit209;
+		}
+		last = str[i];
+	}
+
+	if((last == T(' ')) || (last == T('.')))
+	{
+		flag = false;
+	}
+
+exit209:
+	pushstring(flag ? T("ok") : T("invalid"));
+	delete [] str;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // SHELL FILE FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 
