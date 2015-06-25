@@ -192,13 +192,13 @@
 !macro _StdUtils_ValidFileName out test
 	push '${test}'
 	StdUtils::ValidFileName /NOUNLOAD
-	pop ${var}
+	pop ${out}
 !macroend
 
 !macro _StdUtils_ValidPathSpec out test
 	push '${test}'
 	StdUtils::ValidPathSpec /NOUNLOAD
-	pop ${var}
+	pop ${out}
 !macroend
 
 !macro _StdUtils_SHFileMove out from to hwnd
