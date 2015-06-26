@@ -21,34 +21,12 @@
 
 #pragma once
 
-wchar_t *ansi_to_utf16(const char *const input);
-wchar_t *utf8_to_utf16(const char *const input);
-char *utf16_to_utf8(const wchar_t *const input);
+#include "StdUtils.h"
 
-char *strtrim(char* input, bool trim_left = true, bool trim_right = true);
-wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
+#define STD_HASHTYPE_SHA3_224 1
+#define STD_HASHTYPE_SHA3_256 2
+#define STD_HASHTYPE_SHA3_384 3
+#define STD_HASHTYPE_SHA3_512 4
 
-#ifdef UNICODE
-	#define STRLEN wcslen	
-	#define STRICMP _wcsicmp
-	#define STRNCPY wcsncpy
-	#define STRCHR wcschr
-	#define STRTRIM wcstrim
-	#define SNPRINTF _snwprintf
-	#define SSCANF swscanf
-	#define ISCNTRL iswcntrl
-	#define ISALPHA iswalpha
-	#define __T__(X) L##X
-	#define T(X) __T__(X)
-#else
-	#define STRLEN strlen
-	#define STRICMP _stricmp
-	#define STRNCPY strncpy
-	#define STRCHR strchr
-	#define STRTRIM strtrim
-	#define SNPRINTF _snprintf
-	#define SSCANF sscanf
-	#define ISCNTRL iscntrl
-	#define ISALPHA isalpha
-	#define T(X) X
-#endif
+bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR *const hashOut, const size_t hashOutSize);
+bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR *const hashOut, const size_t hashOutSize);

@@ -21,7 +21,7 @@
 
 #include <Windows.h>
 
-wchar_t *ansi_to_utf16(const char *input)
+wchar_t *ansi_to_utf16(const char *const input)
 {
 	wchar_t *Buffer;
 	int BuffSize, Result;
@@ -35,7 +35,7 @@ wchar_t *ansi_to_utf16(const char *input)
 	return NULL;
 }
 
-wchar_t *utf8_to_utf16(const char *input)
+wchar_t *utf8_to_utf16(const char *const input)
 {
 	wchar_t *Buffer;
 	int BuffSize, Result;
@@ -44,6 +44,20 @@ wchar_t *utf8_to_utf16(const char *input)
 	{
 		Buffer = new wchar_t[BuffSize];
 		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
+		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+	}
+	return NULL;
+}
+
+char *utf16_to_utf8(const wchar_t *const input)
+{
+	char *Buffer;
+	int BuffSize, Result;
+	BuffSize = WideCharToMultiByte(CP_UTF8, 0, input, -1, NULL, 0, NULL, NULL);
+	if(BuffSize > 0)
+	{
+		Buffer = new char[BuffSize];
+		Result = WideCharToMultiByte(CP_UTF8, 0, input, -1, Buffer, BuffSize, NULL, NULL);
 		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
 	}
 	return NULL;

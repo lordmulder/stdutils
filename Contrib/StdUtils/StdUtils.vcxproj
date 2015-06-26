@@ -190,8 +190,11 @@
     <ClCompile Include="src\ComUtils.cpp" />
     <ClCompile Include="src\DetectOsVersion.cpp" />
     <ClCompile Include="src\FileUtils.cpp" />
+    <ClCompile Include="src\HashUtils.cpp" />
     <ClCompile Include="src\InvokeShellVerb.cpp" />
     <ClCompile Include="src\ParameterParser.cpp" />
+    <ClCompile Include="src\rhash\byte_order.c" />
+    <ClCompile Include="src\rhash\sha3.c" />
     <ClCompile Include="src\ShellExecAsUser.cpp" />
     <ClCompile Include="src\StdUtils.cpp" />
     <ClCompile Include="src\UnicodeSupport.cpp" />
@@ -200,10 +203,13 @@
     <ClInclude Include="src\ComUtils.h" />
     <ClInclude Include="src\DetectOsVersion.h" />
     <ClInclude Include="src\FileUtils.h" />
+    <ClInclude Include="src\HashUtils.h" />
     <ClInclude Include="src\InvokeShellVerb.h" />
     <ClInclude Include="src\ParameterParser.h" />
     <ClInclude Include="src\RandUtils.h" />
     <ClInclude Include="src\Resource.h" />
+    <ClInclude Include="src\rhash\byte_order.h" />
+    <ClInclude Include="src\rhash\sha3.h" />
     <ClInclude Include="src\ShellExecAsUser.h" />
     <ClInclude Include="src\StdUtils.h" />
     <ClInclude Include="src\UnicodeSupport.h" />

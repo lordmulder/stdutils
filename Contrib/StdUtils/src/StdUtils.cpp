@@ -27,6 +27,7 @@
 #include "DetectOsVersion.h"
 #include "WinUtils.h"
 #include "FileUtils.h"
+#include "HashUtils.h"
 
 bool g_bStdUtilsVerbose = false;
 
@@ -455,6 +456,12 @@ NSISFUNC(ValidFileName)
 	bool flag = true;
 	TCHAR last = 0x0;
 
+	if(!str[0])
+	{
+		flag = false;
+		goto exit209;
+	}
+
 	for(size_t i = 0; str[i]; i++)
 	{
 		if(ISCNTRL(str[i]))
@@ -496,6 +503,12 @@ NSISFUNC(ValidPathSpec)
 	bool flag = true;
 	TCHAR last = 0x0;
 
+	if(!str[0])
+	{
+		flag = false;
+		goto exit209;
+	}
+
 	for(size_t i = 0; str[i]; i++)
 	{
 		if(ISCNTRL(str[i]))
@@ -511,7 +524,7 @@ NSISFUNC(ValidPathSpec)
 				goto exit209;
 			}
 		}
-		if(((i == 0) && (!ISALPHA(str[i]))) || ((i == 1) && (str[i] != T(':'))) || ((i != 1) && (str[i] == T(':'))))
+		if(((i == 0) && (!ISALPHA(str[i]))) || ((i == 1) && (str[i] != T(':'))) || ((i != 1) && (str[i] == T(':'))) || ((i == 2) && (str[i] != T('/')) && (str[i] != T('\\'))))
 		{
 			flag = false;
 			goto exit209;
@@ -1016,6 +1029,67 @@ NSISFUNC(GetOsEdition)
 	}
 
 	pushstring(isServerEdition ? T("server") : T("workstation"));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// HASH COMPUTATION
+///////////////////////////////////////////////////////////////////////////////
+
+static int GetHashType(const TCHAR *const type)
+{
+	if(STRICMP(type, T("SHA3-224")) == 0) return STD_HASHTYPE_SHA3_224;
+	if(STRICMP(type, T("SHA3-256")) == 0) return STD_HASHTYPE_SHA3_256;
+	if(STRICMP(type, T("SHA3-384")) == 0) return STD_HASHTYPE_SHA3_384;
+	if(STRICMP(type, T("SHA3-512")) == 0) return STD_HASHTYPE_SHA3_512;
+	return -1;
+}
+
+NSISFUNC(HashFile)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(file, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(file, 0);
+	popstringn(temp, 0);
+
+	const int hashType = GetHashType(temp);
+	if((hashType >= 0) && ComputeHash_FromFile(hashType, file, temp, g_stringsize))
+	{
+		pushstring(temp);
+	}
+	else
+	{
+		pushstring(T("error"));
+	}
+
+	delete [] file;
+	delete [] temp;
+}
+
+NSISFUNC(HashText)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(temp, g_stringsize);
+	MAKESTR(text, g_stringsize);
+
+	popstringn(text, 0);
+	popstringn(temp, 0);
+
+	const int hashType = GetHashType(temp);
+	if((hashType >= 0) && ComputeHash_FromText(hashType, text, temp, g_stringsize))
+	{
+		pushstring(temp);
+	}
+	else
+	{
+		pushstring(T("error"));
+	}
+
+	delete [] text;
+	delete [] temp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

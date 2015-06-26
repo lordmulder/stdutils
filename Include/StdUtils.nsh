@@ -59,6 +59,8 @@
 !define StdUtils.GetOSEdition     '!insertmacro _StdUtils_GetOSEdition'  #Get the Windows edition, i.e. "workstation" or "server"
 !define StdUtils.VerifyOSVersion  '!insertmacro _StdUtils_VrfyRealOSVer' #Compare *real* operating system to an expected version number
 !define StdUtils.VerifyOSBuildNo  '!insertmacro _StdUtils_VrfyRealOSBld' #Compare *real* operating system to an expected build number
+!define StdUtils.HashText         '!insertmacro _StdUtils_HashText'      #Compute hash from text string (currently only SHA-3)
+!define StdUtils.HashFile         '!insertmacro _StdUtils_HashFile'      #Compute hash from file (currently only SHA-3)
 !define StdUtils.GetLibVersion    '!insertmacro _StdUtils_GetLibVersion' #Get the current StdUtils library version (for debugging)
 !define StdUtils.SetVerbose       '!insertmacro _StdUtils_SetVerbose'    #Enable or disable "verbose" mode (for debugging)
 
@@ -303,6 +305,20 @@
 
 !macro _StdUtils_GetOSEdition out
 	StdUtils::GetOsEdition /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_HashText out type text
+	push '${type}'
+	push '${text}'
+	StdUtils::HashText /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_HashFile out type file
+	push '${type}'
+	push '${file}'
+	StdUtils::HashFile /NOUNLOAD
 	pop ${out}
 !macroend
 
