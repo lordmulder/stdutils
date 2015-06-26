@@ -42,6 +42,7 @@
 	<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
 	<li><a href="#d452a779">InvokeShellVerb</a>
 	<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
+	<li><a href="#e1f7e07b">HashText / HashFile</a>
 	<li><a href="#14863bf9">Debugging Functions</a>
 	<li><a href="#b92197af">Acknowledgment</a>
 	<li><a href="#db579654">License</a>
@@ -358,6 +359,21 @@ SectionEnd</pre>
 	DetailPrint "String: $0"
 	${StdUtils.RevStr} $0
 	DetailPrint "RevStr: $0"
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.ValidFileName} <i>user_var(output)</i> <i>input</i><br>${StdUtils.ValidPathSpec} <i>user_var(output)</i> <i>input</i></tt></b></p>
+<p>The <tt>${StdUtils.ValidFileName}</tt> function checks whether the given <tt>input</tt> is a valid file name, and the <tt>${StdUtils.ValidPathSpec}</tt> function checks whether the given <tt>input</tt> is a valid fully-qualified path. Both functions return "ok", if the given string is valid, or "invalid" otherwise.</p>
+<p>Note: File names must <b>not</b> contain any <tt>&lt;&gt;:"/\|?*</tt> characters or any characters accepted by <a href="http://www.cplusplus.com/reference/cctype/iscntrl/">iscntrl()</a>. For paths the same limitations apply, except that a path may contain <tt>/</tt> and <tt>\</tt> characters. Additionally, the <i>first</i> character in a path must be accepted by <a href="http://www.cplusplus.com/reference/cctype/isalpha/">isalpha()</a> and the <i>second</i> character in a path must be a <tt>:</tt> character. However, the <tt>:</tt> character must <b>not</b> appear at any other location in the path. Furthermore, the <i>last</i> character in a file name or path must <b>not</b> be a <tt>.</tt> or whitespace character. Last but not least, an <i>empty</i> string is <b>never</b> accepted as a valid file name or path.
+
+<pre>Section
+	${StdUtils.ValidFileName} $0 "My Document.txt"
+	DetailPrint 'ValidFileName("My Document.txt") = $0'
+
+	${StdUtils.ValidFileName} $0 "Is this a valid name?"
+	DetailPrint 'ValidFileName("Is this a valid name?") = $0'
+	
+	${StdUtils.ValidPathSpec} $0 "C:\Folder\File.foo"
+	DetailPrint 'ValidPathSpec("C:\Folder\File.foo") = $0'
 SectionEnd</pre>
 
 <br>
@@ -715,6 +731,57 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
+<a name="e1f7e07b"></a><h2>HashText / HashFile</h2>
+
+<p><b><tt>${StdUtils.HashText} <i>user_var(out)</i> <i>type</i> <i>text</i></tt></b></p>
+<p>The <tt>${StdUtils.HashText}</tt> function computes the cryptographic hash of the message given by <tt>text</tt>, using the hash function specified by <tt>type</tt>. Currently only SHA-3 (aka <i>Keccak</i>) is supported, so <tt>type</tt> must be either "SHA3-224", "SHA3-256", "SHA3-384" or "SHA3-512". The <a href="https://github.com/rhash/RHash">RHash</a> variant of SHA-3 is used. If the function succeeds, it will return the hash value as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If anything went wrong, e.g. an invalid hash function has been specified, then the functions returns "error".</p>
+<p>Note: For improved consistency between the ANSI and Unicode versions of this plug-in, the Unicode version will convert the given message to <i>UTF-8</i> before hash computation!</p>
+
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.HashText} $0 "SHA3-224" "The quick brown fox jumps over the lazy dog"
+	DetailPrint 'SHA3-224("The quick brown fox jumps over the lazy dog") = "$0"'
+	
+	${StdUtils.HashText} $0 "SHA3-256" "The quick brown fox jumps over the lazy dog"
+	DetailPrint 'SHA3-256("The quick brown fox jumps over the lazy dog") = "$0"'
+
+	${StdUtils.HashText} $0 "SHA3-384" "The quick brown fox jumps over the lazy dog"
+	DetailPrint 'SHA3-384("The quick brown fox jumps over the lazy dog") = "$0"'
+	
+	${StdUtils.HashText} $0 "SHA3-512" "The quick brown fox jumps over the lazy dog"
+	DetailPrint 'SHA3-512("The quick brown fox jumps over the lazy dog") = "$0"'
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.HashFile} <i>user_var(out)</i> <i>type</i> <i>file</i></tt></b></p>
+<p>The <tt>${StdUtils.HashFile}</tt> function computes the cryptographic hash of the contents of the given <tt>file</tt>, using the hash function specified by <tt>type</tt>. Currently only SHA-3 (aka <i>Keccak</i>) is supported, so <tt>type</tt> must be either "SHA3-224", "SHA3-256", "SHA3-384" or "SHA3-512". The <a href="https://github.com/rhash/RHash">RHash</a> variant of SHA-3 is used. If the function succeeds, it will return the hash value as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If anything went wrong, e.g. an invalid hash function has been specified, then the functions returns "error".</p>
+
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.HashFile} $0 "SHA3-224" "$WINDIR\Explorer.exe"
+	DetailPrint 'SHA3-224($WINDIR\Explorer.exe) = "$0"'
+	
+	${StdUtils.HashFile} $0 "SHA3-256" "$WINDIR\Explorer.exe"
+	DetailPrint 'SHA3-256($WINDIR\Explorer.exe) = "$0"'
+
+	${StdUtils.HashFile} $0 "SHA3-384" "$WINDIR\Explorer.exe"
+	DetailPrint 'SHA3-384($WINDIR\Explorer.exe) = "$0"'
+	
+	${StdUtils.HashFile} $0 "SHA3-512" "$WINDIR\Explorer.exe"
+	DetailPrint 'SHA3-512($WINDIR\Explorer.exe) = "$0"'
+SectionEnd</pre>
+
+<br>
+
+<!-- ---------------- -->
+
 <a name="14863bf9"></a><h2>Debugging Functions</h2>
 
 <p><b><tt>${StdUtils.GetLibVersion} <i>user_var(out_ver)</i> <i>user_var(out_tst)</i></tt></b></p>
@@ -784,6 +851,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.<
 <ul>
 	<li><b>Version 1.07, not yet released</b>
 	<ul>
+		<li>Added new functions <tt>HashText</tt> and <tt>HashFile</tt>, which can be used to compute the cryptographic hash of the given file or string
 		<li>Added new functions <tt>ValidFileName</tt> and <tt>ValidPathSpec</tt>, which can be used to test if a string is a valid file name or a valid full path
 		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another (existing) file.
 	</ul>
