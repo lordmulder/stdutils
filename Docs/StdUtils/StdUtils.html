@@ -742,7 +742,7 @@ SectionEnd</pre>
 
 <p><b><tt>${StdUtils.HashText} <i>user_var(out)</i> <i>type</i> <i>text</i></tt></b></p>
 <p>The <tt>${StdUtils.HashText}</tt> function computes the <i>cryptographic hash</i> of the message given by <tt>text</tt>, using the hash function specified by <tt>type</tt>. Currently CRC32, MD5, SHA-1, the SHA-2 family as well as the SHA-3 family are supported (using <a href="https://github.com/rhash/RHash">RHash</a> implementation). See below for details! If the function succeeds, it will return the hash value, as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If an invalid hash function was specified, the function returns "invalid". And, if anything else went wrong, it returns "error".</p>
-<p>Note: For improved consistency between the ANSI and Unicode installers, the Unicode version of thsi function will convert the given message to <i>UTF-8</i> before hash computation!</p>
+<p>Note: For improved consistency between the ANSI and Unicode installers, the Unicode version of this function will convert the given message to <i>UTF-8</i> before hash computation!</p>
 
 <pre>!include 'StdUtils.nsh'
 
