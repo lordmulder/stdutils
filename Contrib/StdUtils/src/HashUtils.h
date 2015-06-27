@@ -23,10 +23,21 @@
 
 #include "StdUtils.h"
 
-#define STD_HASHTYPE_SHA3_224 1
-#define STD_HASHTYPE_SHA3_256 2
-#define STD_HASHTYPE_SHA3_384 3
-#define STD_HASHTYPE_SHA3_512 4
+#define STD_HASHTYPE_CRC_32   0x1
+#define STD_HASHTYPE_MD5_128  0x2
+#define STD_HASHTYPE_SHA1_160 0x3
+#define STD_HASHTYPE_SHA2_224 0x4
+#define STD_HASHTYPE_SHA2_256 0x5
+#define STD_HASHTYPE_SHA2_384 0x6
+#define STD_HASHTYPE_SHA2_512 0x7
+#define STD_HASHTYPE_SHA3_224 0x8
+#define STD_HASHTYPE_SHA3_256 0x9
+#define STD_HASHTYPE_SHA3_384 0xA
+#define STD_HASHTYPE_SHA3_512 0xB
+#define STD_HASHTYPE_BLK2_224 0xC
+#define STD_HASHTYPE_BLK2_256 0xD
+#define STD_HASHTYPE_BLK2_384 0xE
+#define STD_HASHTYPE_BLK2_512 0xF
 
 bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR *const hashOut, const size_t hashOutSize);
 bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR *const hashOut, const size_t hashOutSize);

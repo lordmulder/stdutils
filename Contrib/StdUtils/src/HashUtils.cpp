@@ -19,9 +19,18 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-//SHA3
-#include "rhash/sha3.h"
 #include "HashUtils.h"
+
+//RHash
+#include "rhash/crc32.h"
+#include "rhash/md5.h"
+#include "rhash/sha1.h"
+#include "rhash/sha256.h"
+#include "rhash/sha512.h"
+#include "rhash/sha3.h"
+
+//Blake2
+#include "blake2/blake2.h"
 
 //Win32
 #ifndef _WINDOWS_
@@ -33,64 +42,146 @@
 #include "WinUtils.h"
 #include "UnicodeSupport.h"
 
+//Const
+static const uint32_t CRC32_INIT_VECTOR = 0x00000000;
+
 //Byte to Hex
-static const TCHAR *const HEX_CONVERT[256] =
+extern const TCHAR *const LUT_BYTE2HEX[256];
+
+//Hash context
+ALIGN(64) typedef union hash_ctx
 {
-	T("00"), T("01"), T("02"), T("03"), T("04"), T("05"), T("06"), T("07"),
-	T("08"), T("09"), T("0A"), T("0B"), T("0C"), T("0D"), T("0E"), T("0F"),
-	T("10"), T("11"), T("12"), T("13"), T("14"), T("15"), T("16"), T("17"),
-	T("18"), T("19"), T("1A"), T("1B"), T("1C"), T("1D"), T("1E"), T("1F"),
-	T("20"), T("21"), T("22"), T("23"), T("24"), T("25"), T("26"), T("27"),
-	T("28"), T("29"), T("2A"), T("2B"), T("2C"), T("2D"), T("2E"), T("2F"),
-	T("30"), T("31"), T("32"), T("33"), T("34"), T("35"), T("36"), T("37"),
-	T("38"), T("39"), T("3A"), T("3B"), T("3C"), T("3D"), T("3E"), T("3F"),
-	T("40"), T("41"), T("42"), T("43"), T("44"), T("45"), T("46"), T("47"),
-	T("48"), T("49"), T("4A"), T("4B"), T("4C"), T("4D"), T("4E"), T("4F"),
-	T("50"), T("51"), T("52"), T("53"), T("54"), T("55"), T("56"), T("57"),
-	T("58"), T("59"), T("5A"), T("5B"), T("5C"), T("5D"), T("5E"), T("5F"),
-	T("60"), T("61"), T("62"), T("63"), T("64"), T("65"), T("66"), T("67"),
-	T("68"), T("69"), T("6A"), T("6B"), T("6C"), T("6D"), T("6E"), T("6F"),
-	T("70"), T("71"), T("72"), T("73"), T("74"), T("75"), T("76"), T("77"),
-	T("78"), T("79"), T("7A"), T("7B"), T("7C"), T("7D"), T("7E"), T("7F"),
-	T("80"), T("81"), T("82"), T("83"), T("84"), T("85"), T("86"), T("87"),
-	T("88"), T("89"), T("8A"), T("8B"), T("8C"), T("8D"), T("8E"), T("8F"),
-	T("90"), T("91"), T("92"), T("93"), T("94"), T("95"), T("96"), T("97"),
-	T("98"), T("99"), T("9A"), T("9B"), T("9C"), T("9D"), T("9E"), T("9F"),
-	T("A0"), T("A1"), T("A2"), T("A3"), T("A4"), T("A5"), T("A6"), T("A7"),
-	T("A8"), T("A9"), T("AA"), T("AB"), T("AC"), T("AD"), T("AE"), T("AF"),
-	T("B0"), T("B1"), T("B2"), T("B3"), T("B4"), T("B5"), T("B6"), T("B7"),
-	T("B8"), T("B9"), T("BA"), T("BB"), T("BC"), T("BD"), T("BE"), T("BF"),
-	T("C0"), T("C1"), T("C2"), T("C3"), T("C4"), T("C5"), T("C6"), T("C7"),
-	T("C8"), T("C9"), T("CA"), T("CB"), T("CC"), T("CD"), T("CE"), T("CF"),
-	T("D0"), T("D1"), T("D2"), T("D3"), T("D4"), T("D5"), T("D6"), T("D7"),
-	T("D8"), T("D9"), T("DA"), T("DB"), T("DC"), T("DD"), T("DE"), T("DF"),
-	T("E0"), T("E1"), T("E2"), T("E3"), T("E4"), T("E5"), T("E6"), T("E7"),
-	T("E8"), T("E9"), T("EA"), T("EB"), T("EC"), T("ED"), T("EE"), T("EF"),
-	T("F0"), T("F1"), T("F2"), T("F3"), T("F4"), T("F5"), T("F6"), T("F7"),
-	T("F8"), T("F9"), T("FA"), T("FB"), T("FC"), T("FD"), T("FE"), T("FF"),
-};
+	uint32_t   crc32;
+	md5_ctx    md5;
+	sha1_ctx   sha1;
+	sha256_ctx sha256;
+	sha512_ctx sha512;
+	sha3_ctx   sha3;
+	blake2_ctx balke2;
+}
+hash_ctx;
 
 static size_t GetHashSize(const int hashType)
 {
 	switch(hashType)
 	{
+		case STD_HASHTYPE_CRC_32:   return sizeof(uint32_t);
+		case STD_HASHTYPE_MD5_128:  return md5_hash_size;
+		case STD_HASHTYPE_SHA1_160: return sha1_hash_size;
+		case STD_HASHTYPE_SHA2_224: return sha224_hash_size;
+		case STD_HASHTYPE_SHA2_256: return sha256_hash_size;
+		case STD_HASHTYPE_SHA2_384: return sha384_hash_size;
+		case STD_HASHTYPE_SHA2_512: return sha512_hash_size;
 		case STD_HASHTYPE_SHA3_224: return sha3_224_hash_size;
 		case STD_HASHTYPE_SHA3_256: return sha3_256_hash_size;
 		case STD_HASHTYPE_SHA3_384: return sha3_384_hash_size;
 		case STD_HASHTYPE_SHA3_512: return sha3_512_hash_size;
+		case STD_HASHTYPE_BLK2_224: return blk2_224_hash_size;
+		case STD_HASHTYPE_BLK2_256: return blk2_256_hash_size;
+		case STD_HASHTYPE_BLK2_384: return blk2_384_hash_size;
+		case STD_HASHTYPE_BLK2_512: return blk2_512_hash_size;
 		default: return SIZE_MAX;
 	}
 }
 
-static size_t InitHashContext(const int hashType, sha3_ctx *const ctx)
+static inline bool HashFunction_Init(const int hashType, hash_ctx *const ctx)
+{
+	memset(ctx, 0, sizeof(hash_ctx));
+	switch(hashType)
+	{
+		case STD_HASHTYPE_CRC_32:   rhash_crc32_init(&ctx->crc32);                   return true;
+		case STD_HASHTYPE_MD5_128:  rhash_md5_init(&ctx->md5);                       return true;
+		case STD_HASHTYPE_SHA1_160: rhash_sha1_init(&ctx->sha1);                     return true;
+		case STD_HASHTYPE_SHA2_224: rhash_sha224_init(&ctx->sha256);                 return true;
+		case STD_HASHTYPE_SHA2_256: rhash_sha256_init(&ctx->sha256);                 return true;
+		case STD_HASHTYPE_SHA2_384: rhash_sha384_init(&ctx->sha512);                 return true;
+		case STD_HASHTYPE_SHA2_512: rhash_sha512_init(&ctx->sha512);                 return true;
+		case STD_HASHTYPE_SHA3_224: rhash_sha3_224_init(&ctx->sha3);                 return true;
+		case STD_HASHTYPE_SHA3_256: rhash_sha3_256_init(&ctx->sha3);                 return true;
+		case STD_HASHTYPE_SHA3_384: rhash_sha3_384_init(&ctx->sha3);                 return true;
+		case STD_HASHTYPE_SHA3_512: rhash_sha3_512_init(&ctx->sha3);                 return true;
+		case STD_HASHTYPE_BLK2_224: return (blake2b_init(&ctx->balke2, blk2_224_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_256: return (blake2b_init(&ctx->balke2, blk2_256_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_384: return (blake2b_init(&ctx->balke2, blk2_384_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_512: return (blake2b_init(&ctx->balke2, blk2_512_hash_size) == 0);
+		default: return false;
+	}
+}
+
+static inline bool HashFunction_Update(const int hashType, hash_ctx *const ctx, const unsigned char *const msg, const size_t size)
 {
 	switch(hashType)
 	{
-		case STD_HASHTYPE_SHA3_224: rhash_sha3_224_init(ctx); return true;
-		case STD_HASHTYPE_SHA3_256: rhash_sha3_256_init(ctx); return true;
-		case STD_HASHTYPE_SHA3_384: rhash_sha3_384_init(ctx); return true;
-		case STD_HASHTYPE_SHA3_512: rhash_sha3_512_init(ctx); return true;
-		default: return false;
+		case STD_HASHTYPE_CRC_32:
+			rhash_crc32_update(&ctx->crc32, msg, size);
+			return true;
+		case STD_HASHTYPE_MD5_128:
+			rhash_md5_update(&ctx->md5, msg, size);
+			return true;
+		case STD_HASHTYPE_SHA1_160:
+			rhash_sha1_update(&ctx->sha1, msg, size);
+			return true;
+		case STD_HASHTYPE_SHA2_224:
+		case STD_HASHTYPE_SHA2_256:
+			rhash_sha256_update(&ctx->sha256, msg, size);
+			return true;
+		case STD_HASHTYPE_SHA2_384:
+		case STD_HASHTYPE_SHA2_512:
+			rhash_sha512_update(&ctx->sha512, msg, size);
+			return true;
+		case STD_HASHTYPE_SHA3_224:
+		case STD_HASHTYPE_SHA3_256:
+		case STD_HASHTYPE_SHA3_384:
+		case STD_HASHTYPE_SHA3_512:
+			rhash_sha3_update(&ctx->sha3, msg, size);
+			return true;
+		case STD_HASHTYPE_BLK2_224:
+		case STD_HASHTYPE_BLK2_256:
+		case STD_HASHTYPE_BLK2_384:
+		case STD_HASHTYPE_BLK2_512:
+			return (blake2b_update(&ctx->balke2, msg, size) == 0);
+		default:
+			return false;
+	}
+}
+
+static inline bool HashFunction_Final(const int hashType, hash_ctx *const ctx, unsigned char *const result)
+{
+	switch(hashType)
+	{
+		case STD_HASHTYPE_CRC_32:
+			rhash_crc32_final(&ctx->crc32, result);
+			return true;
+		case STD_HASHTYPE_MD5_128:
+			rhash_md5_final(&ctx->md5, result);
+			return true;
+		case STD_HASHTYPE_SHA1_160:
+			rhash_sha1_final(&ctx->sha1, result);
+			return true;
+		case STD_HASHTYPE_SHA2_224:
+		case STD_HASHTYPE_SHA2_256:
+			rhash_sha256_final(&ctx->sha256, result);
+			return true;
+		case STD_HASHTYPE_SHA2_384:
+		case STD_HASHTYPE_SHA2_512:
+			rhash_sha512_final(&ctx->sha512, result);
+			return true;
+		case STD_HASHTYPE_SHA3_224:
+		case STD_HASHTYPE_SHA3_256:
+		case STD_HASHTYPE_SHA3_384:
+		case STD_HASHTYPE_SHA3_512:
+			rhash_sha3_final(&ctx->sha3, result);
+			return true;
+		case STD_HASHTYPE_BLK2_224:
+			return (blake2b_final(&ctx->balke2, result, blk2_224_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_256:
+			return (blake2b_final(&ctx->balke2, result, blk2_256_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_384:
+			return (blake2b_final(&ctx->balke2, result, blk2_384_hash_size) == 0);
+		case STD_HASHTYPE_BLK2_512:
+			return (blake2b_final(&ctx->balke2, result, blk2_512_hash_size) == 0);
+		default:
+			return false;
 	}
 }
 
@@ -99,8 +190,8 @@ static void ConvertHashToHex(const size_t hashSize, const BYTE *const hashValue,
 	size_t offset = 0;
 	for(size_t i = 0; i < hashSize; i++)
 	{
-		hashOut[offset++] = HEX_CONVERT[hashValue[i]][0];
-		hashOut[offset++] = HEX_CONVERT[hashValue[i]][1];
+		hashOut[offset++] = LUT_BYTE2HEX[hashValue[i]][0];
+		hashOut[offset++] = LUT_BYTE2HEX[hashValue[i]][1];
 	}
 	hashOut[offset] = T('\0');
 }
@@ -119,8 +210,8 @@ bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR
 		return false;
 	}
 
-	sha3_ctx ctx;
-	if(!InitHashContext(hashType, &ctx))
+	hash_ctx ctx;
+	if(!HashFunction_Init(hashType, &ctx))
 	{
 		CLOSE_HANDLE(h);
 		return false;
@@ -142,14 +233,21 @@ bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR
 			CLOSE_HANDLE(h);
 			break;
 		}
-		rhash_sha3_update(&ctx, buffer, nBytesRead);
+		if(!HashFunction_Update(hashType, &ctx, buffer, nBytesRead))
+		{
+			CLOSE_HANDLE(h);
+			return false;
+		}
 	}
 
-	BYTE hashValue[64];
-	rhash_sha3_final(&ctx, hashValue);
+	BYTE hashValue[128];
+	if(HashFunction_Final(hashType, &ctx, hashValue))
+	{
+		ConvertHashToHex(hashSize, hashValue, hashOut);
+		return true;
+	}
 
-	ConvertHashToHex(hashSize, hashValue, hashOut);
-	return true;
+	return false;
 }
 
 bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR *const hashOut, const size_t hashOutSize)
@@ -160,8 +258,8 @@ bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR
 		return false;
 	}
 
-	sha3_ctx ctx;
-	if(!InitHashContext(hashType, &ctx))
+	hash_ctx ctx;
+	if(!HashFunction_Init(hashType, &ctx))
 	{
 		return false;
 	}
@@ -172,15 +270,25 @@ bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR
 	{
 		return false;
 	}
-	rhash_sha3_update(&ctx, (BYTE*)textUtf8, strlen(textUtf8));
+	if(!HashFunction_Update(hashType, &ctx, (BYTE*)textUtf8, strlen(textUtf8)))
+	{
+		delete [] textUtf8;
+		return false;
+	}
 	delete [] textUtf8;
 #else
-	rhash_sha3_update(&ctx, (BYTE*)textData, strlen(textData));
+	if(!HashFunction_Update(hashType, &ctx, (BYTE*)textData, strlen(textData)))
+	{
+		return false;
+	}
 #endif
 
-	BYTE hashValue[64];
-	rhash_sha3_final(&ctx, hashValue);
+	BYTE hashValue[128];
+	if(HashFunction_Final(hashType, &ctx, hashValue))
+	{
+		ConvertHashToHex(hashSize, hashValue, hashOut);
+		return true;
+	}
 
-	ConvertHashToHex(hashSize, hashValue, hashOut);
-	return true;
+	return false;
 };

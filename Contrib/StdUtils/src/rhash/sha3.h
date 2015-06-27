@@ -1,7 +1,7 @@
 /* sha3.h */
 #ifndef RHASH_SHA3_H
 #define RHASH_SHA3_H
-#include <stdlib.h>
+
 #include <stdint.h>
 
 #ifdef __cplusplus

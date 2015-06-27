@@ -44,8 +44,8 @@
 	<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 	<li><a href="#e1f7e07b">HashText / HashFile</a>
 	<li><a href="#14863bf9">Debugging Functions</a>
-	<li><a href="#b92197af">Acknowledgment</a>
 	<li><a href="#db579654">License</a>
+	<li><a href="#b92197af">Acknowledgment</a>
 	<li><a href="#01efe0f2">Download and Sources</a>
 	<li><a href="#53c38996">Version History</a>
 </ul>
@@ -76,6 +76,8 @@
 !define StdUtils.TrimStrLeft      #Remove whitspaces from string, left side only
 !define StdUtils.TrimStrRight     #Remove whitspaces from string, right side only
 !define StdUtils.RevStr           #Reverse a string, e.g. "reverse me" <-> "em esrever"
+!define StdUtils.ValidFileName    #Test whether string is a valid file name - no paths allowed
+!define StdUtils.ValidPathSpec    #Test whether string is a valid full(!) path specification
 !define StdUtils.SHFileMove       #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       #SHFileOperation(), using the FO_COPY operation
 !define StdUtils.AppendToFile     #Append contents of an existing file to another file
@@ -86,12 +88,17 @@
 !define StdUtils.GetParameter     #Get the value of a specific command-line option
 !define StdUtils.GetAllParameters #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion #Get the *real* Windows version number, even on Windows 8.1+
+!define StdUtils.GetRealOSBuildNo #Get the *real* Windows build number, even on Windows 8.1+
 !define StdUtils.GetRealOSName    #Get the *real* Windows version, as a "friendly" name
-!define StdUtils.VerifyOSVersion  #Compare the *real* operating system to an expected version
+!define StdUtils.GetOSEdition     #Get the Windows edition, i.e. "workstation" or "server"
+!define StdUtils.VerifyOSVersion  #Compare *real* operating system to an expected version number
+!define StdUtils.VerifyOSBuildNo  #Compare *real* operating system to an expected build number
+!define StdUtils.HashText         #Compute hash from text string (CRC32, MD5, SHA1/2/3, BLAKE2)
+!define StdUtils.HashFile         #Compute hash from file (CRC32, MD5, SHA1/2/3, BLAKE2)
 !define StdUtils.GetLibVersion    #Get the current StdUtils library version (for debugging)
 !define StdUtils.SetVerbose       #Enable or disable "verbose" mode (for debugging)</pre>
 
-<p><b>Please see the descriptions below for details on the individual functions!</b></p>
+<p><b style="color:darkred">Please see the descriptions below for details on the individual functions!</b></p>
 
 <br>
 
@@ -734,8 +741,8 @@ SectionEnd</pre>
 <a name="e1f7e07b"></a><h2>HashText / HashFile</h2>
 
 <p><b><tt>${StdUtils.HashText} <i>user_var(out)</i> <i>type</i> <i>text</i></tt></b></p>
-<p>The <tt>${StdUtils.HashText}</tt> function computes the cryptographic hash of the message given by <tt>text</tt>, using the hash function specified by <tt>type</tt>. Currently only SHA-3 (aka <i>Keccak</i>) is supported, so <tt>type</tt> must be either "SHA3-224", "SHA3-256", "SHA3-384" or "SHA3-512". The <a href="https://github.com/rhash/RHash">RHash</a> variant of SHA-3 is used. If the function succeeds, it will return the hash value as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If anything went wrong, e.g. an invalid hash function has been specified, then the functions returns "error".</p>
-<p>Note: For improved consistency between the ANSI and Unicode versions of this plug-in, the Unicode version will convert the given message to <i>UTF-8</i> before hash computation!</p>
+<p>The <tt>${StdUtils.HashText}</tt> function computes the <i>cryptographic hash</i> of the message given by <tt>text</tt>, using the hash function specified by <tt>type</tt>. Currently CRC32, MD5, SHA-1, the SHA-2 family as well as the SHA-3 family are supported (using <a href="https://github.com/rhash/RHash">RHash</a> implementation). See below for details! If the function succeeds, it will return the hash value, as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If an invalid hash function was specified, the function returns "invalid". And, if anything else went wrong, it returns "error".</p>
+<p>Note: For improved consistency between the ANSI and Unicode installers, the Unicode version of thsi function will convert the given message to <i>UTF-8</i> before hash computation!</p>
 
 <pre>!include 'StdUtils.nsh'
 
@@ -756,8 +763,8 @@ Section
 	DetailPrint 'SHA3-512("The quick brown fox jumps over the lazy dog") = "$0"'
 SectionEnd</pre>
 
-<p><br><b><tt>${StdUtils.HashFile} <i>user_var(out)</i> <i>type</i> <i>file</i></tt></b></p>
-<p>The <tt>${StdUtils.HashFile}</tt> function computes the cryptographic hash of the contents of the given <tt>file</tt>, using the hash function specified by <tt>type</tt>. Currently only SHA-3 (aka <i>Keccak</i>) is supported, so <tt>type</tt> must be either "SHA3-224", "SHA3-256", "SHA3-384" or "SHA3-512". The <a href="https://github.com/rhash/RHash">RHash</a> variant of SHA-3 is used. If the function succeeds, it will return the hash value as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If anything went wrong, e.g. an invalid hash function has been specified, then the functions returns "error".</p>
+<p><br><b><tt>${StdUtils.HashFile} <i>user_var(out)</i> <i>type</i> <i>path</i></tt></b></p>
+<p>The <tt>${StdUtils.HashText}</tt> function computes the <i>cryptographic hash</i> of the contents of the file specified by <tt>path</tt>, using the hash function specified by <tt>type</tt>. Currently CRC32, MD5, SHA-1, the SHA-2 family as well as the SHA-3 family are supported (using <a href="https://github.com/rhash/RHash">RHash</a> implementation). See below for details! If the function succeeds, it will return the hash value, as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If an invalid hash function was specified, the function returns "invalid". And, if anything else went wrong, it returns "error".</p>
 
 <pre>!include 'StdUtils.nsh'
 
@@ -780,6 +787,33 @@ SectionEnd</pre>
 
 <br>
 
+<p><b>List of supported hash functions:</b></p>
+
+<table border>
+	<tr><td><b>Hash Function</b></td><td><b>Hash Length in Bit (in Byte)</b></td><td><b>Algorithm Identifier</b></td></tr>
+	<tr><td>CRC<b style="color:red">*</b></td><td>32 (4)</td><td><tt>CRC-32</tt></td></tr>
+	<tr><td>MD5<b style="color:red">*</b></td><td>128 (16)</td><td><tt>MD5-128</tt></td></tr>
+	<tr><td>SHA-1<b style="color:red">*</b></td><td>160 (20)</td><td><tt>SHA1-160</tt></td></tr>
+	<!-- SHA2 -->
+	<tr><td rowspan="4">SHA-2</td><td>224 (28)</td><td><tt>SHA2-224</tt></td></tr>
+	<tr><td>256 (32)</td><td><tt>SHA2-256</tt></td></tr>
+	<tr><td>384 (48)</td><td><tt>SHA2-384</tt></td></tr>
+	<tr><td>512 (64)</td><td><tt>SHA2-512</tt></td></tr>
+	<!-- SHA3 -->
+	<tr><td rowspan="4">SHA-3</td><td>224 (28)</td><td><tt>SHA3-224</tt></td></tr>
+	<tr><td>256 (32)</td><td><tt>SHA3-256</tt></td></tr>
+	<tr><td>384 (48)</td><td><tt>SHA3-384</tt></td></tr>
+	<tr><td>512 (64)</td><td><tt>SHA3-512</tt></td></tr>
+	<!-- BLAKE2 -->
+	<tr><td rowspan="4">BLAKE2</td><td>224 (28)</td><td><tt>BLAKE2-224</tt></td></tr>
+	<tr><td>256 (32)</td><td><tt>BLAKE2-256</tt></td></tr>
+	<tr><td>384 (48)</td><td><tt>BLAKE2-384</tt></td></tr>
+	<tr><td>512 (64)</td><td><tt>BLAKE2-512</tt></td></tr>
+</table>
+<p><small><b style="color:red">*</b> Please do <u>not</u> use these hash functions for security critical code nowadays, as they they have known collisions!</small></p>
+
+<br>
+
 <!-- ---------------- -->
 
 <a name="14863bf9"></a><h2>Debugging Functions</h2>
@@ -794,17 +828,9 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="b92197af"></a><h2>Acknowledgment</h2>
-
-<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;.</p>
-<p>This plug-in has partly been inspired by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>. This plug-in has partly been inspired by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
-<p>Special thanks to <i>Afrow UK</i> for providing his excellent plug-ins (his code helped me to understand how to write NSIS plug-ins).</p>
-
-<br>
-
-<!-- ---------------- -->
-
 <a name="db579654"></a><h2>License</h2>
+
+<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;. It is distribiuted under the <b><a href="https://www.gnu.org/licenses/lgpl-2.1.html">GNU LGPL v2.1</a></b>.</p>
 
 <pre>StdUtils plug-in for NSIS
 Copyright (C) 2004-2015 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
@@ -824,7 +850,40 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.</pre>
 
 <p>The author of the StdUtils plug-in Library for NSIS adds the following clarification to the GNU Lesser General Public License version 2.1: Installer programs (executables) created with NSIS (Nullsoft Scriptable Install System) that make use of the StdUtils plug-in Library (strictly through the NSIS plug-in interface) and that contain/distribute verbatim copies of the StdUtils plug-in Library are considered a "work that uses the Library"; they do <b>not</b> represent a derivative of the Library.</p>
-<p>Please see <a href="http://www.gnu.org/licenses/lgpl-2.1.html">http://www.gnu.org/licenses/lgpl-2.1.html</a> for details!</p>
+
+<br>
+
+<!-- ---------------- -->
+
+<a name="b92197af"></a><h2>Acknowledgment</h2>
+
+<p>This plug-in has been inspired, partly, by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
+<p>This plug-in has been inspired, partly, by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>.</p>
+<p>Special thanks to <i>Afrow UK</i> for providing his excellent plug-ins (his code helped me to understand how to write NSIS plug-ins).</p>
+
+<p><br>The following third-party code has been incorporated into StdUtils plug-in:
+<ul>
+	<li><p><b>RHash</b><br>
+	<i>Copyright (c) 2005-2014 Aleksey Kravchenko &lt;rhash.admin&#64;gmail.com&gt;</i><br>
+	<a href="https://github.com/rhash/RHash">https://github.com/rhash/RHash</a></p>
+	<pre>Permission is hereby granted, free of charge,  to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction,  including without limitation the rights
+to  use,  copy,  modify,  merge, publish, distribute, sublicense, and/or sell
+copies  of  the Software,  and  to permit  persons  to whom  the Software  is
+furnished to do so.
+The Software  is distributed in the hope that it will be useful,  but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  Use  this  program  at  your  own  risk!</pre>
+	<li><p><b>BLAKE2 reference source code package</b><br>
+	<i>Written in 2012 by Samuel Neves &lt;sneves@dei.uc.pt&gt;</i><br>
+	<a href="https://github.com/BLAKE2/BLAKE2">https://github.com/BLAKE2/BLAKE2</a></p>
+	<pre>To the extent possible under law, the author(s) have dedicated all copyright
+and related and neighboring rights to this software to the public domain
+worldwide. This software is distributed without any warranty.
+You should have received a copy of the CC0 Public Domain Dedication along with
+this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/&gt;.</pre>
+</ul>
 
 <br>
 

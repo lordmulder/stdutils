@@ -16,6 +16,12 @@
     <Filter Include="Header Files\RHash">
       <UniqueIdentifier>{bd95cfc3-398a-4744-ad0d-977a8dd90d32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Blake2">
+      <UniqueIdentifier>{770975d8-35c8-4f28-960a-65c863ce4974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Blake2">
+      <UniqueIdentifier>{9bd8f713-7d3e-4c65-84d9-c8fa048bed68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DetectOsVersion.cpp">
@@ -50,6 +56,27 @@
     </ClCompile>
     <ClCompile Include="src\HashUtils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rhash\sha256.c">
+      <Filter>Source Files\RHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rhash\sha512.c">
+      <Filter>Source Files\RHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rhash\sha1.c">
+      <Filter>Source Files\RHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rhash\crc32.c">
+      <Filter>Source Files\RHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rhash\md5.c">
+      <Filter>Source Files\RHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ByteToHex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blake2\blake2.cpp">
+      <Filter>Source Files\Blake2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +121,24 @@
     </ClInclude>
     <ClInclude Include="src\HashUtils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rhash\sha256.h">
+      <Filter>Header Files\RHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rhash\sha512.h">
+      <Filter>Header Files\RHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rhash\sha1.h">
+      <Filter>Header Files\RHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rhash\crc32.h">
+      <Filter>Header Files\RHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rhash\md5.h">
+      <Filter>Header Files\RHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\blake2\blake2.h">
+      <Filter>Header Files\Blake2</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

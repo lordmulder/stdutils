@@ -1037,10 +1037,39 @@ NSISFUNC(GetOsEdition)
 
 static int GetHashType(const TCHAR *const type)
 {
-	if(STRICMP(type, T("SHA3-224")) == 0) return STD_HASHTYPE_SHA3_224;
-	if(STRICMP(type, T("SHA3-256")) == 0) return STD_HASHTYPE_SHA3_256;
-	if(STRICMP(type, T("SHA3-384")) == 0) return STD_HASHTYPE_SHA3_384;
-	if(STRICMP(type, T("SHA3-512")) == 0) return STD_HASHTYPE_SHA3_512;
+	static const struct
+	{
+		const TCHAR *const name;
+		const int id;
+	}
+	HASH_ALGO_MAPPING[] =
+	{
+		{ T("CRC-32"),     STD_HASHTYPE_CRC_32   },
+		{ T("MD5-128"),    STD_HASHTYPE_MD5_128  },
+		{ T("SHA1-160"),   STD_HASHTYPE_SHA1_160 },
+		{ T("SHA2-224"),   STD_HASHTYPE_SHA2_224 },
+		{ T("SHA2-256"),   STD_HASHTYPE_SHA2_256 },
+		{ T("SHA2-384"),   STD_HASHTYPE_SHA2_384 },
+		{ T("SHA2-512"),   STD_HASHTYPE_SHA2_512 },
+		{ T("SHA3-224"),   STD_HASHTYPE_SHA3_224 },
+		{ T("SHA3-256"),   STD_HASHTYPE_SHA3_256 },
+		{ T("SHA3-384"),   STD_HASHTYPE_SHA3_384 },
+		{ T("SHA3-512"),   STD_HASHTYPE_SHA3_512 },
+		{ T("BLAKE2-224"), STD_HASHTYPE_BLK2_224 },
+		{ T("BLAKE2-256"), STD_HASHTYPE_BLK2_256 },
+		{ T("BLAKE2-384"), STD_HASHTYPE_BLK2_384 },
+		{ T("BLAKE2-512"), STD_HASHTYPE_BLK2_512 },
+		{ NULL, -1 }
+	};
+
+	for(size_t i = 0; HASH_ALGO_MAPPING[i].name; i++)
+	{
+		if(STRICMP(type, HASH_ALGO_MAPPING[i].name) == 0)
+		{
+			return type, HASH_ALGO_MAPPING[i].id;
+		}
+	}
+
 	return -1;
 }
 
@@ -1055,13 +1084,20 @@ NSISFUNC(HashFile)
 	popstringn(temp, 0);
 
 	const int hashType = GetHashType(temp);
-	if((hashType >= 0) && ComputeHash_FromFile(hashType, file, temp, g_stringsize))
+	if(hashType >= 0)
 	{
-		pushstring(temp);
+		if(ComputeHash_FromFile(hashType, file, temp, g_stringsize))
+		{
+			pushstring(temp);
+		}
+		else
+		{
+			pushstring(T("error"));
+		}
 	}
 	else
 	{
-		pushstring(T("error"));
+		pushstring(T("invalid"));
 	}
 
 	delete [] file;
@@ -1079,13 +1115,20 @@ NSISFUNC(HashText)
 	popstringn(temp, 0);
 
 	const int hashType = GetHashType(temp);
-	if((hashType >= 0) && ComputeHash_FromText(hashType, text, temp, g_stringsize))
+	if(hashType >= 0)
 	{
-		pushstring(temp);
+		if(ComputeHash_FromText(hashType, text, temp, g_stringsize))
+		{
+			pushstring(temp);
+		}
+		else
+		{
+			pushstring(T("error"));
+		}
 	}
 	else
 	{
-		pushstring(T("error"));
+		pushstring(T("invalid"));
 	}
 
 	delete [] text;

@@ -122,6 +122,7 @@
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\unicode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -161,6 +162,7 @@
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\ansi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -187,6 +189,8 @@
     <ResourceCompile Include="StdUtils.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\blake2\blake2.cpp" />
+    <ClCompile Include="src\ByteToHex.cpp" />
     <ClCompile Include="src\ComUtils.cpp" />
     <ClCompile Include="src\DetectOsVersion.cpp" />
     <ClCompile Include="src\FileUtils.cpp" />
@@ -194,12 +198,18 @@
     <ClCompile Include="src\InvokeShellVerb.cpp" />
     <ClCompile Include="src\ParameterParser.cpp" />
     <ClCompile Include="src\rhash\byte_order.c" />
+    <ClCompile Include="src\rhash\crc32.c" />
+    <ClCompile Include="src\rhash\md5.c" />
+    <ClCompile Include="src\rhash\sha1.c" />
+    <ClCompile Include="src\rhash\sha256.c" />
     <ClCompile Include="src\rhash\sha3.c" />
+    <ClCompile Include="src\rhash\sha512.c" />
     <ClCompile Include="src\ShellExecAsUser.cpp" />
     <ClCompile Include="src\StdUtils.cpp" />
     <ClCompile Include="src\UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\blake2\blake2.h" />
     <ClInclude Include="src\ComUtils.h" />
     <ClInclude Include="src\DetectOsVersion.h" />
     <ClInclude Include="src\FileUtils.h" />
@@ -209,7 +219,12 @@
     <ClInclude Include="src\RandUtils.h" />
     <ClInclude Include="src\Resource.h" />
     <ClInclude Include="src\rhash\byte_order.h" />
+    <ClInclude Include="src\rhash\crc32.h" />
+    <ClInclude Include="src\rhash\md5.h" />
+    <ClInclude Include="src\rhash\sha1.h" />
+    <ClInclude Include="src\rhash\sha256.h" />
     <ClInclude Include="src\rhash\sha3.h" />
+    <ClInclude Include="src\rhash\sha512.h" />
     <ClInclude Include="src\ShellExecAsUser.h" />
     <ClInclude Include="src\StdUtils.h" />
     <ClInclude Include="src\UnicodeSupport.h" />

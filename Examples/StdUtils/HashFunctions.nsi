@@ -18,44 +18,74 @@ ShowInstDetails show
 !define TestData "The quick brown fox jumps over the lazy dog"
 !define TestFile "$WINDIR\Explorer.exe"
 
-Section
-	${StdUtils.HashText} $0 "SHA3-224" ""
-	DetailPrint 'SHA3-224("") = "$0"'
-	
-	${StdUtils.HashText} $0 "SHA3-256" ""
-	DetailPrint 'SHA3-256("") = "$0"'
+!macro _MyHashText type text
+	${StdUtils.HashText} $0 "${type}" "${text}"
+	DetailPrint '${type}("${text}") = $0'
+!macroend
+!define MyHashText "!insertmacro _MyHashText"
 
-	${StdUtils.HashText} $0 "SHA3-384" ""
-	DetailPrint 'SHA3-384("") = "$0"'
-	
-	${StdUtils.HashText} $0 "SHA3-512" ""
-	DetailPrint 'SHA3-512("") = "$0"'
+!macro _MyHashFile type file
+	${StdUtils.HashFile} $0 "${type}" "${file}"
+	DetailPrint '${type}(${file}) = $0'
+!macroend
+!define MyHashFile "!insertmacro _MyHashFile"
+
+Section
+	${MyHashText} "CRC-32"     ""
+	${MyHashText} "MD5-128"    ""
+	${MyHashText} "SHA1-160"   ""
+	${MyHashText} "SHA2-224"   ""
+	${MyHashText} "SHA2-256"   ""
+	${MyHashText} "SHA2-384"   ""
+	${MyHashText} "SHA2-512"   ""
+	${MyHashText} "SHA3-224"   ""
+	${MyHashText} "SHA3-256"   ""
+	${MyHashText} "SHA3-384"   ""
+	${MyHashText} "SHA3-512"   ""
+	${MyHashText} "BLAKE2-224" ""
+	${MyHashText} "BLAKE2-256" ""
+	${MyHashText} "BLAKE2-384" ""
+	${MyHashText} "BLAKE2-512" ""
+	DetailPrint "----"
 SectionEnd
 
 Section
-	${StdUtils.HashText} $0 "SHA3-224" "${TestData}"
-	DetailPrint 'SHA3-224("${TestData}") = "$0"'
-	
-	${StdUtils.HashText} $0 "SHA3-256" "${TestData}"
-	DetailPrint 'SHA3-256("${TestData}") = "$0"'
-
-	${StdUtils.HashText} $0 "SHA3-384" "${TestData}"
-	DetailPrint 'SHA3-384("${TestData}") = "$0"'
-	
-	${StdUtils.HashText} $0 "SHA3-512" "${TestData}"
-	DetailPrint 'SHA3-512("${TestData}") = "$0"'
+	${MyHashText} "CRC-32"     "${TestData}"
+	${MyHashText} "MD5-128"    "${TestData}"
+	${MyHashText} "SHA1-160"   "${TestData}"
+	${MyHashText} "SHA1-160"   "${TestData}"
+	${MyHashText} "SHA2-224"   "${TestData}"
+	${MyHashText} "SHA2-256"   "${TestData}"
+	${MyHashText} "SHA2-384"   "${TestData}"
+	${MyHashText} "SHA2-512"   "${TestData}"
+	${MyHashText} "SHA3-224"   "${TestData}"
+	${MyHashText} "SHA3-256"   "${TestData}"
+	${MyHashText} "SHA3-384"   "${TestData}"
+	${MyHashText} "SHA3-512"   "${TestData}"
+	${MyHashText} "BLAKE2-224" "${TestData}"
+	${MyHashText} "BLAKE2-256" "${TestData}"
+	${MyHashText} "BLAKE2-384" "${TestData}"
+	${MyHashText} "BLAKE2-512" "${TestData}"
+	DetailPrint "----"
 SectionEnd
 
 Section
-	${StdUtils.HashFile} $0 "SHA3-224" "${TestFile}"
-	DetailPrint 'SHA3-224(${TestFile}) = "$0"'
-	
-	${StdUtils.HashFile} $0 "SHA3-256" "${TestFile}"
-	DetailPrint 'SHA3-256(${TestFile}) = "$0"'
+	${MyHashFile} "CRC-32"     "${TestFile}"
+	${MyHashFile} "MD5-128"    "${TestFile}"
+	${MyHashFile} "SHA1-160"   "${TestFile}"
+	${MyHashFile} "SHA1-160"   "${TestFile}"
+	${MyHashFile} "SHA2-224"   "${TestFile}"
+	${MyHashFile} "SHA2-256"   "${TestFile}"
+	${MyHashFile} "SHA2-384"   "${TestFile}"
+	${MyHashFile} "SHA2-512"   "${TestFile}"
+	${MyHashFile} "SHA3-224"   "${TestFile}"
+	${MyHashFile} "SHA3-256"   "${TestFile}"
+	${MyHashFile} "SHA3-384"   "${TestFile}"
+	${MyHashFile} "SHA3-512"   "${TestFile}"
+	${MyHashFile} "BLAKE2-224" "${TestFile}"
+	${MyHashFile} "BLAKE2-256" "${TestFile}"
+	${MyHashFile} "BLAKE2-384" "${TestFile}"
+	${MyHashFile} "BLAKE2-512" "${TestFile}"
 
-	${StdUtils.HashFile} $0 "SHA3-384" "${TestFile}"
-	DetailPrint 'SHA3-384(${TestFile}) = "$0"'
-	
-	${StdUtils.HashFile} $0 "SHA3-512" "${TestFile}"
-	DetailPrint 'SHA3-512(${TestFile}) = "$0"'
+	DetailPrint "----"
 SectionEnd
