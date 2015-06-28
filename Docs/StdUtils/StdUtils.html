@@ -284,7 +284,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.TrimStr} <i>user_var(input/output)</i><br>${StdUtils.TrimStrLeft} <i>user_var(input/output)</i><br>${StdUtils.TrimStrRight} <i>user_var(input/output)</i></tt></b></p>
-<p>Trims a string by removing all leading and/or trailing whitspace (space, tabular, line feed, carriage return) characters <i>in-place</i>:</p>
+<p>Trims a string by removing all leading and/or trailing whitespace characters. A characters is considered to be a "whitespace" character by this function, if (and only if) it is accepted by either <a href="http://www.cplusplus.com/reference/cctype/iscntrl/">iscntrl()</a> or <a href="http://www.cplusplus.com/reference/cctype/isspace/">isspace()</a>. The function operates <i>in-place</i>.</p>
 
 <pre>Section
 	StrCpy $1 "        Some Text        "
