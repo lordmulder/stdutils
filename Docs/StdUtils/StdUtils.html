@@ -17,9 +17,19 @@
 
 <body>
 
+<table width="100%">
+	<tr>
+		<td align="left"><a href="http://muldersoft.com/">http://muldersoft.com/</a> | <a href="http://sourceforge.net/projects/muldersoft/">http://sourceforge.net/projects/muldersoft/</a> | <a href="http://nsis.sourceforge.net/Category:Plugins">http://nsis.sourceforge.net/Category:Plugins</a></td>
+		<td align="right"><a href="https://www.youtube.com/v/uKUYSl8c-90?autoplay=1">Earth Heals Herself</a></td>
+	</tr>
+</table>
+
+<hr>
+<br>
+
 <!-- ---------------- -->
 
-<h1>StdUtils - Swiss Army Knife for NSIS</h1>
+<h1><u>StdUtils - Swiss Army Knife for NSIS</u></h1>
 
 <p>This plug-in provides access to a number of "standard" functions from the <a href="http://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>, which programmers are used to from C/C++ and other "high level" languages, but which are <i>not</i> normally available in NSIS. In order to keep the plug-in size as small as possible and for maximum compatibility, the Visual C++ Runtime v6.0 "MSVCRT.DLL" is used, which is an integral part of all versions of Windows (since Windows 2000). This means that the C++ Runtime neither needs to be shipped as a separate DLL nor does it need to be linked <i>statically</i> into the plug-in.
 <p>Many additional functions, <i>not</i> directly related to the C Standard Library, have been added over the years: For example, this plug-in provides a number convenience functions to deal with <i>strings</i>, such as trimming whitespaces or validating a given file name. There also are some functions to conveniently access the <i>command-line parameters</i> that have been passed to the installer. Furthermore, there is a wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function, which can be used to <i>copy or move files</i> using the Windows Shell, as well as a function to efficiently <i>append</i> the contents of one file to another file. Moreover, the plug-in provides a method for launching programs in a <i>non-elevated</i> way (aka "user mode") from an installer that is running in <i>elevated</i> context (aka "admin mode"). In addition to that, there is a set of functions that can be used to detect the <i>real</i> Windows version that the installer is running on, which still work correctly/reliably on Windows 8.1 (and later) where Microsoft has <i style="color:darkred">broken</i> the GetVersionEx() system function. And, as if this wasn't enough, the plug-in can compute the <i>cryptographic hash</i> of a given file or text message, using various state-of-the-art hash functions, including SHA-{1,2,3}. Last but not least, the plug-in provides a variant of <tt>ExecShell</tt> with "wait for process termination" feature, based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>, as well as a function for invoking "shell verbs" &ndash; useful for programmatically <i>pinning shortcuts to the Taskbar</i>.</p>
@@ -32,21 +42,24 @@
 	<li><a href="#53826d99">Available Functions</a>
 	<li><a href="#e5717960">Installation</a>
 	<li><a href="#72a4075a">General Usage</a>
-	<li><a href="#66dd4753">Time Functions</a>
-	<li><a href="#dc3f60d9">Pseudorandom Number Generator (PRNG)</a>
-	<li><a href="#23711935">String Functions</a>
-	<li><a href="#df333b53">Shell File Operation</a>
-	<li><a href="#18e9c5cb">AppendToFile</a>
-	<li><a href="#a3d3af46">ExecShellAsUser</a>
-	<li><a href="#0c74ed2a">ExecShellWait</a>
-	<li><a href="#f24cc3f9">GetParameter / GetAllParameters</a>
-	<li><a href="#d452a779">InvokeShellVerb</a>
-	<li><a href="#f57ec206">GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
-	<li><a href="#e1f7e07b">HashText / HashFile</a>
-	<li><a href="#14863bf9">Debugging Functions</a>
+	<li><a href="#17095e85">Function Reference</a>
+	<ul>
+		<li><a href="#66dd4753">Time Functions: Time / GetMinutes / GetHours / GetDays</a>
+		<li><a href="#dc3f60d9">Pseudorandom Number Generator: </a>
+		<li><a href="#23711935">String Functions: FormatStr / ScanStr / TrimStr / RevStr / ValidFileName / ValidPathSpec</a>
+		<li><a href="#df333b53">Shell File Operation: SHFileCopy / SHFileMove</a>
+		<li><a href="#18e9c5cb">AppendToFile</a>
+		<li><a href="#a3d3af46">Create Process Functions: ExecShellAsUser / ExecShellWait / WaitForProcEx</a>
+		<li><a href="#f24cc3f9">Command-line Parameter Functions: GetParameter / GetAllParameters</a>
+		<li><a href="#d452a779">InvokeShellVerb</a>
+		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
+		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
+		<li><a href="#14863bf9">Debugging Functions</a>
+	</ul>
 	<li><a href="#db579654">License</a>
 	<li><a href="#b92197af">Acknowledgment</a>
 	<li><a href="#01efe0f2">Download and Sources</a>
+	<li><a href="#8d7f91f6">Help & Support</a>
 	<li><a href="#53c38996">Version History</a>
 </ul>
 
@@ -54,7 +67,7 @@
 
 <!-- ---------------- -->
 
-<a name="53826d99"></a><h2>Available Functions</h2>
+<a name="53826d99"></a><h1>Available Functions</h1>
 
 <p>The following functions are provided by the StdUtils plug-in:
 
@@ -104,7 +117,7 @@
 
 <!-- ---------------- -->
 
-<a name="e5717960"></a><h2>Installation</h2>
+<a name="e5717960"></a><h1>Installation</h1>
 
 <p>Depending on whether you are using the Unicode or ANSI (non-Unicode) variant of NSIS (we highly recommend using the Unicode variant!), you must copy either <tt>StdUtils\Plugins\Release_Unicode\StdUtils.dll</tt> or <tt>StdUtils\Plugins\Release_ANSI\StdUtils.dll</tt> into the <tt>Plugins</tt> sub-directory inside your NSIS installation directory. Also, in both cases, you must copy <tt>StdUtils\Include\StdUtils.nsh</tt> into the <tt>Include</tt> sub-directory inside your NSIS installation directory. That's it!</p>
 
@@ -112,7 +125,7 @@
 
 <!-- ---------------- -->
 
-<a name="72a4075a"></a><h2>General Usage</h2>
+<a name="72a4075a"></a><h1>General Usage</h1>
 
 <p>In order to use the StdUtils plug-in in your script, simply include <tt>StdUtils.nsh</tt> and then use the pre-defined <tt>${StdUtils.<i>FunctionName</i>}</tt> macros like this:</p>
 
@@ -125,6 +138,14 @@ SectionEnd</pre>
 
 <p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defind macros, which ensures that the plug-in functions are used in the "proper" way.</p>
 <p>For more details, please have a look at the example scripts located in the <tt>StdUtils\Examples\StdUtils</tt> directory!</p>
+
+<br>
+
+<!-- ---------------- -->
+
+<a name="17095e85"></a><h1>Function Reference</h1>
+
+<p>In this chapter the individual functions provided by the <i>StdUtils</i> plug-in are described in detail.</p>
 
 <br>
 
@@ -445,7 +466,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="a3d3af46"></a><h2>ExecShellAsUser</h2>
+<a name="a3d3af46"></a><h2>Create Process Functions</h2>
 
 <p><b><tt>${StdUtils.ExecShellAsUser} <i>user_var(output)</i> <i>file</i> <i>verb</i> <i>args</i></tt></b></p>
 <p>The <tt>${StdUtils.ExecShellAsUser}</tt> function allows for launching a child process with normal user privileges (user level), directly from an elevated installer instance (admin level). This is in contrast to the built-in <tt>Exec</tt>, <tt>ExecWait</tt> and <tt>ExecShell</tt> instructions, which all cause the child process to be elevated too. Consequently, the <tt>${StdUtils.ExecShellAsUser}</tt> function provides a simple and more lightweight alternative to the UAC plug-in. The function expects three arguments: The path to the <tt>file</tt> to be executed, the <tt>verb</tt> that shall be used to execute the file (e.g. "open") and the argument string <tt>args</tt> to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). If the function succeeded, then it returns either "ok" or "fallback". Otherwise it returns either "einval", "timeout", "not_found" or "error".</p>
@@ -473,13 +494,7 @@ Section
 	DetailPrint "Result: $0"
 SectionEnd</pre>
 
-<br>
-
-<!-- ---------------- -->
-
-<a name="0c74ed2a"></a><h2>ExecShellWait</h2>
-
-<p><b><tt>${StdUtils.ExecShellWaitEx} <i>user_var(output_1)</i> <i>user_var(output_2)</i> <i>file</i> <i>verb</i> <i>args</i><br>${StdUtils.WaitForProcEx} <i>user_var(output)</i> <i>handle</i></tt></b></p>
+<p><br><b><tt>${StdUtils.ExecShellWaitEx} <i>user_var(output_1)</i> <i>user_var(output_2)</i> <i>file</i> <i>verb</i> <i>args</i><br>${StdUtils.WaitForProcEx} <i>user_var(output)</i> <i>handle</i></tt></b></p>
 <p>The <tt>${StdUtils.ExecShellWaitEx}</tt> function works like the built-in <tt>ExecShell</tt> command, except that you can wait for the process to terminate. The function expects three arguments: The path to the file to be executed, the <i>verb</i> that shall be used to execute the file (e.g. "open") and the arguments to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). Furthermore, the function returns two values: The <i>first</i> value is either "ok", "no_wait" or "error", while the <i>second</i> value provides additional info. "ok" indicates that the process was created successfully and can be waited for, "no_wait" indicates that we cannot wait for the process (because <tt>ShellExecuteEx</tt> did not create a new process, but passed the file/URL to a running instance) and "error" indicates that something went wrong.</p>
 <p>If the <i>first</i> return value is "ok", the <i>second</i> return value contains the handle of the new process. If the <i>first</i> return value is "error", the <i>second</i> return value contains the Win32 error code. And if the <i>first</i> return value is "no_wait", the <i>second</i> return value is zero. Only if "ok" <i>and</i> a process handle were returned, you can call <tt>${StdUtils.WaitForProcEx}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the <i>first</i> return value of <tt>${StdUtils.ExecShellWaitEx}</tt> before you pass the <i>second</i> return value to <tt>${StdUtils.WaitForProcEx}</tt>. The behavior of <tt>${StdUtils.WaitForProcEx}</tt> is undefined if you pass something that isn't a valid process handle! If successfull, <tt>${StdUtils.WaitForProcEx}</tt> returns the exit code of the process after it has terminated. The function returns "error" if something went wrong.</p>
 
@@ -520,7 +535,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="f24cc3f9"></a><h2>GetParameter / GetAllParameters</h2>
+<a name="f24cc3f9"></a><h2>Command-line Parameter Functions</h2>
 
 <p><b><tt>${StdUtils.GetParameter} <i>user_var(output)</i> <i>name</i> <i>default</i><br>${StdUtils.GetAllParameters} <i>user_var(output)</i> <i>truncate</i></tt></b></p>
 <p>With <tt>${StdUtils.GetParameter}</tt> you can check for the presence of a specific command-line parameter. If the parameter was specified with a (non-empty) value, then the parameter's value is return. If the parameter was specified without a value, then an empty string is return. If the parameter has not been specified, then the default value is returned.</p>
@@ -608,7 +623,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="f57ec206"></a><h2>GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</h2>
+<a name="f57ec206"></a><h2>OS Version Functions</h2>
 
 <p><b><tt>${StdUtils.GetRealOSVersion} <i>user_var(out_major)</i> <i>user_var(out_minor)</i> <i>user_var(out_spack)</i></tt></b></p>
 <p>The <tt>${StdUtils.GetRealOSVersion}</tt> function returns the <i>real</i> <a href="#b26a3e82">Windows NT version</a> installed on the computer. Note that starting with Windows 8.1 (Windows NT 6.3), Microsoft has <u>broken</u> the <tt>GetVersion()</tt> and <tt>GetVersionEx()</tt> functions! These function will now return the Windows version that the calling application has been compiled for (as indicated by the program's Manifest), <b>not</b> the actual Windows version we are running on! So these functions are effectively a NOP now &ndash; you don't need to call the Win32 API to determine which Windows version your own program has been compiled for, you already know it. This has the consequence that Windows 8.1 will now identify itself as Windows 8.0! Workarounds exist, such as adding a certain GUID to the program's Manifest, which cannot work with <i>future</i> Windows versions, or trying to read the Windows version from the Registry, which is unreliable. At the same time, the <tt>${StdUtils.GetRealOSVersion}</tt> function reveals the <i>actual</i> Windows version on Windows 8.1 (and later), regardless of the application Manifest. Furthermore, it will continue to work correctly in <i>future</i> Windows versions. Finally, this function still returns the <i>correct</i> Windows version, when the installer runs in "compatibility mode". The function will return the <i>major</i> and <i>minor</i> Windows NT version (e.g. "6.3" on Windows 8.1) plus the Service Pack <i>spack</i>. It returns "error", if something went wrong.</p>
@@ -738,7 +753,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="e1f7e07b"></a><h2>HashText / HashFile</h2>
+<a name="e1f7e07b"></a><h2>Cryptographic Hash Functions</h2>
 
 <p><b><tt>${StdUtils.HashText} <i>user_var(out)</i> <i>type</i> <i>text</i></tt></b></p>
 <p>The <tt>${StdUtils.HashText}</tt> function computes the <i>cryptographic hash</i> of the message given by <tt>text</tt>, using the hash function specified by <tt>type</tt>. Currently CRC32, MD5, SHA-1, the SHA-2 family as well as the SHA-3 family are supported (using <a href="https://github.com/rhash/RHash">RHash</a> implementation). See below for details! If the function succeeds, it will return the hash value, as a <i>hexadecimal</i> string. The length of the result depends on the chosen hash function. If an invalid hash function was specified, the function returns "invalid". And, if anything else went wrong, it returns "error".</p>
@@ -828,7 +843,7 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
-<a name="db579654"></a><h2>License</h2>
+<a name="db579654"></a><h1>License</h1>
 
 <p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;. It is distribiuted under the <b><a href="https://www.gnu.org/licenses/lgpl-2.1.html">GNU LGPL v2.1</a></b>.</p>
 
@@ -855,7 +870,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.<
 
 <!-- ---------------- -->
 
-<a name="b92197af"></a><h2>Acknowledgment</h2>
+<a name="b92197af"></a><h1>Acknowledgment</h1>
 
 <p>This plug-in has been inspired, partly, by the <b>InvokeShellVerb</b> plug-in, created by <i>Robert Strong</i>.</p>
 <p>This plug-in has been inspired, partly, by the <b>ShellExecAsUser</b> plug-in, created by <i>installer32</i>.</p>
@@ -889,23 +904,41 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 
 <!-- ---------------- -->
 
-<a name="01efe0f2"></a><h2>Download and Sources</h2>
+<a name="01efe0f2"></a><h1>Download and Sources</h1>
 
 <p>The source codes for the StdUtils plug-in are available from the code repository at:</p>
-
 <ul>
 	<li><tt>https://github.com/lordmulder/stdutils.git</tt> (<a href="https://github.com/lordmulder/stdutils">Browse</a> | <a href="https://github.com/lordmulder/stdutils/commits/master">History</a>)
 	<li><tt>https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis.git</tt> (<a href="https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/tree/master">Browse</a> | <a href="https://gitlab.com/stdutils-plug-in-for-nsis/stdutils-plug-in-for-nsis/commits/master">History</a>)
 	<li><tt>https://bitbucket.org/lord_mulder/stdutils.git</tt> (<a href="https://bitbucket.org/lord_mulder/stdutils/src">Browse</a> | <a href="https://bitbucket.org/lord_mulder/stdutils/commits">History</a>)
 </ul>
 
-<p>You can download pre-compiled binaries (i.e. ready-to-use DLL files) of the plug-in here:<br><a href="https://github.com/lordmulder/stdutils/releases/latest">https://github.com/lordmulder/stdutils/releases/latest</a></p>
+<p><br>You can download pre-compiled binaries (i.e. ready-to-use DLL files) of the plug-in from here:</p>
+<ul>
+	<li><a href="https://github.com/lordmulder/stdutils/releases/latest">https://github.com/lordmulder/stdutils/releases/latest</a>
+	<li><a href="http://sourceforge.net/projects/muldersoft/files/StdUtils-Plugin%20%28NSIS%29/">http://sourceforge.net/projects/muldersoft/files/StdUtils-Plugin%20%28NSIS%29/</a>
+</ul>
 
 <br>
 
 <!-- ---------------- -->
 
-<a name="53c38996"></a><h2>Version History</h2>
+<a name="8d7f91f6"></a><h1>Help & Support</h1>
+
+<p>For help and support, please use the "NSIS Discussion" sub-forum of the Winamp forums:<br>
+<a href="http://forums.winamp.com/forumdisplay.php?f=65">http://forums.winamp.com/forumdisplay.php?f=65</a></p>
+
+<p>If you have any <i>feature requests</i> or <i>bug reports</i>, please submit them directly to our GitHub bug-tracker:<br>
+<a href="https://github.com/lordmulder/stdutils/issues">https://github.com/lordmulder/stdutils/issues</a></p>
+
+<p>Also you may wish to check the official NSIS Wiki for the latest information and updates:<br>
+<a href="http://nsis.sourceforge.net/StdUtils_plug-in">http://nsis.sourceforge.net/StdUtils_plug-in</a></p>
+
+<br>
+
+<!-- ---------------- -->
+
+<a name="53c38996"></a><h1>Version History</h1>
 
 <ul>
 	<li><b>Version 1.07, not yet released</b>
@@ -925,10 +958,12 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 <br>
 <hr>
 
+<!-- ---------------- -->
+
 <table width="100%">
 	<tr>
 		<td align="left"><a href="http://muldersoft.com/">http://muldersoft.com/</a> | <a href="http://sourceforge.net/projects/muldersoft/">http://sourceforge.net/projects/muldersoft/</a> | <a href="http://nsis.sourceforge.net/Category:Plugins">http://nsis.sourceforge.net/Category:Plugins</a></td>
-		<td align="right"><a href="http://www.youtube.com/watch?v=uKUYSl8c-90">Earth Heals Herself</a></td>
+		<td align="right"><a href="https://www.youtube.com/v/uKUYSl8c-90?autoplay=1">Earth Heals Herself</a></td>
 	</tr>
 </table>
 

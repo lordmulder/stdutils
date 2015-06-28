@@ -46,8 +46,19 @@
 //StdLib
 extern "C" __declspec(dllimport) void __cdecl abort(void);
 
-//Byte to Hex
+//External vars
 extern const TCHAR *const LUT_BYTE2HEX[256];
+extern bool g_bStdUtilsVerbose;
+
+//Verbos logging
+#define ERROR_MSG(X) do \
+{ \
+	if(g_bStdUtilsVerbose) \
+	{ \
+		MessageBox(NULL, (X), T("StdUtils::HashUtils"), MB_ICONERROR | MB_TOPMOST); \
+	} \
+} \
+while(0)
 
 //Hash context
 ALIGN(64) typedef struct hash_ctx
@@ -100,7 +111,9 @@ static size_t GetHashSize(const int hashType)
 		case STD_HASHTYPE_BLK2_256: return blk2_256_hash_size;
 		case STD_HASHTYPE_BLK2_384: return blk2_384_hash_size;
 		case STD_HASHTYPE_BLK2_512: return blk2_512_hash_size;
-		default: return SIZE_MAX;
+		default:
+			ERROR_MSG(T("The specified hash type is unknown/unsupported!"));
+			return SIZE_MAX;
 	}
 }
 
@@ -131,6 +144,7 @@ static inline bool HashFunction_Init(const int hashType, hash_ctx *const ctx)
 			}
 			return true;
 		default:
+			ERROR_MSG(T("The specified hash type is unknown/unsupported!"));
 			return false;
 	}
 }
@@ -237,12 +251,14 @@ bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR
 	const size_t hashSize = GetHashSize(hashType);
 	if((hashSize == SIZE_MAX) || (hashSize >= (hashOutSize / 2)))
 	{
+		if(hashSize != SIZE_MAX) ERROR_MSG(T("Output buffer is too small to hold the hash value!"));
 		return false;
 	}
 
 	HANDLE h = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if(!VALID_HANDLE(h))
 	{
+		ERROR_MSG(T("Failed to open input file for reading!"));
 		return false;
 	}
 
@@ -261,6 +277,7 @@ bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR
 		DWORD nBytesRead = 0;
 		if(!ReadFile(h, buffer, BUFF_SIZE, &nBytesRead, NULL))
 		{
+			ERROR_MSG(T("Failed to read data from input file!"));
 			CLOSE_HANDLE(h);
 			return false;
 		}
@@ -283,6 +300,7 @@ bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR
 	const size_t hashSize = GetHashSize(hashType);
 	if((hashSize == SIZE_MAX) || (hashSize >= (hashOutSize / 2)))
 	{
+		if(hashSize != SIZE_MAX) ERROR_MSG(T("Output buffer is too small to hold the hash value!"));
 		return false;
 	}
 

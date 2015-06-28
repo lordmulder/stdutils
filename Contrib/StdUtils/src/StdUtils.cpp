@@ -1069,6 +1069,12 @@ static int GetHashType(const TCHAR *const type)
 			return HASH_ALGO_MAPPING[i].id;
 		}
 	}
+
+	if(g_bStdUtilsVerbose)
+	{
+		MessageBox(NULL, T("And invalid hash function has been specified!"), T("StdUtils::GetHashType"), MB_TOPMOST | MB_ICONSTOP);
+	}
+
 	return -1;
 }
 
