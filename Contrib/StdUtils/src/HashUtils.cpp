@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "HashUtils.h"
+#ifndef STDUTILS_DISABLE_HASHES
 
 //RHash
 #include "rhash/crc32.h"
@@ -42,24 +43,43 @@
 #include "WinUtils.h"
 #include "UnicodeSupport.h"
 
-//Const
-static const uint32_t CRC32_INIT_VECTOR = 0x00000000;
+//StdLib
+extern "C" __declspec(dllimport) void __cdecl abort(void);
 
 //Byte to Hex
 extern const TCHAR *const LUT_BYTE2HEX[256];
 
 //Hash context
-ALIGN(64) typedef union hash_ctx
+ALIGN(64) typedef struct hash_ctx
 {
-	uint32_t   crc32;
-	md5_ctx    md5;
-	sha1_ctx   sha1;
-	sha256_ctx sha256;
-	sha512_ctx sha512;
-	sha3_ctx   sha3;
-	blake2_ctx balke2;
+	int hashType;
+	ALIGN(64) union
+	{
+		ALIGN(64) uint32_t   crc32;
+		ALIGN(64) md5_ctx    md5;
+		ALIGN(64) sha1_ctx   sha1;
+		ALIGN(64) sha256_ctx sha256;
+		ALIGN(64) sha512_ctx sha512;
+		ALIGN(64) sha3_ctx   sha3;
+		ALIGN(64) blake2_ctx balke2;
+	}
+	data;
 }
 hash_ctx;
+
+static inline size_t Blake2_Size(const int hashType)
+{
+	switch(hashType)
+	{
+		case STD_HASHTYPE_BLK2_224: return blk2_224_hash_size;
+		case STD_HASHTYPE_BLK2_256: return blk2_256_hash_size;
+		case STD_HASHTYPE_BLK2_384: return blk2_384_hash_size;
+		case STD_HASHTYPE_BLK2_512 :return blk2_512_hash_size;
+		default:
+			MessageBox(NULL, T("Inconsistent state detected, going to abort!"), T("StdUtils::Blake2_Size"), MB_ICONSTOP | MB_TOPMOST);
+			abort(); return (-1);
+	}
+}
 
 static size_t GetHashSize(const int hashType)
 {
@@ -87,101 +107,117 @@ static size_t GetHashSize(const int hashType)
 static inline bool HashFunction_Init(const int hashType, hash_ctx *const ctx)
 {
 	memset(ctx, 0, sizeof(hash_ctx));
-	switch(hashType)
+	switch(ctx->hashType = hashType)
 	{
-		case STD_HASHTYPE_CRC_32:   rhash_crc32_init(&ctx->crc32);                   return true;
-		case STD_HASHTYPE_MD5_128:  rhash_md5_init(&ctx->md5);                       return true;
-		case STD_HASHTYPE_SHA1_160: rhash_sha1_init(&ctx->sha1);                     return true;
-		case STD_HASHTYPE_SHA2_224: rhash_sha224_init(&ctx->sha256);                 return true;
-		case STD_HASHTYPE_SHA2_256: rhash_sha256_init(&ctx->sha256);                 return true;
-		case STD_HASHTYPE_SHA2_384: rhash_sha384_init(&ctx->sha512);                 return true;
-		case STD_HASHTYPE_SHA2_512: rhash_sha512_init(&ctx->sha512);                 return true;
-		case STD_HASHTYPE_SHA3_224: rhash_sha3_224_init(&ctx->sha3);                 return true;
-		case STD_HASHTYPE_SHA3_256: rhash_sha3_256_init(&ctx->sha3);                 return true;
-		case STD_HASHTYPE_SHA3_384: rhash_sha3_384_init(&ctx->sha3);                 return true;
-		case STD_HASHTYPE_SHA3_512: rhash_sha3_512_init(&ctx->sha3);                 return true;
-		case STD_HASHTYPE_BLK2_224: return (blake2b_init(&ctx->balke2, blk2_224_hash_size) == 0);
-		case STD_HASHTYPE_BLK2_256: return (blake2b_init(&ctx->balke2, blk2_256_hash_size) == 0);
-		case STD_HASHTYPE_BLK2_384: return (blake2b_init(&ctx->balke2, blk2_384_hash_size) == 0);
-		case STD_HASHTYPE_BLK2_512: return (blake2b_init(&ctx->balke2, blk2_512_hash_size) == 0);
-		default: return false;
-	}
-}
-
-static inline bool HashFunction_Update(const int hashType, hash_ctx *const ctx, const unsigned char *const msg, const size_t size)
-{
-	switch(hashType)
-	{
-		case STD_HASHTYPE_CRC_32:
-			rhash_crc32_update(&ctx->crc32, msg, size);
-			return true;
-		case STD_HASHTYPE_MD5_128:
-			rhash_md5_update(&ctx->md5, msg, size);
-			return true;
-		case STD_HASHTYPE_SHA1_160:
-			rhash_sha1_update(&ctx->sha1, msg, size);
-			return true;
-		case STD_HASHTYPE_SHA2_224:
-		case STD_HASHTYPE_SHA2_256:
-			rhash_sha256_update(&ctx->sha256, msg, size);
-			return true;
-		case STD_HASHTYPE_SHA2_384:
-		case STD_HASHTYPE_SHA2_512:
-			rhash_sha512_update(&ctx->sha512, msg, size);
-			return true;
-		case STD_HASHTYPE_SHA3_224:
-		case STD_HASHTYPE_SHA3_256:
-		case STD_HASHTYPE_SHA3_384:
-		case STD_HASHTYPE_SHA3_512:
-			rhash_sha3_update(&ctx->sha3, msg, size);
-			return true;
+		case STD_HASHTYPE_CRC_32:   rhash_crc32_init(&ctx->data.crc32);   return true;
+		case STD_HASHTYPE_MD5_128:  rhash_md5_init(&ctx->data.md5);       return true;
+		case STD_HASHTYPE_SHA1_160: rhash_sha1_init(&ctx->data.sha1);     return true;
+		case STD_HASHTYPE_SHA2_224: rhash_sha224_init(&ctx->data.sha256); return true;
+		case STD_HASHTYPE_SHA2_256: rhash_sha256_init(&ctx->data.sha256); return true;
+		case STD_HASHTYPE_SHA2_384: rhash_sha384_init(&ctx->data.sha512); return true;
+		case STD_HASHTYPE_SHA2_512: rhash_sha512_init(&ctx->data.sha512); return true;
+		case STD_HASHTYPE_SHA3_224: rhash_sha3_224_init(&ctx->data.sha3); return true;
+		case STD_HASHTYPE_SHA3_256: rhash_sha3_256_init(&ctx->data.sha3); return true;
+		case STD_HASHTYPE_SHA3_384: rhash_sha3_384_init(&ctx->data.sha3); return true;
+		case STD_HASHTYPE_SHA3_512: rhash_sha3_512_init(&ctx->data.sha3); return true;
 		case STD_HASHTYPE_BLK2_224:
 		case STD_HASHTYPE_BLK2_256:
 		case STD_HASHTYPE_BLK2_384:
 		case STD_HASHTYPE_BLK2_512:
-			return (blake2b_update(&ctx->balke2, msg, size) == 0);
+			if(blake2b_init(&ctx->data.balke2, Blake2_Size(ctx->hashType)) != 0)
+			{
+				MessageBox(NULL, T("Blake2_Init internal error, going to abort!"), T("StdUtils::HashFunction_Init"), MB_ICONSTOP | MB_TOPMOST);
+				abort();
+			}
+			return true;
 		default:
 			return false;
 	}
 }
 
-static inline bool HashFunction_Final(const int hashType, hash_ctx *const ctx, unsigned char *const result)
+static inline void HashFunction_Update(hash_ctx *const ctx, const unsigned char *const msg, const size_t size)
 {
-	switch(hashType)
+	switch(ctx->hashType)
 	{
 		case STD_HASHTYPE_CRC_32:
-			rhash_crc32_final(&ctx->crc32, result);
-			return true;
+			rhash_crc32_update(&ctx->data.crc32, msg, size);
+			return;
 		case STD_HASHTYPE_MD5_128:
-			rhash_md5_final(&ctx->md5, result);
-			return true;
+			rhash_md5_update(&ctx->data.md5, msg, size);
+			return;
 		case STD_HASHTYPE_SHA1_160:
-			rhash_sha1_final(&ctx->sha1, result);
-			return true;
+			rhash_sha1_update(&ctx->data.sha1, msg, size);
+			return;
 		case STD_HASHTYPE_SHA2_224:
 		case STD_HASHTYPE_SHA2_256:
-			rhash_sha256_final(&ctx->sha256, result);
-			return true;
+			rhash_sha256_update(&ctx->data.sha256, msg, size);
+			return;
 		case STD_HASHTYPE_SHA2_384:
 		case STD_HASHTYPE_SHA2_512:
-			rhash_sha512_final(&ctx->sha512, result);
-			return true;
+			rhash_sha512_update(&ctx->data.sha512, msg, size);
+			return;
 		case STD_HASHTYPE_SHA3_224:
 		case STD_HASHTYPE_SHA3_256:
 		case STD_HASHTYPE_SHA3_384:
 		case STD_HASHTYPE_SHA3_512:
-			rhash_sha3_final(&ctx->sha3, result);
-			return true;
+			rhash_sha3_update(&ctx->data.sha3, msg, size);
+			return;
 		case STD_HASHTYPE_BLK2_224:
-			return (blake2b_final(&ctx->balke2, result, blk2_224_hash_size) == 0);
 		case STD_HASHTYPE_BLK2_256:
-			return (blake2b_final(&ctx->balke2, result, blk2_256_hash_size) == 0);
 		case STD_HASHTYPE_BLK2_384:
-			return (blake2b_final(&ctx->balke2, result, blk2_384_hash_size) == 0);
 		case STD_HASHTYPE_BLK2_512:
-			return (blake2b_final(&ctx->balke2, result, blk2_512_hash_size) == 0);
+			if(blake2b_update(&ctx->data.balke2, msg, size) != 0)
+			{
+				MessageBox(NULL, T("Blake2_Update internal error, going to abort!"), T("StdUtils::HashFunction_Update"), MB_ICONSTOP | MB_TOPMOST);
+				abort();
+			}
+			return;
 		default:
-			return false;
+			MessageBox(NULL, T("Inconsistent state detected, going to abort!"), T("StdUtils::HashFunction_Update"), MB_ICONSTOP | MB_TOPMOST);
+			abort();
+	}
+}
+
+static inline void HashFunction_Final(hash_ctx *const ctx, unsigned char *const result)
+{
+	switch(ctx->hashType)
+	{
+		case STD_HASHTYPE_CRC_32:
+			rhash_crc32_final(&ctx->data.crc32, result);
+			return;
+		case STD_HASHTYPE_MD5_128:
+			rhash_md5_final(&ctx->data.md5, result);
+			return;
+		case STD_HASHTYPE_SHA1_160:
+			rhash_sha1_final(&ctx->data.sha1, result);
+			return;
+		case STD_HASHTYPE_SHA2_224:
+		case STD_HASHTYPE_SHA2_256:
+			rhash_sha256_final(&ctx->data.sha256, result);
+			return;
+		case STD_HASHTYPE_SHA2_384:
+		case STD_HASHTYPE_SHA2_512:
+			rhash_sha512_final(&ctx->data.sha512, result);
+			return;
+		case STD_HASHTYPE_SHA3_224:
+		case STD_HASHTYPE_SHA3_256:
+		case STD_HASHTYPE_SHA3_384:
+		case STD_HASHTYPE_SHA3_512:
+			rhash_sha3_final(&ctx->data.sha3, result);
+			return;
+		case STD_HASHTYPE_BLK2_224:
+		case STD_HASHTYPE_BLK2_256:
+		case STD_HASHTYPE_BLK2_384:
+		case STD_HASHTYPE_BLK2_512:
+			if(blake2b_final(&ctx->data.balke2, result, Blake2_Size(ctx->hashType)) != 0)
+			{
+				MessageBox(NULL, T("Blake2_Final internal error, going to abort!"), T("StdUtils::HashFunction_Final"), MB_ICONSTOP | MB_TOPMOST);
+				abort();
+			}
+			return;
+		default:
+			MessageBox(NULL, T("Inconsistent state detected, going to abort!"), T("StdUtils::HashFunction_Final"), MB_ICONSTOP | MB_TOPMOST);
+			abort();
 	}
 }
 
@@ -233,21 +269,13 @@ bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR
 			CLOSE_HANDLE(h);
 			break;
 		}
-		if(!HashFunction_Update(hashType, &ctx, buffer, nBytesRead))
-		{
-			CLOSE_HANDLE(h);
-			return false;
-		}
+		HashFunction_Update(&ctx, buffer, nBytesRead);
 	}
 
 	BYTE hashValue[128];
-	if(HashFunction_Final(hashType, &ctx, hashValue))
-	{
-		ConvertHashToHex(hashSize, hashValue, hashOut);
-		return true;
-	}
-
-	return false;
+	HashFunction_Final(&ctx, hashValue);
+	ConvertHashToHex(hashSize, hashValue, hashOut);
+	return true;
 }
 
 bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR *const hashOut, const size_t hashOutSize)
@@ -270,25 +298,16 @@ bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR
 	{
 		return false;
 	}
-	if(!HashFunction_Update(hashType, &ctx, (BYTE*)textUtf8, strlen(textUtf8)))
-	{
-		delete [] textUtf8;
-		return false;
-	}
+	HashFunction_Update(&ctx, (BYTE*)textUtf8, strlen(textUtf8));
 	delete [] textUtf8;
 #else
-	if(!HashFunction_Update(hashType, &ctx, (BYTE*)textData, strlen(textData)))
-	{
-		return false;
-	}
+	HashFunction_Update(&ctx, (BYTE*)textData, strlen(textData));
 #endif
 
 	BYTE hashValue[128];
-	if(HashFunction_Final(hashType, &ctx, hashValue))
-	{
-		ConvertHashToHex(hashSize, hashValue, hashOut);
-		return true;
-	}
-
-	return false;
+	HashFunction_Final(&ctx, hashValue);
+	ConvertHashToHex(hashSize, hashValue, hashOut);
+	return true;
 };
+
+#endif //STDUTILS_DISABLE_HASHES

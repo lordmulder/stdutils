@@ -1066,10 +1066,9 @@ static int GetHashType(const TCHAR *const type)
 	{
 		if(STRICMP(type, HASH_ALGO_MAPPING[i].name) == 0)
 		{
-			return type, HASH_ALGO_MAPPING[i].id;
+			return HASH_ALGO_MAPPING[i].id;
 		}
 	}
-
 	return -1;
 }
 
@@ -1083,7 +1082,7 @@ NSISFUNC(HashFile)
 	popstringn(file, 0);
 	popstringn(temp, 0);
 
-	const int hashType = GetHashType(temp);
+	const int hashType = GetHashType(STRTRIM(temp));
 	if(hashType >= 0)
 	{
 		if(ComputeHash_FromFile(hashType, file, temp, g_stringsize))
@@ -1114,7 +1113,7 @@ NSISFUNC(HashText)
 	popstringn(text, 0);
 	popstringn(temp, 0);
 
-	const int hashType = GetHashType(temp);
+	const int hashType = GetHashType(STRTRIM(temp));
 	if(hashType >= 0)
 	{
 		if(ComputeHash_FromText(hashType, text, temp, g_stringsize))

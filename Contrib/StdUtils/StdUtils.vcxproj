@@ -123,6 +123,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\unicode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -163,6 +164,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\ansi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
