@@ -80,7 +80,8 @@ char *strtrim(char* input, bool trim_left, bool trim_right)
 		size_t right = strlen(input);
 		while(right > 0)
 		{
-			if(str_whitespace(input[--right])) input[right] = '\0';
+			if(!str_whitespace(input[--right])) break;
+			input[right] = '\0';
 		}
 	}
 
@@ -100,7 +101,8 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left, bool trim_right)
 		size_t right = wcslen(input);
 		while(right > 0)
 		{
-			if(wcs_whitespace(input[--right])) input[right] = L'\0';
+			if(!wcs_whitespace(input[--right])) break;
+			input[right] = L'\0';
 		}
 	}
 
