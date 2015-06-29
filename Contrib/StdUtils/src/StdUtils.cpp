@@ -863,10 +863,22 @@ NSISFUNC(GetParameter)
 
 	popstringn(aval, 0);
 	popstringn(name, 0);
-	parse_commandline(name, aval, g_stringsize);
+	parse_commandline(STRTRIM(name), aval, g_stringsize);
 	pushstring(aval);
 
 	delete [] aval;
+	delete [] name;
+}
+
+NSISFUNC(TestParameter)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(name, g_stringsize);
+
+	popstringn(name, 0);
+	pushstring(parse_commandline(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
+
 	delete [] name;
 }
 

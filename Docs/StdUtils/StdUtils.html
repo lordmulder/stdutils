@@ -50,7 +50,7 @@
 		<li><a href="#df333b53">Shell File Operation: SHFileCopy / SHFileMove</a>
 		<li><a href="#18e9c5cb">AppendToFile</a>
 		<li><a href="#a3d3af46">Create Process Functions: ExecShellAsUser / ExecShellWait / WaitForProcEx</a>
-		<li><a href="#f24cc3f9">Command-line Parameter Functions: GetParameter / GetAllParameters</a>
+		<li><a href="#f24cc3f9">Command-line Parameter Functions: TestParameter / GetParameter / GetAllParameters</a>
 		<li><a href="#d452a779">InvokeShellVerb</a>
 		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
@@ -99,6 +99,7 @@
 !define StdUtils.ExecShellWaitEx  #ShellExecuteEx(), returns the handle of the new process
 !define StdUtils.WaitForProcEx    #WaitForSingleObject(), e.g. to wait for a running process
 !define StdUtils.GetParameter     #Get the value of a specific command-line option
+!define StdUtils.TestParameter    #Test whether a specific command-line option has been set
 !define StdUtils.GetAllParameters #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion #Get the *real* Windows version number, even on Windows 8.1+
 !define StdUtils.GetRealOSBuildNo #Get the *real* Windows build number, even on Windows 8.1+
@@ -537,17 +538,19 @@ SectionEnd</pre>
 
 <a name="f24cc3f9"></a><h2>Command-line Parameter Functions</h2>
 
-<p><b><tt>${StdUtils.GetParameter} <i>user_var(output)</i> <i>name</i> <i>default</i><br>${StdUtils.GetAllParameters} <i>user_var(output)</i> <i>truncate</i></tt></b></p>
-<p>With <tt>${StdUtils.GetParameter}</tt> you can check for the presence of a specific command-line parameter. If the parameter was specified with a (non-empty) value, then the parameter's value is return. If the parameter was specified without a value, then an empty string is return. If the parameter has not been specified, then the default value is returned.</p>
+<p><b><tt>${StdUtils.TestParameter} <i>user_var(output)</i> <i>name</i><br>${StdUtils.GetParameter} <i>user_var(output)</i> <i>name</i> <i>default</i></tt></b></p>
+<p>With the <tt>${StdUtils.TestParameter}</tt> function you can check for the presence of the command-line parameter specified by <tt>name</tt>. If that parameter is present on the command-line, the function returns <tt>true</tt>, otherwise it returns <tt>false</tt>. Additionally, the <tt>${StdUtils.GetParameter}</tt> function can be used to get the value of the command-line parameter specified by <tt>name</tt>. If that parameter is present on the command-line, then the function returns the corresponding value. This might be an <i>empty</i> string! If the parameter is <i>not</i> present, then the <tt>default</tt> value is returned.</p>
+<p>Hint: If the same parameter appears on the command-line multiple times, only the <i>first</i> occurrence will be returned. If the parameter value is too long to fit into an NSIS string, it will be truncated as needed. In any case, the parameter value will automatically be <i>trimmed</i> by this function.</p>
 
-<p>Parameters can be passed to the installer like this:</p>
+<p><b>Parameters are passed to the installer using the following syntax:</b></p>
 <ul>
-	<li><tt>Installer.exe /Foobar</tt>
-	<li><tt>Installer.exe /Foobar=SomeValue</tt>
-	<li><tt>Installer.exe "/Foobar=Some Value With Whitespaces"</tt>
+	<li><tt>Installer.exe /ParameterName</tt>
+	<li><tt>Installer.exe /ParameterName=Value</tt>
+	<li><tt>Installer.exe "/ParameterName=Value Containing Spaces"</tt>
+	<li><tt>Installer.exe /ParameterName="Value Containing Spaces"</tt> <b style="color:red;font-family:monospace">*</b>
+	<li><tt>Installer.exe /ParameterName=Value" Containing "Spaces</tt> <b style="color:red;font-family:monospace">*</b>
 </ul>
-
-<p>Additionally you can use <tt>${StdUtils.GetAllParameters}</tt> to get the complete command-line string, but without the executable name. This is useful to forward all command-line parameters to an encapsulated installer, for example. The truncate parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With the parameter set to 1, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> (usually 1024 or 8192) characters, if necessary. With the parameter set to 0, the command-line will not be truncated. Instead the value "too_long" is returned, if the command-line doesn't fit into an NSIS string.</p>
+<p><small><b style="color:red;font-family:monospace">*</b> Using this syntax is <u>not</u> recommended, but it is supported anyway, for consistency with the way that Visual C++ handles command-line arguments!</small></p>
 
 <pre>!include 'StdUtils.nsh'
  
@@ -555,23 +558,30 @@ RequestExecutionLevel user
 ShowInstDetails show
  
 Section
-	${StdUtils.GetParameter} $R0 "Foobar" "&lt;N/A&gt;"
+	${StdUtils.TestParameter} $R0 "Foobar"
+	StrCmp "$R0" "true" 0 +3
+	DetailPrint 'Command-line parameter /Foobar is specified!'
+	Goto +2
+	DetailPrint 'Command-line parameter /Foobar is *not* specified!'
+SectionEnd
+
+Section
+	${StdUtils.GetParameter} $R0 "Foobar" "&lt;MyDefault&gt;"
+	DetailPrint 'Value of command-line parameter /Foobar is: "$R0"'
+SectionEnd</pre>
+
+<p><b><tt><br>${StdUtils.GetAllParameters} <i>user_var(output)</i> <i>truncate</i></tt></b></p>
+<p>Furthermore you can use <tt>${StdUtils.GetAllParameters}</tt> to get the <i>complete</i> command-line string, but <u>without</u> the executable name. This is useful, for example, to forward all command-line parameters to an <i><a href="http://nsis.sourceforge.net/Embedding_other_installers">embedded</a></i> installer. The <tt>truncate</tt> parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With <tt>truncate</tt> set to <b>1</b>, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> characters. With <tt>truncate</tt> set to <b>0</b>, the function returns "too_long", if the command-line doesn't fit into an NSIS string.</p>
+
+<pre>!include 'StdUtils.nsh'
  
-	StrCmp "$R0" "&lt;N/A&gt;" 0 +3
-	DetailPrint "Parameter /Foobar is *not* specified!"
-	Goto Finished
+RequestExecutionLevel user
+ShowInstDetails show
  
-	StrCmp "$R0" "" 0 +3 ;'Installer.exe [...] /Foobar'
-	DetailPrint "Parameter /Foobar specified without a value." 
-	Goto Finished
- 
-	;'Installer.exe /Foobar=Foo' or 'Installer.exe "/Foobar=Foo Bar"'
-	${StdUtils.TrimStr} $R0
-	DetailPrint "Value of parameter /Foobar is: '$R0'"
- 
-	Finished:
+Section
 	${StdUtils.GetAllParameters} $R0 0
 	DetailPrint "Complete command-line: '$R0'"
+
 	${StdUtils.GetAllParameters} $R0 1
 	DetailPrint "Truncated command-line: '$R0'"
 SectionEnd</pre>
@@ -945,7 +955,8 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 	<ul>
 		<li>Added new functions <tt>HashText</tt> and <tt>HashFile</tt>, which can be used to compute the cryptographic hash of the given file or string
 		<li>Added new functions <tt>ValidFileName</tt> and <tt>ValidPathSpec</tt>, which can be used to test if a string is a valid file name or a valid full path
-		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another (existing) file.
+		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another (existing) file
+		<li>Added new function <tt>TestParameter</tt>, which can be used to test whether a specific parameter is present on the command-line
 	</ul>
 	<li><b>Version 1.06, released 2015-06-14</b>
 	<ul>

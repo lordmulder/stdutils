@@ -35,19 +35,28 @@ static bool parse_parameter(TCHAR *const buffer, const TCHAR *const arg_name, bo
 	TCHAR *offset = STRCHR(buffer, T('='));
 	if(!offset)
 	{
-		if((buffer[0] == T('/')) && (STRICMP(STRTRIM(&buffer[1]), arg_name) == 0))
+		const TCHAR *const temp = STRTRIM(buffer);
+		if((temp[0] == T('/')) && (STRICMP(&temp[1], arg_name) == 0))
 		{
-			dest_buff[0] = T('\0');
+			if(dest_buff && (dest_size > 0))
+			{
+				dest_buff[0] = T('\0');
+			}
 			return true;
 		}
 		return false;
 	}
 
-	*(offset++) = T('\0');
-	if((buffer[0] == T('/')) && (STRICMP(STRTRIM(&buffer[1]), arg_name) == 0))
+	*(offset++) = T('\0');	// <-- replace the separator with NULL character
+
+	const TCHAR *const temp = STRTRIM(buffer);
+	if((temp[0] == T('/')) && (STRICMP(&temp[1], arg_name) == 0))
 	{
-		STRNCPY(dest_buff, STRTRIM(offset), dest_size);
-		dest_buff[dest_size-1] = T('\0');
+		if(dest_buff && (dest_size > 0))
+		{
+			STRNCPY(dest_buff, STRTRIM(offset), dest_size);
+			dest_buff[dest_size-1] = T('\0');
+		}
 		return true;
 	}
 	

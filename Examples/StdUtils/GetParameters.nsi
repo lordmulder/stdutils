@@ -16,23 +16,22 @@ RequestExecutionLevel user
 ShowInstDetails show
 
 Section
-	${StdUtils.GetParameter} $R0 "Foobar" "<N/A>"
-	
-	StrCmp "$R0" "<N/A>" 0 +3
-	DetailPrint "Parameter /Foobar is *not* specified!"
-	Goto Finished
-	
-	StrCmp "$R0" "" 0 +3 ;'Installer.exe [...] /Foobar'
-	DetailPrint "Parameter /Foobar specified without a value." 
-	Goto Finished
+	${StdUtils.TestParameter} $R0 "Foobar"
+	StrCmp "$R0" "true" 0 +3
+	DetailPrint 'Command-line parameter /Foobar is specified!'
+	Goto +2
+	DetailPrint 'Command-line parameter /Foobar is *not* specified!'
+SectionEnd
 
-	;'Installer.exe /Foobar=Foo' or 'Installer.exe "/Foobar=Foo Bar"'
-	${StdUtils.TrimStr} $R0
-	DetailPrint "Value of parameter /Foobar is: '$R0'"
-	
-	Finished:
+Section
+	${StdUtils.GetParameter} $R0 "Foobar" "<MyDefault>"
+	DetailPrint 'Value of command-line parameter /Foobar is: "$R0"'
+SectionEnd
+
+Section
 	${StdUtils.GetAllParameters} $R0 0
 	DetailPrint "Complete command-line: '$R0'"
+
 	${StdUtils.GetAllParameters} $R0 1
 	DetailPrint "Truncated command-line: '$R0'"
 SectionEnd
