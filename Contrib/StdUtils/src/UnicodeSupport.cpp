@@ -63,14 +63,14 @@ char *utf16_to_utf8(const wchar_t *const input)
 	return NULL;
 }
 
-inline static bool str_whitespace(const char c)
+inline bool str_whitespace(const char c)
 {
-	return iscntrl(c) || isspace(c);	//return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
+	return (c) && (iscntrl(c) || isspace(c));	//return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 }
 
-inline static bool wcs_whitespace(const wchar_t c)
+inline bool wcs_whitespace(const wchar_t c)
 {
-	return iswcntrl(c) || iswspace(c);	//return (c == L' ') || (c == L'\t') || (c == L'\n') || (c == L'\r');
+	return (c) && (iswcntrl(c) || iswspace(c));	//return (c == L' ') || (c == L'\t') || (c == L'\n') || (c == L'\r');
 }
 
 char *strtrim(char* input, bool trim_left, bool trim_right)

@@ -24,7 +24,7 @@
 #include <Windows.h>
 #include "UnicodeSupport.h"
 
-static bool parse_parameter(const TCHAR *str, const size_t len, const TCHAR *arg_name, bool *first, TCHAR *dest_buff, size_t dest_size)
+static bool parse_parameter(TCHAR *const buffer, const TCHAR *const arg_name, bool *const first, TCHAR *dest_buff, size_t dest_size)
 {
 	if(*first)
 	{
@@ -32,123 +32,121 @@ static bool parse_parameter(const TCHAR *str, const size_t len, const TCHAR *arg
 		return false;
 	}
 
-	bool bSuccess = false;
-	
-	if((len > 1) && (str[0] == T('/')))
+	TCHAR *offset = STRCHR(buffer, T('='));
+	if(!offset)
 	{
-		TCHAR *buffer = new TCHAR[len];
-		memset(buffer, 0, sizeof(TCHAR) * len);
-		STRNCPY(buffer, &str[1], len-1);
-
-		TCHAR *offset = STRCHR(buffer, T('='));
-		if(offset != NULL)
+		if((buffer[0] == T('/')) && (STRICMP(STRTRIM(&buffer[1]), arg_name) == 0))
 		{
-			offset[0] = T('\0');
-			if(STRICMP(buffer, arg_name) == 0)
-			{
-				bSuccess = true;
-				STRNCPY(dest_buff, &offset[1], dest_size);
-				dest_buff[dest_size-1] = T('\0');
-			}
+			dest_buff[0] = T('\0');
+			return true;
 		}
-		else
-		{
-			if(STRICMP(buffer, arg_name) == 0)
-			{
-				bSuccess = true;
-				dest_buff[0] = T('\0');
-			}
-		}
-	
-		delete [] buffer;
+		return false;
 	}
 
-	return bSuccess;
+	*(offset++) = T('\0');
+	if((buffer[0] == T('/')) && (STRICMP(STRTRIM(&buffer[1]), arg_name) == 0))
+	{
+		STRNCPY(dest_buff, STRTRIM(offset), dest_size);
+		dest_buff[dest_size-1] = T('\0');
+		return true;
+	}
+	
+	return false;
 }
 
-bool parse_commandline(const TCHAR *arg_name, TCHAR *dest_buff, size_t dest_size)
+bool parse_commandline(const TCHAR *const arg_name, TCHAR *const dest_buff, size_t dest_size)
 {
-	bool bSuccess = false;
-	TCHAR *cmd = GetCommandLine();
-	
-	if(cmd)
+	if((!arg_name) || (!arg_name[0]))
 	{
-		bool first = true;
-		size_t cmd_len = STRLEN(cmd);
-		size_t tok_len = 0;
-		TCHAR *tok_pos = NULL;
+		return false;
+	}
+
+	const TCHAR *const cmd = GetCommandLine();
+	if((!cmd) || (!cmd[0]))
+	{
+		return false;
+	}
+
+	size_t pos = 0, tok_len = 0;
+	bool first = true;
+	TCHAR *buffer = new TCHAR[STRLEN(cmd) + 1];
+
+	while(cmd[pos])
+	{
 		bool flag = false;
-		for(size_t i = 0; i < cmd_len; i++)
+		while(WHITESPACE(cmd[pos])) pos++;
+		while(cmd[pos])
 		{
-			if(cmd[i] == T('\"'))
+			if(cmd[pos] == T('"'))
 			{
-				if(tok_pos != NULL)
+				flag = (!flag);
+			}
+			else
+			{
+				const bool is_space = WHITESPACE(cmd[pos]);
+				if((!flag) && is_space)
 				{
-					if(parse_parameter(tok_pos, tok_len, arg_name, &first, dest_buff, dest_size))
+					if(tok_len > 0)
 					{
-						bSuccess = true;
+						buffer[tok_len] = T('\0');
+						if(parse_parameter(buffer, arg_name, &first, dest_buff, dest_size))
+						{
+							delete [] buffer;
+							return true;
+						}
+						tok_len = 0;
 					}
+					break;
 				}
-				tok_len = 0;
-				tok_pos = NULL;
-				flag = !flag;
-				continue;
+				buffer[tok_len++] = is_space ? T(' ') : cmd[pos];
 			}
-			if((cmd[i] == L' ') && (flag == false))
-			{
-				if(tok_pos != NULL)
-				{
-					if(parse_parameter(tok_pos, tok_len, arg_name, &first, dest_buff, dest_size))
-					{
-						bSuccess = true;
-					}
-				}
-				tok_len = 0;
-				tok_pos = NULL;
-				continue;
-			}
-			if(tok_pos == NULL)
-			{
-				tok_pos = &cmd[i];
-			}
-			tok_len++;
-		}
-		if(tok_pos != NULL)
-		{
-			if(parse_parameter(tok_pos, tok_len, arg_name, &first, dest_buff, dest_size))
-			{
-				bSuccess = true;
-			}
+			pos++;
 		}
 	}
 
-	return bSuccess;
+	if(tok_len > 0)
+	{
+		buffer[tok_len] = T('\0');
+		if(parse_parameter(buffer, arg_name, &first, dest_buff, dest_size))
+		{
+			delete [] buffer;
+			return true;
+		}
+	}
+
+	delete [] buffer;
+	return false;
 }
 
 const TCHAR *get_commandline_arguments(void)
 {
-	TCHAR *cmd = GetCommandLine();
-	static const TCHAR *error = T("error");
-
-	if(cmd)
+	const TCHAR *cmd = GetCommandLine();
+	if((!cmd) || (!cmd[0]))
 	{
-		size_t i = 0;
-		while(cmd[i] == T(' ')) i++;
-		if(cmd[i] == T('\"'))
+		static const TCHAR *error = T("error");
+		return error;
+	}
+
+	size_t pos = 0;
+	while(WHITESPACE(cmd[pos])) pos++;
+
+	bool flag = false;
+	while(cmd[pos])
+	{
+		if(cmd[pos] == T('"'))
 		{
-			i++;
-			while((cmd[i] != T('\0')) && (cmd[i] != T('\"'))) i++;
-			if(cmd[i] == T('\"')) i++;
+			flag = (!flag);
 		}
 		else
 		{
-			while((cmd[i] != T('\0')) && (cmd[i] != T(' ')) && (cmd[i] != T('\"'))) i++;
+			if((!flag) && WHITESPACE(cmd[pos]))
+			{
+				break;
+			}
 		}
-		while(cmd[i] == T(' ')) i++;
-		return &cmd[i];
+		pos++;
 	}
-	else
-	{
-		return error;
-	}
+
+	while(WHITESPACE(cmd[pos])) pos++;
+	return &cmd[pos];
 }

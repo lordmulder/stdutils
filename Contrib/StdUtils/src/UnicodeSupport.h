@@ -28,6 +28,9 @@ char *utf16_to_utf8(const wchar_t *const input);
 char *strtrim(char* input, bool trim_left = true, bool trim_right = true);
 wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 
+bool str_whitespace(const char c);
+bool wcs_whitespace(const wchar_t c);
+
 #ifdef UNICODE
 	#define STRLEN wcslen	
 	#define STRICMP _wcsicmp
@@ -40,6 +43,7 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 	#define ISALPHA iswalpha
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
+	#define WHITESPACE wcs_whitespace
 #else
 	#define STRLEN strlen
 	#define STRICMP _stricmp
@@ -51,4 +55,5 @@ wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
 	#define ISCNTRL iscntrl
 	#define ISALPHA isalpha
 	#define T(X) X
+	#define WHITESPACE str_whitespace
 #endif
