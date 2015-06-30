@@ -78,6 +78,9 @@
     <ClCompile Include="src\blake2\blake2.cpp">
       <Filter>Source Files\Blake2</Filter>
     </ClCompile>
+    <ClCompile Include="src\RandUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ComUtils.h">

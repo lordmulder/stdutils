@@ -21,5 +21,6 @@
 
 #pragma once
 
-bool parse_commandline(const TCHAR *const arg_name, TCHAR *const dest_buff, size_t dest_size);
+bool parse_commandline_param(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size);
 const TCHAR *get_commandline_arguments(void);
+void free_commandline_args(void);

@@ -29,10 +29,12 @@
 #include "FileUtils.h"
 #include "HashUtils.h"
 
+//Global
 bool g_bStdUtilsVerbose = false;
+RTL_CRITICAL_SECTION g_pStdUtilsMutex;
 
+//Local
 static HANDLE g_hInstance;
-static RTL_CRITICAL_SECTION g_mutex;
 static bool g_bCallbackRegistred;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,14 +45,15 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
-		InitializeCriticalSection(&g_mutex);
+		InitializeCriticalSection(&g_pStdUtilsMutex);
 		g_hInstance = hInst;
 		g_bCallbackRegistred = false;
 		g_bStdUtilsVerbose = false;
 	}
 	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
-		DeleteCriticalSection(&g_mutex);
+		free_commandline_args();
+		DeleteCriticalSection(&g_pStdUtilsMutex);
 	}
 	return TRUE;
 }
@@ -863,8 +866,8 @@ NSISFUNC(GetParameter)
 
 	popstringn(aval, 0);
 	popstringn(name, 0);
-	parse_commandline(STRTRIM(name), aval, g_stringsize);
-	pushstring(aval);
+	parse_commandline_param(STRTRIM(name), aval, g_stringsize);
+	pushstring(STRTRIM(aval));
 
 	delete [] aval;
 	delete [] name;
@@ -877,7 +880,7 @@ NSISFUNC(TestParameter)
 	MAKESTR(name, g_stringsize);
 
 	popstringn(name, 0);
-	pushstring(parse_commandline(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
+	pushstring(parse_commandline_param(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
 
 	delete [] name;
 }

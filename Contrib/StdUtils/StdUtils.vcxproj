@@ -199,6 +199,7 @@
     <ClCompile Include="src\HashUtils.cpp" />
     <ClCompile Include="src\InvokeShellVerb.cpp" />
     <ClCompile Include="src\ParameterParser.cpp" />
+    <ClCompile Include="src\RandUtils.cpp" />
     <ClCompile Include="src\rhash\byte_order.c" />
     <ClCompile Include="src\rhash\crc32.c" />
     <ClCompile Include="src\rhash\md5.c" />

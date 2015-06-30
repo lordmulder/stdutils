@@ -21,4 +21,23 @@
 
 #pragma once
 
-unsigned int next_rand(void);
+#define WIN32_LEAN_AND_MEAN 1
+#include <Windows.h>
+
+/*RAII mutext locker class*/
+class MutexLocker
+{
+public:
+	MutexLocker(LPCRITICAL_SECTION mutex)
+	:
+		m_mutex(mutex)
+	{
+		EnterCriticalSection(m_mutex);
+	}
+	~MutexLocker(void)
+	{
+		LeaveCriticalSection(m_mutex);
+	}
+private:
+	LPCRITICAL_SECTION const m_mutex;
+};

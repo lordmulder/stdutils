@@ -34,6 +34,7 @@ bool wcs_whitespace(const wchar_t c);
 #ifdef UNICODE
 	#define STRLEN wcslen	
 	#define STRICMP _wcsicmp
+	#define STRNICMP _wcsnicmp
 	#define STRNCPY wcsncpy
 	#define STRCHR wcschr
 	#define STRTRIM wcstrim
@@ -47,6 +48,7 @@ bool wcs_whitespace(const wchar_t c);
 #else
 	#define STRLEN strlen
 	#define STRICMP _stricmp
+	#define STRNICMP _strnicmp
 	#define STRNCPY strncpy
 	#define STRCHR strchr
 	#define STRTRIM strtrim

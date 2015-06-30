@@ -21,22 +21,54 @@
 
 #pragma warning(disable:4996)
 
-#include <Windows.h>
+#include "Mutex.h"
 #include "UnicodeSupport.h"
+#include <stdlib.h>
+#include <msvc_utils.h>
 
-static bool parse_parameter(TCHAR *const buffer, const TCHAR *const arg_name, bool *const first, TCHAR *dest_buff, size_t dest_size)
+//Global
+extern RTL_CRITICAL_SECTION g_pStdUtilsMutex;
+
+//Stdlib
+typedef struct { int newmode; } _startupinfo;
+extern "C"
 {
-	if(*first)
+	int __getmainargs (int *_Argc, char    ***_Argv, char    ***_Env, int _DoWildCard, _startupinfo *_StartInfo);
+	int __wgetmainargs(int *_Argc, wchar_t ***_Argv, wchar_t ***_Env, int _DoWildCard, _startupinfo *_StartInfo);
+}
+
+//Unicode support
+#ifdef UNICODE
+#define GETMAINARGS __wgetmainargs
+#else
+#define GETMAINARGS __getmainargs
+#endif
+
+//Command-line parameters buffer
+static int s_argc = 0;
+static TCHAR **s_argv = NULL, **s_envp = NULL;
+
+static bool init_mainargs(void)
+{
+	MutexLocker locker(&g_pStdUtilsMutex);
+	if(!s_argv)
 	{
-		*first = false;
+		_startupinfo si = { 0 };
+		if(GETMAINARGS(&s_argc, &s_argv, &s_envp, 0, &si) == 0)
+		{
+			return (s_argv != NULL);
+		}
 		return false;
 	}
+	return true;
+}
 
-	TCHAR *offset = STRCHR(buffer, T('='));
-	if(!offset)
+static bool try_parse_parameter(const TCHAR *const argstr, const TCHAR *const arg_name, const size_t arg_name_len, TCHAR *const dest_buff, const size_t dest_size)
+{
+	const TCHAR *separator = STRCHR(argstr, T('='));
+	if(!separator)
 	{
-		const TCHAR *const temp = STRTRIM(buffer);
-		if((temp[0] == T('/')) && (STRICMP(&temp[1], arg_name) == 0))
+		if((argstr[0] == T('/')) && (STRICMP(&argstr[1], arg_name) == 0))
 		{
 			if(dest_buff && (dest_size > 0))
 			{
@@ -47,83 +79,37 @@ static bool parse_parameter(TCHAR *const buffer, const TCHAR *const arg_name, bo
 		return false;
 	}
 
-	*(offset++) = T('\0');	// <-- replace the separator with NULL character
-
-	const TCHAR *const temp = STRTRIM(buffer);
-	if((temp[0] == T('/')) && (STRICMP(&temp[1], arg_name) == 0))
+	const size_t len = separator - argstr;
+	if(len > arg_name_len)
 	{
-		if(dest_buff && (dest_size > 0))
+		if((argstr[0] == T('/')) && (STRNICMP(&argstr[1], arg_name, arg_name_len) == 0))
 		{
-			STRNCPY(dest_buff, STRTRIM(offset), dest_size);
-			dest_buff[dest_size-1] = T('\0');
+			if(dest_buff && (dest_size > 0))
+			{
+				STRNCPY(dest_buff, ++separator, dest_size);
+				dest_buff[dest_size-1] = T('\0');
+			}
+			return true;
 		}
-		return true;
 	}
 	
 	return false;
 }
 
-bool parse_commandline(const TCHAR *const arg_name, TCHAR *const dest_buff, size_t dest_size)
+bool parse_commandline_param(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
-	if((!arg_name) || (!arg_name[0]))
+	if(init_mainargs())
 	{
-		return false;
-	}
-
-	const TCHAR *const cmd = GetCommandLine();
-	if((!cmd) || (!cmd[0]))
-	{
-		return false;
-	}
-
-	size_t pos = 0, tok_len = 0;
-	bool first = true;
-	TCHAR *buffer = new TCHAR[STRLEN(cmd) + 1];
-
-	while(cmd[pos])
-	{
-		bool flag = false;
-		while(WHITESPACE(cmd[pos])) pos++;
-		while(cmd[pos])
+		for(int i = 1; i < s_argc; i++)
 		{
-			if(cmd[pos] == T('"'))
+			const size_t arg_name_len = STRLEN(arg_name);
+			if(try_parse_parameter(s_argv[i], arg_name, arg_name_len, dest_buff, dest_size))
 			{
-				flag = (!flag);
+				return true;
 			}
-			else
-			{
-				const bool is_space = WHITESPACE(cmd[pos]);
-				if((!flag) && is_space)
-				{
-					if(tok_len > 0)
-					{
-						buffer[tok_len] = T('\0');
-						if(parse_parameter(buffer, arg_name, &first, dest_buff, dest_size))
-						{
-							delete [] buffer;
-							return true;
-						}
-						tok_len = 0;
-					}
-					break;
-				}
-				buffer[tok_len++] = is_space ? T(' ') : cmd[pos];
-			}
-			pos++;
 		}
 	}
 
-	if(tok_len > 0)
-	{
-		buffer[tok_len] = T('\0');
-		if(parse_parameter(buffer, arg_name, &first, dest_buff, dest_size))
-		{
-			delete [] buffer;
-			return true;
-		}
-	}
-
-	delete [] buffer;
 	return false;
 }
 
@@ -158,4 +144,19 @@ const TCHAR *get_commandline_arguments(void)
 
 	while(WHITESPACE(cmd[pos])) pos++;
 	return &cmd[pos];
+}
+
+void free_commandline_args(void)
+{
+	MutexLocker locker(&g_pStdUtilsMutex);
+	if(s_argv)
+	{
+		for (TCHAR **ptr = s_argv; (*ptr); ++ptr)
+		{
+			free(*ptr);
+		}
+		free(s_argv);
+		s_argv = NULL;
+		s_argc = 0;
+	}
 }
