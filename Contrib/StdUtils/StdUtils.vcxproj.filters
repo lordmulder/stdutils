@@ -81,6 +81,9 @@
     <ClCompile Include="src\RandUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CleanUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ComUtils.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="src\blake2\blake2.h">
       <Filter>Header Files\Blake2</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CleanUp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -28,14 +28,15 @@
 #include "WinUtils.h"
 #include "FileUtils.h"
 #include "HashUtils.h"
+#include "CleanUp.h"
 
-//Global
+//External
 bool g_bStdUtilsVerbose = false;
 RTL_CRITICAL_SECTION g_pStdUtilsMutex;
 
-//Local
-static HANDLE g_hInstance;
-static bool g_bCallbackRegistred;
+//Global
+static HANDLE g_hInstance = NULL;
+static bool g_bCallbackRegistred = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DLL MAIN
@@ -52,7 +53,7 @@ BOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lpReserved)
 	}
 	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
-		free_commandline_args();
+		cleanup_execute_tasks();
 		DeleteCriticalSection(&g_pStdUtilsMutex);
 	}
 	return TRUE;
@@ -866,7 +867,7 @@ NSISFUNC(GetParameter)
 
 	popstringn(aval, 0);
 	popstringn(name, 0);
-	parse_commandline_param(STRTRIM(name), aval, g_stringsize);
+	commandline_get_arg(STRTRIM(name), aval, g_stringsize);
 	pushstring(STRTRIM(aval));
 
 	delete [] aval;
@@ -880,7 +881,7 @@ NSISFUNC(TestParameter)
 	MAKESTR(name, g_stringsize);
 
 	popstringn(name, 0);
-	pushstring(parse_commandline_param(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
+	pushstring(commandline_get_arg(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
 
 	delete [] name;
 }
@@ -890,7 +891,7 @@ NSISFUNC(GetAllParameters)
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
 	int truncate = popint();
-	const TCHAR *cmd = get_commandline_arguments();
+	const TCHAR *cmd = commandline_get_all();
 
 	if((STRLEN(cmd) < g_stringsize) || truncate)
 	{

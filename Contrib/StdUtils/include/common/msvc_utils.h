@@ -26,23 +26,22 @@
 extern "C" {
 #endif
 
-
 #define RAND_MAX 0x7fff
 #define INT_MAX 2147483647
 
 #ifndef _INC_STDLIB
-long time(long *time);
-int rand(void);
-void srand(unsigned int _Seed);
-int abs(_In_ int _X);
+long __declspec(dllimport) time(long *time);
+int  __declspec(dllimport) rand(void);
+void __declspec(dllimport) srand(unsigned int _Seed);
+int  __declspec(dllimport) abs(_In_ int _X);
 #endif //_INC_STDLIB
 
-int _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
-int _snprintf(char *buffer, size_t count, const char *format, ...);
-int sscanf(const char *input, const char * format, ...);
-int swscanf(const wchar_t *input, const wchar_t * format, ...);
+int __declspec(dllimport) _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
+int __declspec(dllimport) _snprintf(char *buffer, size_t count, const char *format, ...);
+int __declspec(dllimport) sscanf(const char *input, const char * format, ...);
+int __declspec(dllimport) swscanf(const wchar_t *input, const wchar_t * format, ...);
 
-uintptr_t _beginthreadex( 
+uintptr_t __declspec(dllimport) _beginthreadex( 
 	void *security,
 	unsigned stack_size,
 	unsigned (__stdcall *start_address)(void*),

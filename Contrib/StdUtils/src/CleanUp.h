@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+#pragma once;///////////////////////////////////////////////////////////////////////////////
 // StdUtils plug-in for NSIS
 // Copyright (C) 2004-2015 LoRd_MuldeR <MuldeR2@GMX.de>
 //
@@ -19,8 +19,7 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+typedef void (*cleanup_task_t)(void);
 
-bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size);
-const TCHAR *commandline_get_all(void);
-
+void cleanup_register_task(const cleanup_task_t task);
+void cleanup_execute_tasks(void);

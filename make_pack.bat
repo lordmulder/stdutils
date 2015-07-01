@@ -29,10 +29,12 @@ if exist "%~dp0\StdUtils.%ISO_DATE%.zip" (
 )
 REM -------------------------------------------------------------------------
 for %%c in (Debug,Release_ANSI,Release_Unicode) do (
-	MSBuild.exe /property:Configuration=%%c /property:Platform=Win32 /target:Rebuild /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
-	if not "!ERRORLEVEL!"=="0" (
-		pause
-		exit
+	for %%t in (Clean,Rebuild,Build) do (
+		MSBuild.exe /property:Configuration=%%c /property:Platform=Win32 /target:%%t /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
+		if not "!ERRORLEVEL!"=="0" (
+			pause
+			exit
+		)
 	)
 )
 REM -------------------------------------------------------------------------

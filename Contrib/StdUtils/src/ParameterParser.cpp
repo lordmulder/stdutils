@@ -23,10 +23,12 @@
 
 #include "Mutex.h"
 #include "UnicodeSupport.h"
-#include <stdlib.h>
+#include "CleanUp.h"
+
+#include <malloc.h>
 #include <msvc_utils.h>
 
-//Global
+//External
 extern RTL_CRITICAL_SECTION g_pStdUtilsMutex;
 
 //Stdlib
@@ -44,9 +46,37 @@ extern "C"
 #define GETMAINARGS __getmainargs
 #endif
 
+//Ugly Win2k hackage
+#define IS_WIN2K (get_winver() < 0x501)
+
 //Command-line parameters buffer
 static int s_argc = 0;
 static TCHAR **s_argv = NULL, **s_envp = NULL;
+
+///////////////////////////////////////////////////////////////////////////////
+// INTERNAL FUNCTIONS
+///////////////////////////////////////////////////////////////////////////////
+
+static inline DWORD get_winver(void)
+{
+	const DWORD dwVersion = GetVersion();
+	return ((dwVersion & 0xFF) << 8) | ((dwVersion >> 8) & 0xFF);
+}
+
+static void free_mainargs(void)
+{
+	MutexLocker locker(&g_pStdUtilsMutex);
+	if(s_argv)
+	{
+		for (TCHAR **ptr = s_argv; (*ptr); ++ptr)
+		{
+			free(*ptr);
+		}
+		free(s_argv);
+		s_argv = NULL;
+		s_argc = 0;
+	}
+}
 
 static bool init_mainargs(void)
 {
@@ -54,16 +84,20 @@ static bool init_mainargs(void)
 	if(!s_argv)
 	{
 		_startupinfo si = { 0 };
-		if(GETMAINARGS(&s_argc, &s_argv, &s_envp, 0, &si) == 0)
+		if((GETMAINARGS(&s_argc, &s_argv, &s_envp, 0, &si) == 0) || IS_WIN2K)
 		{
-			return (s_argv != NULL);
+			if(s_argv != NULL)
+			{
+				cleanup_register_task(free_mainargs);
+				return true;
+			}
 		}
 		return false;
 	}
 	return true;
 }
 
-static bool try_parse_parameter(const TCHAR *const argstr, const TCHAR *const arg_name, const size_t arg_name_len, TCHAR *const dest_buff, const size_t dest_size)
+static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name, const size_t arg_len, TCHAR *const dest_buff, const size_t dest_size)
 {
 	const TCHAR *separator = STRCHR(argstr, T('='));
 	if(!separator)
@@ -80,9 +114,9 @@ static bool try_parse_parameter(const TCHAR *const argstr, const TCHAR *const ar
 	}
 
 	const size_t len = separator - argstr;
-	if(len > arg_name_len)
+	if(len > arg_len)
 	{
-		if((argstr[0] == T('/')) && (STRNICMP(&argstr[1], arg_name, arg_name_len) == 0))
+		if((argstr[0] == T('/')) && (STRNICMP(&argstr[1], arg_name, arg_len) == 0))
 		{
 			if(dest_buff && (dest_size > 0))
 			{
@@ -96,24 +130,27 @@ static bool try_parse_parameter(const TCHAR *const argstr, const TCHAR *const ar
 	return false;
 }
 
-bool parse_commandline_param(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
+///////////////////////////////////////////////////////////////////////////////
+// PUBLIC FUNCTIONS
+///////////////////////////////////////////////////////////////////////////////
+
+bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
-	if(init_mainargs())
+	if(s_argv || init_mainargs())
 	{
+		const size_t arg_len = STRLEN(arg_name);
 		for(int i = 1; i < s_argc; i++)
 		{
-			const size_t arg_name_len = STRLEN(arg_name);
-			if(try_parse_parameter(s_argv[i], arg_name, arg_name_len, dest_buff, dest_size))
+			if(try_parse_arg(s_argv[i], arg_name, arg_len, dest_buff, dest_size))
 			{
 				return true;
 			}
 		}
 	}
-
 	return false;
 }
 
-const TCHAR *get_commandline_arguments(void)
+const TCHAR *commandline_get_all(void)
 {
 	const TCHAR *cmd = GetCommandLine();
 	if((!cmd) || (!cmd[0]))
@@ -144,19 +181,4 @@ const TCHAR *get_commandline_arguments(void)
 
 	while(WHITESPACE(cmd[pos])) pos++;
 	return &cmd[pos];
-}
-
-void free_commandline_args(void)
-{
-	MutexLocker locker(&g_pStdUtilsMutex);
-	if(s_argv)
-	{
-		for (TCHAR **ptr = s_argv; (*ptr); ++ptr)
-		{
-			free(*ptr);
-		}
-		free(s_argv);
-		s_argv = NULL;
-		s_argc = 0;
-	}
 }

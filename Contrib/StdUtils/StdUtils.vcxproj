@@ -193,6 +193,7 @@
   <ItemGroup>
     <ClCompile Include="src\blake2\blake2.cpp" />
     <ClCompile Include="src\ByteToHex.cpp" />
+    <ClCompile Include="src\CleanUp.cpp" />
     <ClCompile Include="src\ComUtils.cpp" />
     <ClCompile Include="src\DetectOsVersion.cpp" />
     <ClCompile Include="src\FileUtils.cpp" />
@@ -213,6 +214,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\blake2\blake2.h" />
+    <ClInclude Include="src\CleanUp.h" />
     <ClInclude Include="src\ComUtils.h" />
     <ClInclude Include="src\DetectOsVersion.h" />
     <ClInclude Include="src\FileUtils.h" />
