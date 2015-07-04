@@ -22,5 +22,6 @@
 #pragma once
 
 bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size);
+bool commandline_get_raw(const int index, TCHAR *const dest_buff, const size_t dest_size);
 const TCHAR *commandline_get_all(void);
 

@@ -29,15 +29,15 @@ Section
 SectionEnd
 
 Section
-	${StdUtils.TestParameter} $R0 "Foobar"
-	StrCmp "$R0" "true" 0 +3
-	DetailPrint 'Command-line parameter /Foobar is specified!'
-	Goto +2
-	DetailPrint 'Command-line parameter /Foobar is *not* specified!'
-	
-	${StdUtils.GetParameter} $R0 "Foobar" "<MyDefault>"
-	DetailPrint 'Value of command-line parameter /Foobar is: "$R0"'
-	
+	StrCpy $R1 0
+FetchNextArg:
+	${StdUtils.RawParameter} $R0 $R1 "!$#@%&?"
+	StrCmp "$R0" "!$#@%&?" NoMoreArgs
+	DetailPrint 'Command-line token #$R1 is "$R0"'
+	IntOp $R1 $R1 + 1
+	Goto FetchNextArg
+NoMoreArgs:
+	DetailPrint 'No more command-line tokens!'
 	DetailPrint "----"
 SectionEnd
 

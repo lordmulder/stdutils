@@ -46,7 +46,7 @@ extern "C"
 #define GETMAINARGS __getmainargs
 #endif
 
-//Ugly Win2k hackage
+//Ugly Win2k hackage -> in Win2k __[w]getmainargs() did not have return value, so return value will be *undefined* on that OS!
 #define IS_WIN2K (get_winver() < 0x501)
 
 //Command-line parameters buffer
@@ -143,6 +143,24 @@ bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, co
 		{
 			if(try_parse_arg(s_argv[i], arg_name, arg_len, dest_buff, dest_size))
 			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool commandline_get_raw(const int index, TCHAR *const dest_buff, const size_t dest_size)
+{
+	if(index >= 0)
+	{
+		if(s_argv || init_mainargs())
+		{
+			const int actual_index = index + 1;
+			if(actual_index < s_argc)
+			{
+				STRNCPY(dest_buff, s_argv[actual_index], dest_size);
+				dest_buff[dest_size-1] = T('\0');
 				return true;
 			}
 		}

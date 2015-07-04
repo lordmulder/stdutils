@@ -886,6 +886,20 @@ NSISFUNC(TestParameter)
 	delete [] name;
 }
 
+NSISFUNC(RawParameter)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+	MAKESTR(value, g_stringsize);
+
+	popstringn(value, 0);
+	const int index = popint();
+	commandline_get_raw(index, value, g_stringsize);
+	pushstring(STRTRIM(value));
+
+	delete [] value;
+}
+
 NSISFUNC(GetAllParameters)
 {
 	EXDLL_INIT();
