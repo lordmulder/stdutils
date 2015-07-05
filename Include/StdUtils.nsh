@@ -53,7 +53,8 @@
 !define StdUtils.WaitForProcEx    '!insertmacro _StdUtils_WaitForProcEx' #WaitForSingleObject(), e.g. to wait for a running process
 !define StdUtils.GetParameter     '!insertmacro _StdUtils_GetParameter'  #Get the value of a specific command-line option
 !define StdUtils.TestParameter    '!insertmacro _StdUtils_TestParameter' #Test whether a specific command-line option has been set
-!define StdUtils.RawParameter     '!insertmacro _StdUtils_RawParameter'  #Get the n-th command-line token, similar to argv[i] of main()
+!define StdUtils.ParameterCnt     '!insertmacro _StdUtils_ParameterCnt'  #Get number of command-line tokens, similar to argc in main()
+!define StdUtils.ParameterStr     '!insertmacro _StdUtils_ParameterStr'  #Get the n-th command-line token, similar to argv[i] in main()
 !define StdUtils.GetAllParameters '!insertmacro _StdUtils_GetAllParams'  #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion '!insertmacro _StdUtils_GetRealOSVer'  #Get the *real* Windows version number, even on Windows 8.1+
 !define StdUtils.GetRealOSBuildNo '!insertmacro _StdUtils_GetRealOSBld'  #Get the *real* Windows build number, even on Windows 8.1+
@@ -274,10 +275,14 @@
 	pop ${out}
 !macroend
 
-!macro _StdUtils_RawParameter out index default
+!macro _StdUtils_ParameterCnt out
+	StdUtils::ParameterCnt /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdUtils_ParameterStr out index
 	push ${index}
-	push '${default}'
-	StdUtils::RawParameter /NOUNLOAD
+	StdUtils::ParameterStr /NOUNLOAD
 	pop ${out}
 !macroend
 
@@ -356,7 +361,7 @@
 # MAGIC NUMBERS
 #################################################################################
 
-!define StdUtils.Const.ISV_PinToTaskbar 5386
-!define StdUtils.Const.ISV_UnpinFromTaskbar 5387
-!define StdUtils.Const.ISV_PinToStartmenu 5381
+!define StdUtils.Const.ISV_PinToTaskbar       5386
+!define StdUtils.Const.ISV_UnpinFromTaskbar   5387
+!define StdUtils.Const.ISV_PinToStartmenu     5381
 !define StdUtils.Const.ISV_UnpinFromStartmenu 5382

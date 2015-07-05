@@ -50,7 +50,7 @@
 		<li><a href="#df333b53">Shell File Operation: SHFileCopy / SHFileMove</a>
 		<li><a href="#18e9c5cb">AppendToFile</a>
 		<li><a href="#a3d3af46">Create Process Functions: ExecShellAsUser / ExecShellWait / WaitForProcEx</a>
-		<li><a href="#f24cc3f9">Command-line Parameter Functions: TestParameter / GetParameter / GetAllParameters</a>
+		<li><a href="#f24cc3f9">Command-line Functions: {Test,Get}Parameter / Parameter{Cnt,Str} / GetAllParameters</a>
 		<li><a href="#d452a779">InvokeShellVerb</a>
 		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
@@ -100,6 +100,8 @@
 !define StdUtils.WaitForProcEx    #WaitForSingleObject(), e.g. to wait for a running process
 !define StdUtils.GetParameter     #Get the value of a specific command-line option
 !define StdUtils.TestParameter    #Test whether a specific command-line option has been set
+!define StdUtils.ParameterCnt     #Get number of command-line tokens, similar to argc in main()
+!define StdUtils.ParameterStr     #Get the n-th command-line token, similar to argv[i] in main()
 !define StdUtils.GetAllParameters #Get complete command-line, but without executable name
 !define StdUtils.GetRealOSVersion #Get the *real* Windows version number, even on Windows 8.1+
 !define StdUtils.GetRealOSBuildNo #Get the *real* Windows build number, even on Windows 8.1+
@@ -120,7 +122,8 @@
 
 <a name="e5717960"></a><h1>Installation</h1>
 
-<p>Depending on whether you are using the Unicode or ANSI (non-Unicode) variant of NSIS (we highly recommend using the Unicode variant!), you must copy either <tt>StdUtils\Plugins\Release_Unicode\StdUtils.dll</tt> or <tt>StdUtils\Plugins\Release_ANSI\StdUtils.dll</tt> into the <tt>Plugins</tt> sub-directory inside your NSIS installation directory. Also, in both cases, you must copy <tt>StdUtils\Include\StdUtils.nsh</tt> into the <tt>Include</tt> sub-directory inside your NSIS installation directory. That's it!</p>
+<p>Depending on whether you are using the <b>Unicode</b> or the <b>ANSI</b> (non-Unicode) variant of NSIS, you must copy either <tt>Plugins\Release_<span style="color:darkred">Unicode</span>\StdUtils.dll</tt> or <tt>Plugins\Release_<span style="color:darkred">ANSI</span>\StdUtils.dll</tt> into the <tt>Plugins</tt> sub-directory inside your NSIS installation. Using the <b>Unicode</b> version is <i>highly recommended</i> these days! Also, <i>in both cases</i>, you must copy <tt>Include\StdUtils.nsh</tt> into the <tt>Include</tt> sub-directory inside your NSIS installation. Please note that NSIS v2.x does <u>not</u> officially support Unicode, but you can (and should!) use <a href="http://www.scratchpaper.com/"><b>Unicode NSIS</b></a>. Unicode support will officially be added to NSIS v3.x, which currently is still in development stage. Therefore, the <b>Unicode</b> version of this plug-in has been developed and tested with <i>Unicode NSIS</i> v2.x, <b>not</b> with NSIS v3.x. Support for NSIS v3.x is going to be added as soon as it will be released.</p>
+<p>Hint: The release package now also contains a "tiny" version of this plug-in. That version has about 1/3 the size of the "normal" (full) version, but lacks support for hash computation. The "tiny" version is provided as <i>Unicode</i> build only!</p>
 
 <br>
 
@@ -570,6 +573,29 @@ Section
 	DetailPrint 'Value of command-line parameter /Foobar is: "$R0"'
 SectionEnd</pre>
 
+<p><b><tt><br>${StdUtils.ParameterCnt} <i>user_var(output)</i><br>${StdUtils.ParameterStr} <i>user_var(output)</i> <i>index</i></tt></b></p>
+<p>The <tt>${StdUtils.ParameterCnt}</tt> function returns then number of command-line tokens. This is equivalent to the <i>argc</i> parameter passed to the <a href="http://en.cppreference.com/w/cpp/language/main_function">main()</a> function. Note that this value may be <i>zero</i>, in which case <u>no</u> command-line tokens are available. If something went wrong, "error" is returned. Accordingly, the <tt>${StdUtils.ParameterStr}</tt> function returns the <i>n</i>-th command-line token. This is equivalent to the <i>n</i>-th element of the <i>argv</i> array passed to the <a href="http://en.cppreference.com/w/cpp/language/main_function">main()</a> function. Note that the token may be an <i>empty</i> string. Also note that this function uses <i>zero-based</i> indexing. Thus, an <tt>index</tt> of <b>0</b> returns the <i>first</i> token, an <tt>index</tt> of <b>1</b> returns the <i>second</i> token, and so on. The <tt>index</tt> must be in the <b>[0,N)</b> range (i.e. N <u>not</u> included), where <b>N</b> is the value returned by <tt>${StdUtils.ParameterCnt}</tt>. If something went wrong, e.g. <tt>index</tt> is out of range, the function returns "error".</p>
+<p>Hint: In contrast to the <a href="http://en.cppreference.com/w/cpp/language/main_function">main()</a> function, where the <i>first</i> token (index = 0) always contains the executable name, the <tt>${StdUtils.ParameterCnt}</tt> and <tt>${StdUtils.ParameterStr}</tt> functions will <u>omit</u> the executable name. Simply use the built-in <tt>$EXEFILE</tt> or <tt>$EXEPATH</tt> constants instead!</p>
+
+<pre>!include 'StdUtils.nsh'
+ 
+RequestExecutionLevel user
+ShowInstDetails show
+ 
+Section
+	StrCpy $R0 0                                    #Init counter to zero
+	${StdUtils.ParameterCnt} $R1                    #Get number of command-line tokens
+	IntCmp $R1 0 0 0 LoopNext                       #Any tokens available?
+	DetailPrint 'No command-line tokens!'           #Print some info
+	Goto LoopExit                                   #Exit
+LoopNext:
+	${StdUtils.ParameterStr} $R2 $R0                #Read next command-line token
+	DetailPrint 'Command-line token #$R0 is "$R2"'  #Print command-line token
+	IntOp $R0 $R0 + 1                               #counter += 1
+	IntCmp $R0 $R1 0 LoopNext                       #Loop while more tokens available
+LoopExit:
+SectionEnd</pre>
+
 <p><b><tt><br>${StdUtils.GetAllParameters} <i>user_var(output)</i> <i>truncate</i></tt></b></p>
 <p>Furthermore you can use <tt>${StdUtils.GetAllParameters}</tt> to get the <i>complete</i> command-line string, but <u>without</u> the executable name. This is useful, for example, to forward all command-line parameters to an <i><a href="http://nsis.sourceforge.net/Embedding_other_installers">embedded</a></i> installer. The <tt>truncate</tt> parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With <tt>truncate</tt> set to <b>1</b>, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> characters. With <tt>truncate</tt> set to <b>0</b>, the function returns "too_long", if the command-line doesn't fit into an NSIS string.</p>
 
@@ -957,6 +983,7 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 		<li>Added new functions <tt>ValidFileName</tt> and <tt>ValidPathSpec</tt>, which can be used to test if a string is a valid file name or a valid full path
 		<li>Added new function <tt>AppendToFile</tt>, which can be used to <i>append</i> the contents of one file to another (existing) file
 		<li>Added new function <tt>TestParameter</tt>, which can be used to test whether a specific parameter is present on the command-line
+		<li>Added new functions <tt>ParameterCnt</tt> and <tt>ParameterStr</tt>, which can be used to access the "raw" command-line tokens (like <tt>argv[i]</tt>)
 	</ul>
 	<li><b>Version 1.06, released 2015-06-14</b>
 	<ul>

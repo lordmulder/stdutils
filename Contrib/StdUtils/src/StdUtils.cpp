@@ -402,7 +402,7 @@ NSISFUNC(TrimStrLeft)
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
-	pushstring(STRTRIM(str, true, false));
+	pushstring(STRTRIM_LEFT(str));
 
 	delete [] str;
 }
@@ -414,7 +414,7 @@ NSISFUNC(TrimStrRight)
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
-	pushstring(STRTRIM(str, false, true));
+	pushstring(STRTRIM_RIGHT(str));
 
 	delete [] str;
 }
@@ -886,18 +886,38 @@ NSISFUNC(TestParameter)
 	delete [] name;
 }
 
-NSISFUNC(RawParameter)
+NSISFUNC(ParameterStr)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_hInstance);
 	MAKESTR(value, g_stringsize);
 
-	popstringn(value, 0);
 	const int index = popint();
-	commandline_get_raw(index, value, g_stringsize);
-	pushstring(STRTRIM(value));
+	if(commandline_get_raw(index, value, g_stringsize))
+	{
+		pushstring(STRTRIM(value));
+	}
+	else
+	{
+		pushstring(T("error"));
+	}
 
 	delete [] value;
+}
+
+NSISFUNC(ParameterCnt)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_hInstance);
+
+	const int index = commandline_get_cnt();
+	if(index >= 0)
+	{
+		pushint(index);
+		return;
+	}
+
+	pushstring(T("error"));
 }
 
 NSISFUNC(GetAllParameters)

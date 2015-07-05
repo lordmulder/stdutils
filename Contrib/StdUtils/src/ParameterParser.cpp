@@ -97,7 +97,19 @@ static bool init_mainargs(void)
 	return true;
 }
 
-static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name, const size_t arg_len, TCHAR *const dest_buff, const size_t dest_size)
+static bool valid_argname(const TCHAR *const arg_name)
+{
+	for(size_t i = 0; arg_name[i]; i++)
+	{
+		if(!ISALMUM(arg_name[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
 	const TCHAR *separator = STRCHR(argstr, T('='));
 	if(!separator)
@@ -113,8 +125,8 @@ static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name
 		return false;
 	}
 
-	const size_t len = separator - argstr;
-	if(len > arg_len)
+	const size_t arg_len = STRLEN(arg_name);
+	if((separator - argstr) == (arg_len + 1))
 	{
 		if((argstr[0] == T('/')) && (STRNICMP(&argstr[1], arg_name, arg_len) == 0))
 		{
@@ -136,18 +148,29 @@ static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name
 
 bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
-	if(s_argv || init_mainargs())
+	if(arg_name && arg_name[0] && valid_argname(arg_name))
 	{
-		const size_t arg_len = STRLEN(arg_name);
-		for(int i = 1; i < s_argc; i++)
+		if(s_argv || init_mainargs())
 		{
-			if(try_parse_arg(s_argv[i], arg_name, arg_len, dest_buff, dest_size))
+			for(int i = 1; i < s_argc; i++)
 			{
-				return true;
+				if(try_parse_arg(STRTRIM_LEFT(s_argv[i]), arg_name, dest_buff, dest_size))
+				{
+					return true;
+				}
 			}
 		}
 	}
 	return false;
+}
+
+int commandline_get_cnt(void)
+{
+	if(s_argv || init_mainargs())
+	{
+		return (s_argc > 1) ? (s_argc - 1) : 0;
+	}
+	return -1;
 }
 
 bool commandline_get_raw(const int index, TCHAR *const dest_buff, const size_t dest_size)

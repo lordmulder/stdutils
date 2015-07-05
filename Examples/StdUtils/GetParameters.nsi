@@ -29,15 +29,17 @@ Section
 SectionEnd
 
 Section
-	StrCpy $R1 0
-FetchNextArg:
-	${StdUtils.RawParameter} $R0 $R1 "!$#@%&?"
-	StrCmp "$R0" "!$#@%&?" NoMoreArgs
-	DetailPrint 'Command-line token #$R1 is "$R0"'
-	IntOp $R1 $R1 + 1
-	Goto FetchNextArg
-NoMoreArgs:
-	DetailPrint 'No more command-line tokens!'
+	StrCpy $R0 0                                    #Init counter to zero
+	${StdUtils.ParameterCnt} $R1                    #Get number of command-line tokens
+	IntCmp $R1 0 0 0 LoopNext                       #Any tokens available?
+	DetailPrint 'No command-line tokens!'           #Print some info
+	Goto LoopExit                                   #Exit
+LoopNext:
+	${StdUtils.ParameterStr} $R2 $R0                #Read next command-line token
+	DetailPrint 'Command-line token #$R0 is "$R2"'  #Print command-line token
+	IntOp $R0 $R0 + 1                               #counter += 1
+	IntCmp $R0 $R1 0 LoopNext                       #Loop while more tokens available
+LoopExit:
 	DetailPrint "----"
 SectionEnd
 

@@ -28,7 +28,7 @@ if exist "%~dp0\StdUtils.%ISO_DATE%.zip" (
 	exit
 )
 REM -------------------------------------------------------------------------
-for %%c in (Debug,Release_ANSI,Release_Unicode) do (
+for %%c in (Release_ANSI,Release_Unicode,Release_Tiny) do (
 	for %%t in (Clean,Rebuild,Build) do (
 		MSBuild.exe /property:Configuration=%%c /property:Platform=Win32 /target:%%t /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
 		if not "!ERRORLEVEL!"=="0" (
@@ -44,7 +44,7 @@ echo. >> "%~dp0\BUILD.tag"
 echo Built on %DATE%, at %TIME%. >> "%~dp0\BUILD.tag"
 REM -------------------------------------------------------------------------
 pushd "%~dp0"
-set "EXCLUDE_MASK=make_pack.* *.exe *.zip *.7z *.user *.old *.sdf *examples/*.exe */obj/* */ipch/*"
+set "EXCLUDE_MASK=make_pack.* *.zip *.7z *.user *.old *.sdf *examples/*.exe */obj/* */ipch/* */Debug/*"
 "%~dp0\Contrib\StdUtils\utils\Zip.exe" -r -9 -z "%~dp0\StdUtils.%ISO_DATE%.zip" "*.*" -x %EXCLUDE_MASK% < "%~dp0\BUILD.tag"
 popd
 attrib +r "%~dp0\StdUtils.%ISO_DATE%.zip" 

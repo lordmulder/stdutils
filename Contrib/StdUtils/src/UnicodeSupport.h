@@ -25,8 +25,13 @@ wchar_t *ansi_to_utf16(const char *const input);
 wchar_t *utf8_to_utf16(const char *const input);
 char *utf16_to_utf8(const wchar_t *const input);
 
-char *strtrim(char* input, bool trim_left = true, bool trim_right = true);
-wchar_t *wcstrim(wchar_t* input, bool trim_left = true, bool trim_right = true);
+char *strtrim(char *const input);
+const char *strtrim_left(const char *const input);
+char *strtrim_right(char *const input);
+
+wchar_t *wcstrim(wchar_t *const input);
+const wchar_t *wcstrim_left(const wchar_t *const input);
+wchar_t *wcstrim_right(wchar_t *const input);
 
 bool str_whitespace(const char c);
 bool wcs_whitespace(const wchar_t c);
@@ -38,13 +43,16 @@ bool wcs_whitespace(const wchar_t c);
 	#define STRNCPY wcsncpy
 	#define STRCHR wcschr
 	#define STRTRIM wcstrim
+	#define STRTRIM_LEFT wcstrim_left
+	#define STRTRIM_RIGHT wcstrim_right
 	#define SNPRINTF _snwprintf
 	#define SSCANF swscanf
 	#define ISCNTRL iswcntrl
 	#define ISALPHA iswalpha
+	#define ISALMUM iswalnum
+	#define WHITESPACE wcs_whitespace
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
-	#define WHITESPACE wcs_whitespace
 #else
 	#define STRLEN strlen
 	#define STRICMP _stricmp
@@ -52,10 +60,13 @@ bool wcs_whitespace(const wchar_t c);
 	#define STRNCPY strncpy
 	#define STRCHR strchr
 	#define STRTRIM strtrim
+	#define STRTRIM_LEFT strtrim_left
+	#define STRTRIM_RIGHT strtrim_right
 	#define SNPRINTF _snprintf
 	#define SSCANF sscanf
 	#define ISCNTRL iscntrl
 	#define ISALPHA isalpha
-	#define T(X) X
+	#define ISALMUM isalnum
 	#define WHITESPACE str_whitespace
+	#define T(X) X
 #endif
