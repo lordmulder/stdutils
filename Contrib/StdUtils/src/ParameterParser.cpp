@@ -101,7 +101,7 @@ static bool valid_argname(const TCHAR *const arg_name)
 {
 	for(size_t i = 0; arg_name[i]; i++)
 	{
-		if(!ISALMUM(arg_name[i]))
+		if(!ISALNUM(arg_name[i]))
 		{
 			return false;
 		}

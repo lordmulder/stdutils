@@ -49,7 +49,7 @@ bool wcs_whitespace(const wchar_t c);
 	#define SSCANF swscanf
 	#define ISCNTRL iswcntrl
 	#define ISALPHA iswalpha
-	#define ISALMUM iswalnum
+	#define ISALNUM iswalnum
 	#define WHITESPACE wcs_whitespace
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
@@ -66,7 +66,7 @@ bool wcs_whitespace(const wchar_t c);
 	#define SSCANF sscanf
 	#define ISCNTRL iscntrl
 	#define ISALPHA isalpha
-	#define ISALMUM isalnum
+	#define ISALNUM isalnum
 	#define WHITESPACE str_whitespace
 	#define T(X) X
 #endif
