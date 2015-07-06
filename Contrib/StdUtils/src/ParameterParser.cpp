@@ -50,6 +50,7 @@ extern "C"
 #define IS_WIN2K (get_winver() < 0x501)
 
 //Command-line parameters buffer
+static volatile bool s_initialized = false;
 static int s_argc = 0;
 static TCHAR **s_argv = NULL, **s_envp = NULL;
 
@@ -66,28 +67,33 @@ static inline DWORD get_winver(void)
 static void free_mainargs(void)
 {
 	MutexLocker locker(&g_pStdUtilsMutex);
-	if(s_argv)
+	if(s_initialized)
 	{
-		for (TCHAR **ptr = s_argv; (*ptr); ++ptr)
+		if(s_argv)
 		{
-			free(*ptr);
+			for (TCHAR **ptr = s_argv; (*ptr); ++ptr)
+			{
+				free(*ptr);
+			}
+			free(s_argv);
+			s_argv = NULL;
+			s_argc = 0;
 		}
-		free(s_argv);
-		s_argv = NULL;
-		s_argc = 0;
+		s_initialized = false;
 	}
 }
 
 static bool init_mainargs(void)
 {
 	MutexLocker locker(&g_pStdUtilsMutex);
-	if(!s_argv)
+	if(!s_initialized)
 	{
 		_startupinfo si = { 0 };
 		if((GETMAINARGS(&s_argc, &s_argv, &s_envp, 0, &si) == 0) || IS_WIN2K)
 		{
 			if(s_argv != NULL)
 			{
+				s_initialized = true;
 				cleanup_register_task(free_mainargs);
 				return true;
 			}
@@ -150,7 +156,7 @@ bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, co
 {
 	if(arg_name && arg_name[0] && valid_argname(arg_name))
 	{
-		if(s_argv || init_mainargs())
+		if(s_initialized || init_mainargs())
 		{
 			for(int i = 1; i < s_argc; i++)
 			{
@@ -166,7 +172,7 @@ bool commandline_get_arg(const TCHAR *const arg_name, TCHAR *const dest_buff, co
 
 int commandline_get_cnt(void)
 {
-	if(s_argv || init_mainargs())
+	if(s_initialized || init_mainargs())
 	{
 		return (s_argc > 1) ? (s_argc - 1) : 0;
 	}
@@ -177,7 +183,7 @@ bool commandline_get_raw(const int index, TCHAR *const dest_buff, const size_t d
 {
 	if(index >= 0)
 	{
-		if(s_argv || init_mainargs())
+		if(s_initialized || init_mainargs())
 		{
 			const int actual_index = index + 1;
 			if(actual_index < s_argc)

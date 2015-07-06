@@ -19,25 +19,11 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STDUTILS_H__
-#define __STDUTILS_H__
+#pragma once
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
-#include <Shellapi.h>
 #include "nsis/pluginapi.h"
-#include "msvc_utils.h"
 
-#define NSISFUNC(name) extern "C" void __declspec(dllexport) name(HWND hWndParent, int string_size, TCHAR* variables, stack_t** stacktop, extra_parameters* extra)
-
-#define MAKESTR(VAR,LEN) \
-	TCHAR *VAR = new TCHAR[LEN]; \
-	memset(VAR, 0, sizeof(TCHAR) * LEN)
-
-#define REGSITER_CALLBACK(INST) do \
-{ \
-	if(!g_bCallbackRegistred) g_bCallbackRegistred = (extra->RegisterPluginCallback((HMODULE)(INST), PluginCallback) == 0); \
-} \
-while(0)
-
-#endif //__STDUTILS_H__
+bool timer_create(const int procAddress, const int interval, const HWND hWndParent, const extra_parameters *const extra, UINT_PTR &id_out);
+bool timer_destroy(const UINT_PTR id);

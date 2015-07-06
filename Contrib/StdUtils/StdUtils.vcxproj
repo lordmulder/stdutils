@@ -272,6 +272,7 @@
     <ClCompile Include="src\rhash\sha512.c" />
     <ClCompile Include="src\ShellExecAsUser.cpp" />
     <ClCompile Include="src\StdUtils.cpp" />
+    <ClCompile Include="src\TimerUtils.cpp" />
     <ClCompile Include="src\UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +295,7 @@
     <ClInclude Include="src\rhash\sha512.h" />
     <ClInclude Include="src\ShellExecAsUser.h" />
     <ClInclude Include="src\StdUtils.h" />
+    <ClInclude Include="src\TimerUtils.h" />
     <ClInclude Include="src\UnicodeSupport.h" />
     <ClInclude Include="src\WinUtils.h" />
   </ItemGroup>
