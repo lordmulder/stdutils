@@ -23,7 +23,7 @@ Function MyCallback
 	DetailPrint "Timer event has been triggered! (#$MyCount)"
 FunctionEnd
 
-Function .onGuiInit
+Function .onGUIInit
 	${StdUtils.TimerCreate} $TimerId MyCallback 1500
 	StrCmp $TimerId "error" 0 +2
 	MessageBox MB_ICONSTOP "Failed to create timer!"

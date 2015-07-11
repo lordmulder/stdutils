@@ -54,6 +54,7 @@
 		<li><a href="#d452a779">InvokeShellVerb</a>
 		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
+		<li><a href="#5247e2cd">Window Timer Functions</a>
 		<li><a href="#14863bf9">Debugging Functions</a>
 	</ul>
 	<li><a href="#db579654">License</a>
@@ -862,6 +863,47 @@ SectionEnd</pre>
 	<tr><td>512 (64)</td><td><tt>BLAKE2-512</tt></td></tr>
 </table>
 <p><small><b style="color:red">*</b> Please do <u>not</u> use these hash functions for security critical code nowadays, as they they have known collisions!</small></p>
+
+<br>
+
+<!-- ---------------- -->
+
+<a name="5247e2cd"></a><h2>Window Timer Functions</h2>
+
+<p><b><tt>${StdUtils.TimerCreate} <i>user_var(out)</i> <i>callback</i> <i>interval</i><br>${StdUtils.TimerDestroy} <i>user_var(out)</i> <i>timer_id</i></tt></b></p>
+<p>The <tt>${StdUtils.TimerCreate}</tt> function creates a new window timer, using the <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms644906%28v=vs.85%29.aspx">SetTimer</a> API, which is going to <i>periodically</i> execute the NSIS function specified by <tt>callback</tt>. The interval (delay), in milliseconds, is specified by <tt>interval</tt>. If the timer was created successfully, the function returns a <i>unique</i> timer id. And, if anything went wrong, it returns "error". The <tt>${StdUtils.TimerDestroy}</tt> function stops and destroys the timer specified by <tt>timer_id</tt>. Every timer that has been created successfully <b>must</b> be destroyed before the installer unloads the plug-in DLL!</p>
+<p><b>Important:</b> The <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms644906%28v=vs.85%29.aspx">SetTimer</a> function works by appending <tt>WM_TIMER</tt> messages to the <i>message queue</i> of the thread which has created the timer. These messages will be <a href="https://msdn.microsoft.com/de-de/library/windows/desktop/ms644934%28v=vs.85%29.aspx">dispatched</a> to the <i>window procedure</i>, which eventually calls the callback function (TIMERPROC). Consequently, the thread, which creates the timer, <i>must</i> be running a <a href="https://en.wikipedia.org/wiki/Message_loop_in_Microsoft_Windows">message loop</a> &ndash; otherwise the timer is <i>never</i> going to fire! For NSIS this means that the timer must be created (and destroyed) from the "main" GUI thread. You probably want to do this in the <b>.onGUIInit</b> and <b>.onGUIEnd</b> functions.</p>
+
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Var TimerId
+Var MyCount
+
+Function MyCallback
+	IntOp $MyCount $MyCount + 1
+	DetailPrint "Timer event has been triggered! (#$MyCount)"
+FunctionEnd
+
+Function .onGUIInit
+	${StdUtils.TimerCreate} $TimerId MyCallback 1500
+	StrCmp $TimerId "error" 0 +2
+	MessageBox MB_ICONSTOP "Failed to create timer!"
+FunctionEnd
+
+Function .onGUIEnd
+	StrCmp $TimerId "error" 0 +2
+	Return
+	${StdUtils.TimerDestroy} $0 $TimerId
+	StrCmp $0 "ok" +2
+	MessageBox MB_ICONSTOP "Failed to destroy timer!"
+FunctionEnd
+
+Section
+	DetailPrint "Hello, world!"
+SectionEnd</pre>
 
 <br>
 
