@@ -27,12 +27,13 @@
 
 typedef enum
 {
-	SHELLEXECASUSER_ERROR_SUCCESS  =  1,
-	SHELLEXECASUSER_ERROR_FALLBACK =  0,
-	SHELLEXECASUSER_ERROR_FAILED   = -1,
-	SHELLEXECASUSER_ERROR_TIMEOUT  = -2,
-	SHELLEXECASUSER_ERROR_NOTFOUND = -3
+	SHELL_EXEC_AS_USER_SUCCESS     = 0,
+	SHELL_EXEC_AS_USER_FAILED      = 1,
+	SHELL_EXEC_AS_USER_TIMEOUT     = 2,
+	SHELL_EXEC_AS_USER_UNSUPPORTED = 3,
+	SHELL_EXEC_AS_USER_NOT_FOUND   = 4,
+	SHELL_EXEC_AS_USER_FALLBACK    = 5
 }
-SHELLEXECASUSER_ERROR;
+shell_exec_as_user_err_t;
 
 int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &hwnd, const bool &threaded = true);

@@ -19,18 +19,23 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
 
+#include "ComUtils.h"
+#include "WinUtils.h"
+#include "msvc_utils.h"
+
 typedef enum
 {
-	INVOKE_SHELLVERB_SUCCESS     = 0,
-	INVOKE_SHELLVERB_FAILED      = 1,
-	INVOKE_SHELLVERB_TIMEOUT     = 2,
-	INVOKE_SHELLVERB_UNSUPPORTED = 3,
-	INVOKE_SHELLVERB_NOT_FOUND   = 4
+	SHELL_DISPATCH_SUCCESS = 0,
+	SHELL_DISPATCH_FAILED  = 1,
+	SHELL_DISPATCH_TIMEOUT = 2
 }
-invoke_shellverb_err_t;
+shell_dispatch_err_t;
 
-int MyInvokeShellVerb(const TCHAR *pcDirectoryName, const TCHAR *pcFileName, const DWORD uiVerbId, const bool threaded = true);
+typedef int (*shell_dispatch_handler_t)(IShellDispatch2 *const dispatch, const void *const data);
+int MyShellDispatch(const shell_dispatch_handler_t handler, void *const data, const bool &threaded = true);

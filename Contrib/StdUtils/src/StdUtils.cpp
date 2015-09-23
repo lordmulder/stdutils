@@ -686,19 +686,22 @@ NSISFUNC(ExecShellAsUser)
 	
 	switch(result)
 	{
-	case SHELLEXECASUSER_ERROR_SUCCESS:
+	case SHELL_EXEC_AS_USER_SUCCESS:
 		pushstring(T("ok"));
 		break;
-	case SHELLEXECASUSER_ERROR_FALLBACK:
-		pushstring(T("fallback"));
-		break;
-	case SHELLEXECASUSER_ERROR_FAILED:
+	case SHELL_EXEC_AS_USER_FAILED:
 		pushstring(T("error"));
 		break;
-	case SHELLEXECASUSER_ERROR_TIMEOUT:
+	case SHELL_EXEC_AS_USER_TIMEOUT:
 		pushstring(T("timeout"));
 		break;
-	case SHELLEXECASUSER_ERROR_NOTFOUND:
+	case SHELL_EXEC_AS_USER_UNSUPPORTED:
+		pushstring(T("unsupported"));
+		break;
+	case SHELL_EXEC_AS_USER_FALLBACK:
+		pushstring(T("fallback"));
+		break;
+	case SHELL_EXEC_AS_USER_NOT_FOUND:
 		pushstring(T("not_found"));
 		break;
 	default:
@@ -741,20 +744,20 @@ NSISFUNC(InvokeShellVerb)
 	
 	switch(result)
 	{
-	case 1:
+	case INVOKE_SHELLVERB_SUCCESS:
 		pushstring(T("ok"));
 		break;
-	case 0:
-		pushstring(T("not_found"));
+	case INVOKE_SHELLVERB_FAILED:
+		pushstring(T("error"));
 		break;
-	case -1:
-		pushstring(T("unsupported"));
-		break;
-	case -2:
+	case INVOKE_SHELLVERB_TIMEOUT:
 		pushstring(T("timeout"));
 		break;
-	case -3:
-		pushstring(T("error"));
+	case INVOKE_SHELLVERB_UNSUPPORTED:
+		pushstring(T("unsupported"));
+		break;
+	case INVOKE_SHELLVERB_NOT_FOUND:
+		pushstring(T("not_found"));
 		break;
 	default:
 		pushstring(T("unknown"));
