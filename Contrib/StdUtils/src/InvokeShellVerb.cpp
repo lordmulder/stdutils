@@ -27,6 +27,7 @@
 
 #include "InvokeShellVerb.h"
 #include "ShellDispatch.h"
+#include "nsis_tchar.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -38,44 +39,50 @@ typedef struct
 }
 invoke_shellverb_param_t;
 
-static const WCHAR *shell32 = L"shell32.dll";
+static const WCHAR *shell32 = L"shell32";
 
 ///////////////////////////////////////////////////////////////////////////////
+
+static bool MyInvokeShellVerb_LoadResStr(const WCHAR *const libFile, const DWORD &id, wchar_t *const buffer, const size_t &buffSize)
+{
+	memset(buffer, 0, sizeof(WCHAR) * buffSize);
+
+	bool bUnloadDll = false;
+	HMODULE hMod = GetModuleHandleW(libFile); 
+	if(hMod == NULL)
+	{
+		bUnloadDll = true;
+		hMod = LoadLibraryW(libFile);
+		if(hMod == NULL)
+		{
+			return false;
+		}
+	}
+
+	bool success = false;
+	if(LoadStringW(hMod, id, buffer, buffSize) > 0)
+	{
+		success = true;
+	}
+
+	if(bUnloadDll)
+	{
+		FreeLibrary(hMod);
+		hMod = NULL;
+	}
+
+	return success;
+}
 
 static int MyInvokeShellVerb_HandlerProc(IShellDispatch2 *const dispatch, const void *const data)
 {
 	int iSuccess = INVOKE_SHELLVERB_FAILED;
 	const invoke_shellverb_param_t *const param = (const invoke_shellverb_param_t*) data;
 
-	bool bUnloadDll = false;
-	HMODULE hShellDll = GetModuleHandleW(shell32); 
-	if(hShellDll == NULL)
+	WCHAR pcVerbName[256];
+	if(!MyInvokeShellVerb_LoadResStr(shell32, param->uiVerbId, pcVerbName, 256))
 	{
-		bUnloadDll = true;
-		hShellDll = LoadLibraryW(shell32);
-		if(hShellDll == NULL)
-		{
-			return iSuccess;
-		}
-	}
-
-	WCHAR pcVerbName[128];
-	memset(pcVerbName, 0, sizeof(WCHAR) * 128);
-	
-	if(LoadStringW(hShellDll, param->uiVerbId, pcVerbName, 128) < 1)
-	{
-		if(bUnloadDll)
-		{
-			FreeLibrary(hShellDll);
-			hShellDll = NULL;
-		}
-		return iSuccess;
-	}
-
-	if(bUnloadDll)
-	{
-		FreeLibrary(hShellDll);
-		hShellDll = NULL;
+		return (iSuccess = INVOKE_SHELLVERB_NOT_FOUND);
 	}
 
 	// ----------------------------------- //
@@ -168,9 +175,22 @@ static int MyInvokeShellVerb_HandlerProc(IShellDispatch2 *const dispatch, const 
 	return iSuccess;
 }
 
-int MyInvokeShellVerb(const TCHAR *pcDirectoryName, const TCHAR *pcFileName, const DWORD uiVerbId, const bool threaded)
+int MyInvokeShellVerb(const TCHAR *const pcDirectoryName, const TCHAR *const pcFileName, const DWORD uiVerbId, const bool threaded)
 {
 	int iSuccess = INVOKE_SHELLVERB_FAILED;
+
+	if(TCHAR *const path = (TCHAR*) calloc(_tcsclen(pcDirectoryName) + _tcsclen(pcFileName) + 3, sizeof(TCHAR)))
+	{
+		_tcscat(path, pcDirectoryName);
+		_tcscat(path, _T("\\"));
+		_tcscat(path, pcFileName);
+		const bool fileExists = FILE_EXISTS(path);
+		free(path);
+		if(!fileExists)
+		{
+			return (iSuccess = INVOKE_SHELLVERB_NOT_FOUND);
+		}
+	}
 
 	OSVERSIONINFO osVersion;
 	memset(&osVersion, 0, sizeof(OSVERSIONINFO));

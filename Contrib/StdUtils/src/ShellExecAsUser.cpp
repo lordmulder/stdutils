@@ -60,7 +60,7 @@ static int ShellExecAsUser_HandlerProc(IShellDispatch2 *const dispatch, const vo
 int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &parentHwnd, const bool &threaded)
 {
 	//Make sure the destination file exists
-	if(GetFileAttributes(pcFileName) == INVALID_FILE_ATTRIBUTES)
+	if(!FILE_EXISTS(pcFileName))
 	{
 		return SHELL_EXEC_AS_USER_NOT_FOUND;
 	}
