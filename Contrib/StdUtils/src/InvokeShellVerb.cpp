@@ -75,15 +75,6 @@ static bool MyInvokeShellVerb_LoadResStr(const WCHAR *const libFile, const DWORD
 		hMod = NULL;
 	}
 
-	if(success)
-	{
-		MessageBoxW(NULL, buffer, L"LoadResStr", MB_TOPMOST | MB_TASKMODAL);
-	}
-	else
-	{
-		MessageBoxW(NULL, L"<NOT FOUND>", L"LoadResStr", MB_TOPMOST | MB_TASKMODAL);
-	}
-
 	return success;
 }
 

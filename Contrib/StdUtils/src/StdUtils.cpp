@@ -742,6 +742,10 @@ NSISFUNC(InvokeShellVerb)
 
 	if(!(file && path))
 	{
+		if(g_bStdUtilsVerbose)
+		{
+			MessageBox(NULL, T("Specified file name and/or path is missing!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
+		}
 		pushstring(T("einval"));
 		if(file) delete [] file;
 		if(path) delete [] path;
@@ -750,6 +754,10 @@ NSISFUNC(InvokeShellVerb)
 
 	if((verb < 0) || (verb > 3))
 	{
+		if(g_bStdUtilsVerbose)
+		{
+			MessageBox(NULL, T("And invalid verb id has been specified!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
+		}
 		pushstring(T("einval"));
 		if(file) delete [] file;
 		if(path) delete [] path;
