@@ -25,20 +25,7 @@
 // CHARSET CONVERSION FUNCTIONS
 //-----------------------------------------------------------------------------
 
-wchar_t *ansi_to_utf16(const char *const input)
-{
-	wchar_t *Buffer;
-	int BuffSize, Result;
-	BuffSize = MultiByteToWideChar(CP_ACP, 0, input, -1, NULL, 0);
-	if(BuffSize > 0)
-	{
-		Buffer = new wchar_t[BuffSize];
-		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
-		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
-	}
-	return NULL;
-}
-
+/*
 wchar_t *utf8_to_utf16(const char *const input)
 {
 	wchar_t *Buffer;
@@ -48,6 +35,21 @@ wchar_t *utf8_to_utf16(const char *const input)
 	{
 		Buffer = new wchar_t[BuffSize];
 		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
+		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+	}
+	return NULL;
+}
+*/
+
+wchar_t *ansi_to_utf16(const char *const input)
+{
+	wchar_t *Buffer;
+	int BuffSize, Result;
+	BuffSize = MultiByteToWideChar(CP_ACP, 0, input, -1, NULL, 0);
+	if(BuffSize > 0)
+	{
+		Buffer = new wchar_t[BuffSize];
+		Result = MultiByteToWideChar(CP_ACP, 0, input, -1, Buffer, BuffSize);
 		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
 	}
 	return NULL;

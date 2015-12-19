@@ -22,7 +22,6 @@
 #pragma once
 
 wchar_t *ansi_to_utf16(const char *const input);
-wchar_t *utf8_to_utf16(const char *const input);
 char *utf16_to_utf8(const wchar_t *const input);
 
 char *strtrim(char *const input);
