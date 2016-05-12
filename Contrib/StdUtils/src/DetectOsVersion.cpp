@@ -29,9 +29,9 @@
 #include "msvc_utils.h"
 
 //Forward declaration
+static bool get_os_info(OSVERSIONINFOEXW *const osInfo);
 static bool verify_os_version(const DWORD major, const DWORD minor, const WORD spack);
 static bool verify_os_buildNo(const DWORD buildNo);
-static bool read_file_version(const TCHAR *const name, DWORD *const versionHi, DWORD *const versionLo);
 
 //External vars
 extern bool g_bStdUtilsVerbose;
@@ -41,18 +41,16 @@ extern bool g_bStdUtilsVerbose;
  */
 bool get_real_os_version(unsigned int *const major, unsigned int *const minor, unsigned int *const spack, bool *const pbOverride)
 {
-	static const DWORD MAX_VALUE = 1024;
+	static const DWORD MAX_VALUE = 0xFFFF;
 
 	*major = *minor = *spack = 0;
 	*pbOverride = false;
 	
 	//Initialize local variables
 	OSVERSIONINFOEXW osvi;
-	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	//Try GetVersionEx() first
-	if(GetVersionExW((LPOSVERSIONINFOW)&osvi) == FALSE)
+	if(get_os_info(&osvi) == FALSE)
 	{
 		if(g_bStdUtilsVerbose)
 		{
@@ -121,24 +119,6 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 		break;
 	}
 
-	//Workaround for the mess that is sometimes referred to as "Windows 10"
-	if(((*major) > 6) || (((*major) == 6) && ((*minor) >= 2)))
-	{
-		DWORD kernel32_version[2];
-		if(read_file_version(T("kernel32"), &kernel32_version[0], &kernel32_version[1]))
-		{
-			const DWORD kernel32_major = (kernel32_version[0] & DWORD(0xFFFF0000)) >> 0x10;
-			const DWORD kernel32_minor = (kernel32_version[0] & DWORD(0x0000FFFF)) >> 0x00;
-			if((kernel32_major > (*major)) || ((kernel32_major == (*major)) && (kernel32_minor > (*minor))))
-			{
-				*major = kernel32_major;
-				*minor = kernel32_minor;
-				*spack = 0;
-				*pbOverride = true;
-			}
-		}
-	}
-
 	//Overflow detected?
 	if((*major >= MAX_VALUE) || (*minor >= MAX_VALUE) || (*spack >= MAX_VALUE))
 	{
@@ -162,7 +142,7 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	//Try GetVersionEx() first
-	if(GetVersionExW((LPOSVERSIONINFOW)&osvi) == FALSE)
+	if(get_os_info(&osvi) == FALSE)
 	{
 		if(g_bStdUtilsVerbose)
 		{
@@ -207,21 +187,6 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 			continue;
 		}
 		break;
-	}
-
-	//Workaround for the mess that is sometimes referred to as "Windows 10"
-	if((*buildNo) >= 9200)
-	{
-		DWORD kernel32_version[2];
-		if(read_file_version(T("kernel32"), &kernel32_version[0], &kernel32_version[1]))
-		{
-			const DWORD kernel32_build = (kernel32_version[1] & DWORD(0xFFFF0000)) >> 0x10;
-			if(kernel32_build > (*buildNo))
-			{
-				*buildNo = kernel32_build;
-				*pbOverride = true;
-			}
-		}
 	}
 
 	return true;
@@ -286,7 +251,7 @@ bool get_os_server_edition(bool &bIsServer)
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	//Check for server/workstation edition
-	if(GetVersionExW((LPOSVERSIONINFOW)&osvi) != FALSE)
+	if(get_os_info(&osvi) != FALSE)
 	{
 		switch(osvi.wProductType)
 		{
@@ -305,6 +270,61 @@ bool get_os_server_edition(bool &bIsServer)
 	return success;
 }
 
+//===========================================================================
+// INTERNAL FUNCTIONS
+//===========================================================================
+
+typedef LONG(__stdcall *RtlGetVersion)(LPOSVERSIONINFOEXW);
+typedef LONG(__stdcall *RtlVerifyVersionInfo)(LPOSVERSIONINFOEXW, ULONG, ULONGLONG);
+
+static void initialize_os_version(OSVERSIONINFOEXW *const osInfo)
+{
+	memset(osInfo, 0, sizeof(OSVERSIONINFOEXW));
+	osInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+}
+
+/*
+ * Get OS version info
+ */
+static bool get_os_info(OSVERSIONINFOEXW *const osInfo)
+{
+	if (const HMODULE ntdll = GetModuleHandleW(L"ntdll"))
+	{
+		if (const RtlGetVersion pRtlGetVersion = (RtlGetVersion) GetProcAddress(ntdll, "RtlGetVersion"))
+		{
+			initialize_os_version(osInfo);
+			if (pRtlGetVersion(osInfo) == 0)
+			{
+				return true;
+			}
+		}
+	}
+
+	//Fallback
+	initialize_os_version(osInfo);
+	return (GetVersionExW((LPOSVERSIONINFOW)osInfo) != FALSE);
+}
+
+/*
+ * Verify OS version info
+ */
+static bool verify_os_info(OSVERSIONINFOEXW *const osInfo, const ULONG typeMask, const ULONGLONG condMask)
+{
+	if (const HMODULE ntdll = GetModuleHandleW(L"ntdll"))
+	{
+		if (const RtlVerifyVersionInfo pRtlVerifyVersionInfo = (RtlVerifyVersionInfo) GetProcAddress(ntdll, "RtlVerifyVersionInfo"))
+		{
+			if (pRtlVerifyVersionInfo(osInfo, typeMask, condMask) == 0)
+			{
+				return true;
+			}
+		}
+	}
+
+	//Fallback
+	return (VerifyVersionInfoW(osInfo, typeMask, condMask) != FALSE);
+}
+
 /*
  * Verify a specific Windows version
  */
@@ -314,14 +334,13 @@ static bool verify_os_version(const DWORD major, const DWORD minor, const WORD s
 	DWORDLONG dwlConditionMask = 0;
 
 	//Initialize the OSVERSIONINFOEX structure
-	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
+	initialize_os_version(&osvi);
 
 	//Fille the OSVERSIONINFOEX structure
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-	osvi.dwMajorVersion      = major;
-	osvi.dwMinorVersion      = minor;
-	osvi.wServicePackMajor   = spack;
-	osvi.dwPlatformId        = VER_PLATFORM_WIN32_NT;
+	osvi.dwMajorVersion    = major;
+	osvi.dwMinorVersion    = minor;
+	osvi.wServicePackMajor = spack;
+	osvi.dwPlatformId      = VER_PLATFORM_WIN32_NT;
 
 	//Initialize the condition mask
 	VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION,     VER_GREATER_EQUAL);
@@ -330,7 +349,7 @@ static bool verify_os_version(const DWORD major, const DWORD minor, const WORD s
 	VER_SET_CONDITION(dwlConditionMask, VER_PLATFORMID,       VER_EQUAL);
 
 	// Perform the test
-	const BOOL ret = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_PLATFORMID, dwlConditionMask);
+	const BOOL ret = verify_os_info(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_PLATFORMID, dwlConditionMask);
 
 	//Error checking
 	if(!ret)
@@ -356,17 +375,16 @@ static bool verify_os_buildNo(const DWORD buildNo)
 	DWORDLONG dwlConditionMask = 0;
 
 	//Initialize the OSVERSIONINFOEX structure
-	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
+	initialize_os_version(&osvi);
 
 	//Fille the OSVERSIONINFOEX structure
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-	osvi.dwBuildNumber       = buildNo;
+	osvi.dwBuildNumber = buildNo;
 
 	//Initialize the condition mask
 	VER_SET_CONDITION(dwlConditionMask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
 
 	// Perform the test
-	const BOOL ret = VerifyVersionInfoW(&osvi, VER_BUILDNUMBER, dwlConditionMask);
+	const BOOL ret = verify_os_info(&osvi, VER_BUILDNUMBER, dwlConditionMask);
 
 	//Error checking
 	if(!ret)
@@ -381,62 +399,6 @@ static bool verify_os_buildNo(const DWORD buildNo)
 	}
 
 	return (ret != FALSE);
-}
-
-/*
- * Determine file version
- */
-static bool read_file_version(const TCHAR *const name, DWORD *const versionHi, DWORD *const versionLo)
-{
-	*versionHi = *versionLo = 0;
-
-	const DWORD size = GetFileVersionInfoSize(name, NULL);
-	if(size < 1)
-	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(0, T("GetFileVersionInfoSize() has failed, file version cannot be determined!"), T("StdUtils::read_file_version"), MB_ICONERROR|MB_TOPMOST);
-		}
-		return false;
-	}
-
-	HLOCAL buffer = LocalAlloc(LPTR, size);
-	if(!buffer)
-	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(0, T("Memory allocation has failed!"), T("StdUtils::read_file_version"), MB_ICONERROR|MB_TOPMOST);
-		}
-		return false;
-	}
-
-	if(!GetFileVersionInfo(name, 0, size, buffer))
-	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(0, T("GetFileVersionInfo() has failed, file version cannot be determined!"), T("StdUtils::read_file_version"), MB_ICONERROR|MB_TOPMOST);
-		}
-		LocalFree(buffer);
-		return false;
-	}
-
-	VS_FIXEDFILEINFO *verInfo;
-	UINT verInfoLen;
-	if(!VerQueryValue(buffer, T("\\"), (LPVOID*)(&verInfo), &verInfoLen))
-	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(0, T("VerQueryValue() has failed, file version cannot be determined!"), T("StdUtils::read_file_version"), MB_ICONERROR|MB_TOPMOST);
-		}
-		LocalFree(buffer);
-		return false;
-	}
-
-	*versionHi = verInfo->dwFileVersionMS;
-	*versionLo = verInfo->dwFileVersionLS;
-
-	LocalFree(buffer);
-	return true;
 }
 
 /*eof*/

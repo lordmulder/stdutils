@@ -1,0 +1,6 @@
+*.exe
+*.sdf
+*.suo
+/Contrib/StdUtils/ipch
+/Contrib/StdUtils/obj
+/Plugins/Debug
