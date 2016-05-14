@@ -5,4 +5,4 @@
 /*.zip
 /Contrib/StdUtils/ipch
 /Contrib/StdUtils/obj
-/Plugins/Debug
+/Plugins/*

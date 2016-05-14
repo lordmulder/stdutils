@@ -1,9 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 REM -------------------------------------------------------------------------
-set "PATH_MSVC=c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\"
+set "MSC_PATH=c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\"
+set "GIT_PATH=c:\Program Files\Git"
 REM -------------------------------------------------------------------------
-call "%PATH_MSVC%\vcvarsall.bat" x86
+set "PATH=%GIT_PATH%;%GIT_PATH%\mingw64\bin;%GIT_PATH%\usr\bin;%PATH%"
+call "%MSC_PATH%\vcvarsall.bat" x86
 if "%VCINSTALLDIR%"=="" (
 	pause
 	exit
@@ -28,9 +30,10 @@ if exist "%~dp0\StdUtils.%ISO_DATE%.zip" (
 	exit
 )
 REM -------------------------------------------------------------------------
-for %%c in (Release_ANSI,Release_Unicode,Release_Tiny) do (
+set "CONFIG_NAMES=ANSI,Unicode,Tiny"
+for %%c in (%CONFIG_NAMES%) do (
 	for %%t in (Clean,Rebuild,Build) do (
-		MSBuild.exe /property:Configuration=%%c /property:Platform=Win32 /target:%%t /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
+		MSBuild.exe /property:Configuration=Release_%%c /property:Platform=Win32 /target:%%t /verbosity:normal "%~dp0\Contrib\StdUtils\StdUtils.sln"
 		if not "!ERRORLEVEL!"=="0" (
 			pause
 			exit
@@ -38,16 +41,41 @@ for %%c in (Release_ANSI,Release_Unicode,Release_Tiny) do (
 	)
 )
 REM -------------------------------------------------------------------------
-echo StdUtils plug-in for NSIS > "%~dp0\BUILD.tag"
-echo Copyright (C) 2004-2015 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%~dp0\BUILD.tag"
-echo. >> "%~dp0\BUILD.tag"
-echo Built on %DATE%, at %TIME%. >> "%~dp0\BUILD.tag"
+set "PACK_PATH=%TMP%\~%RANDOM%%RANDOM%.tmp"
+mkdir "%PACK_PATH%"
+for %%k in (Plugins,Include) do (
+	mkdir "%PACK_PATH%\%%k"
+)
+for %%k in (Examples,Docs,Contrib) do (
+	mkdir "%PACK_PATH%\%%k"
+	mkdir "%PACK_PATH%\%%k\StdUtils"
+)
+for %%c in (%CONFIG_NAMES%) do (
+	mkdir "%PACK_PATH%\Plugins\%%c"
+	copy /Y "%~dp0\Plugins\Release_%%c\*.dll" "%PACK_PATH%\Plugins\%%c"
+)
+copy /Y "%~dp0\Include\*.nsh"           "%PACK_PATH%\Include"
+copy /Y "%~dp0\Examples\StdUtils\*.nsi" "%PACK_PATH%\Examples\StdUtils"
+copy /Y "%~dp0\Docs\StdUtils\*.html"    "%PACK_PATH%\Docs\StdUtils"
 REM -------------------------------------------------------------------------
 pushd "%~dp0"
-set "EXCLUDE_MASK=make_pack.* *.zip *.7z *.user *.old *.sdf *examples/*.exe */obj/* */ipch/* */Debug/*"
-"%~dp0\Contrib\StdUtils\utils\Zip.exe" -r -9 -z "%~dp0\StdUtils.%ISO_DATE%.zip" "*.*" -x %EXCLUDE_MASK% < "%~dp0\BUILD.tag"
+git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar" MASTER
+popd
+pushd "%PACK_PATH%\Contrib\StdUtils
+tar.exe -xvf "StdUtils.%ISO_DATE%.Sources.tar"
+popd
+del /F "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar"
+del /S /Q "%PACK_PATH%\Contrib\StdUtils\Plugins"
+REM -------------------------------------------------------------------------
+echo StdUtils plug-in for NSIS >                               "%PACK_PATH%\BUILD_TAG.txt"
+echo Copyright (C) 2004-2016 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%PACK_PATH%\BUILD_TAG.txt"
+echo. >>                                                       "%PACK_PATH%\BUILD_TAG.txt"
+echo Built on %DATE%, at %TIME%. >>                            "%PACK_PATH%\BUILD_TAG.txt"
+REM -------------------------------------------------------------------------
+pushd "%PACK_PATH%"
+"%~dp0\Contrib\StdUtils\utils\Zip.exe" -r -9 -z "%~dp0\StdUtils.%ISO_DATE%.zip" "*.*" < "%PACK_PATH%\BUILD_TAG.txt"
 popd
 attrib +r "%~dp0\StdUtils.%ISO_DATE%.zip" 
-del "%~dp0\BUILD.tag"
+rmdir /Q /S "%PACK_PATH%"
 REM -------------------------------------------------------------------------
 pause
