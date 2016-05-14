@@ -59,13 +59,8 @@ copy /Y "%~dp0\Examples\StdUtils\*.nsi" "%PACK_PATH%\Examples\StdUtils"
 copy /Y "%~dp0\Docs\StdUtils\*.html"    "%PACK_PATH%\Docs\StdUtils"
 REM -------------------------------------------------------------------------
 pushd "%~dp0"
-git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar" MASTER
+git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar" HEAD
 popd
-pushd "%PACK_PATH%\Contrib\StdUtils
-tar.exe -xvf "StdUtils.%ISO_DATE%.Sources.tar"
-popd
-del /F "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar"
-del /S /Q "%PACK_PATH%\Contrib\StdUtils\Plugins"
 REM -------------------------------------------------------------------------
 echo StdUtils plug-in for NSIS >                               "%PACK_PATH%\BUILD_TAG.txt"
 echo Copyright (C) 2004-2016 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%PACK_PATH%\BUILD_TAG.txt"
