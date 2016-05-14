@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // StdUtils plug-in for NSIS
-// Copyright (C) 2004-2015 LoRd_MuldeR <MuldeR2@GMX.de>
+// Copyright (C) 2004-2016 LoRd_MuldeR <MuldeR2@GMX.de>
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,14 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
 
 #include <climits>
 
 #include "UnicodeSupport.h"
 #include "DetectOsVersion.h"
+#include "Mutex.h"
 #include "msvc_utils.h"
 
 //Forward declaration
@@ -35,6 +36,14 @@ static bool verify_os_buildNo(const DWORD buildNo);
 
 //External vars
 extern bool g_bStdUtilsVerbose;
+extern RTL_CRITICAL_SECTION g_pStdUtilsMutex;
+
+//Lazy initialization vars
+static volatile unsigned int g_os_version_major = 0;
+static volatile unsigned int g_os_version_minor = 0;
+static volatile unsigned int g_os_version_spack = 0;
+static volatile unsigned int g_os_version_build = 0;
+static volatile bool g_os_version_bOverride = false;
 
 /*
  * Determine the *real* Windows version
@@ -46,6 +55,22 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 	*major = *minor = *spack = 0;
 	*pbOverride = false;
 	
+	//Enter critical section
+	MutexLocker lock(&g_pStdUtilsMutex);
+
+	//Already initialized?
+	if((g_os_version_major != 0) || (g_os_version_minor != 0) || (g_os_version_spack != 0))
+	{
+		*major = g_os_version_major;
+		*minor = g_os_version_minor;
+		*spack = g_os_version_spack;
+		*pbOverride = g_os_version_bOverride;
+		return true;
+	}
+
+	//Temporary unlock
+	lock.unlock();
+
 	//Initialize local variables
 	OSVERSIONINFOEXW osvi;
 
@@ -125,6 +150,26 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 		return false;
 	}
 
+	//Enter critical section
+	lock.relock();
+
+	//Save the results
+	if((g_os_version_major == 0) && (g_os_version_minor == 0) && (g_os_version_spack == 0))
+	{
+		g_os_version_major = *major;
+		g_os_version_minor = *minor;
+		g_os_version_spack = *spack;
+		g_os_version_bOverride = g_os_version_bOverride || (*pbOverride);
+	}
+	else
+	{
+		*major = g_os_version_major;
+		*minor = g_os_version_minor;
+		*spack = g_os_version_spack;
+		*pbOverride = g_os_version_bOverride;
+	}
+
+	//Done
 	return true;
 }
 
@@ -136,6 +181,20 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 	*buildNo = 0;
 	*pbOverride = false;
 	
+	//Enter critical section
+	MutexLocker lock(&g_pStdUtilsMutex);
+
+	//Already initialized?
+	if(g_os_version_build != 0)
+	{
+		*buildNo = g_os_version_build;
+		*pbOverride = g_os_version_bOverride;
+		return true;
+	}
+
+	//Temporary unlock
+	lock.unlock();
+
 	//Initialize local variables
 	OSVERSIONINFOEXW osvi;
 	memset(&osvi, 0, sizeof(OSVERSIONINFOEXW));
@@ -189,6 +248,22 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 		break;
 	}
 
+	//Enter critical section
+	lock.relock();
+
+	//Save the results
+	if(g_os_version_build == 0)
+	{
+		g_os_version_build = *buildNo;
+		g_os_version_bOverride = g_os_version_bOverride || (*pbOverride);
+	}
+	else
+	{
+		*buildNo = g_os_version_build;
+		*pbOverride = g_os_version_bOverride;
+	}
+
+	//Done
 	return true;
 }
 
