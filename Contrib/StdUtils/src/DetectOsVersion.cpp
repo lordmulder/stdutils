@@ -45,6 +45,13 @@ static volatile unsigned int g_os_version_spack = 0;
 static volatile unsigned int g_os_version_build = 0;
 static volatile bool g_os_version_bOverride = false;
 
+//Add with overflow protection
+static inline DWORD SAFE_ADD(const DWORD &a, const DWORD &b)
+{
+	const DWORD temp = a + b;
+	return ((temp >= a) && (temp >= b)) ? temp : MAXDWORD;
+}
+
 /*
  * Determine the *real* Windows version
  */
@@ -231,16 +238,16 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 	}
 
 	//Determine the real build number
-	DWORD stepSize = 4096;
-	for(DWORD nextBuildNo = (*buildNo); nextBuildNo < INT_MAX; nextBuildNo = (*buildNo) + stepSize)
+	DWORD stepSize = 32768;
+	for (DWORD nextBuildNo = SAFE_ADD((*buildNo), stepSize); (*buildNo) < MAXDWORD; nextBuildNo = SAFE_ADD((*buildNo), stepSize))
 	{
-		if(verify_os_buildNo(nextBuildNo))
+		if (verify_os_buildNo(nextBuildNo))
 		{
 			*buildNo = nextBuildNo;
 			*pbOverride = true;
 			continue;
 		}
-		if(stepSize > 1)
+		if (stepSize > 1)
 		{
 			stepSize = stepSize / 2;
 			continue;
