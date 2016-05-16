@@ -33,6 +33,7 @@
 static bool get_os_info(OSVERSIONINFOEXW *const osInfo);
 static bool verify_os_version(const DWORD major, const DWORD minor, const WORD spack);
 static bool verify_os_buildNo(const DWORD buildNo);
+static inline DWORD initialize_step_size(const DWORD &limit);
 
 //External vars
 extern bool g_bStdUtilsVerbose;
@@ -45,11 +46,12 @@ static volatile unsigned int g_os_version_spack = 0;
 static volatile unsigned int g_os_version_build = 0;
 static volatile bool g_os_version_bOverride = false;
 
-//Add with overflow protection
-static inline DWORD SAFE_ADD(const DWORD &a, const DWORD &b)
+/*
+ * Add with overflow protection
+ */
+static inline DWORD SAFE_ADD(const DWORD &a, const DWORD &b, const DWORD &limit = MAXDWORD)
 {
-	const DWORD temp = a + b;
-	return ((temp >= a) && (temp >= b)) ? temp : MAXDWORD;
+	return ((a >= limit) || (b >= limit) || ((limit - a) <= b)) ? limit : (a + b);
 }
 
 /*
@@ -185,6 +187,8 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
  */
 bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 {
+	static const DWORD MAX_BUILDNO = (((DWORD)~((DWORD)0)) >> 1);
+
 	*buildNo = 0;
 	*pbOverride = false;
 	
@@ -238,21 +242,24 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 	}
 
 	//Determine the real build number
-	DWORD stepSize = 32768;
-	for (DWORD nextBuildNo = SAFE_ADD((*buildNo), stepSize); (*buildNo) < MAXDWORD; nextBuildNo = SAFE_ADD((*buildNo), stepSize))
+	if (verify_os_buildNo(SAFE_ADD((*buildNo), 1, MAX_BUILDNO)))
 	{
-		if (verify_os_buildNo(nextBuildNo))
+		DWORD stepSize = initialize_step_size(MAX_BUILDNO);
+		for (DWORD nextBuildNo = SAFE_ADD((*buildNo), stepSize, MAX_BUILDNO); (*buildNo) < MAX_BUILDNO; nextBuildNo = SAFE_ADD((*buildNo), stepSize, MAX_BUILDNO))
 		{
-			*buildNo = nextBuildNo;
-			*pbOverride = true;
-			continue;
+			if (verify_os_buildNo(nextBuildNo))
+			{
+				*buildNo = nextBuildNo;
+				*pbOverride = true;
+				continue;
+			}
+			if (stepSize > 1)
+			{
+				stepSize = stepSize / 2;
+				continue;
+			}
+			break;
 		}
-		if (stepSize > 1)
-		{
-			stepSize = stepSize / 2;
-			continue;
-		}
-		break;
 	}
 
 	//Enter critical section
@@ -359,10 +366,26 @@ bool get_os_server_edition(bool &bIsServer)
 typedef LONG(__stdcall *RtlGetVersion)(LPOSVERSIONINFOEXW);
 typedef LONG(__stdcall *RtlVerifyVersionInfo)(LPOSVERSIONINFOEXW, ULONG, ULONGLONG);
 
+/*
+ * Initialize OSVERSIONINFOEXW structure
+ */
 static void initialize_os_version(OSVERSIONINFOEXW *const osInfo)
 {
 	memset(osInfo, 0, sizeof(OSVERSIONINFOEXW));
 	osInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+}
+
+/*
+ * Determine initial step size
+ */
+static inline DWORD initialize_step_size(const DWORD &limit)
+{
+	DWORD result = 1;
+	while (result < limit)
+	{
+		result = SAFE_ADD(result, result);
+	}
+	return result;
 }
 
 /*
