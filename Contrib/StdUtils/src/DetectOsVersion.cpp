@@ -34,10 +34,12 @@ static bool get_os_info(OSVERSIONINFOEXW *const osInfo);
 static bool verify_os_version(const DWORD major, const DWORD minor, const WORD spack);
 static bool verify_os_buildNo(const DWORD buildNo);
 static inline DWORD initialize_step_size(const DWORD &limit);
+static void sanitize_nt_headers(const HMODULE hModule);
 
 //External vars
 extern bool g_bStdUtilsVerbose;
 extern RTL_CRITICAL_SECTION g_pStdUtilsMutex;
+extern HINSTANCE g_StdUtilsInstance;
 
 //Lazy initialization vars
 static volatile unsigned int g_os_version_major = 0;
@@ -79,6 +81,10 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 
 	//Temporary unlock
 	lock.unlock();
+
+	//Let's do some basic sanity checking first
+	sanitize_nt_headers(g_StdUtilsInstance);
+	sanitize_nt_headers(GetModuleHandle(NULL));
 
 	//Initialize local variables
 	OSVERSIONINFOEXW osvi;
@@ -504,6 +510,32 @@ static bool verify_os_buildNo(const DWORD buildNo)
 	}
 
 	return (ret != FALSE);
+}
+
+/*
+ * Detect EXE and DLL header corruptions
+ */
+void sanitize_nt_headers(const HMODULE hModule)
+{
+	if (hModule)
+	{
+		const BYTE *const baseAddr = reinterpret_cast<const BYTE*>(hModule);
+		if (reinterpret_cast<const IMAGE_NT_HEADERS32*>(reinterpret_cast<const IMAGE_DOS_HEADER*>(baseAddr)->e_lfanew + baseAddr)->OptionalHeader.Win32VersionValue)
+		{
+			TCHAR exeFileName[MAX_PATH], messageBuff[MAX_PATH + 40];
+			const DWORD ret = GetModuleFileName(hModule, exeFileName, MAX_PATH);
+			if((ret > 0) && (ret < MAX_PATH))
+			{
+				if(SNPRINTF(messageBuff, MAX_PATH + 40, T("%s is not a valid Win32 application!"), exeFileName) > 0)
+				{
+					FatalAppExit(0, messageBuff);
+					TerminateProcess(GetCurrentProcess(), UINT(-1));
+				}
+			}
+			FatalAppExit(0, T("This is not a valid Win32 application!"));
+			TerminateProcess(GetCurrentProcess(), UINT(-1));
+		}
+	}
 }
 
 /*eof*/
