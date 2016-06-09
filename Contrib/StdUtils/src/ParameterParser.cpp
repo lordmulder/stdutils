@@ -107,7 +107,7 @@ static bool valid_argname(const TCHAR *const arg_name)
 {
 	for(size_t i = 0; arg_name[i]; i++)
 	{
-		if(!ISALNUM(arg_name[i]))
+		if(!(ISALNUM(arg_name[i]) || (arg_name[i] == T('_')) || (arg_name[i] == T('-'))))
 		{
 			return false;
 		}
@@ -115,36 +115,51 @@ static bool valid_argname(const TCHAR *const arg_name)
 	return true;
 }
 
+static const TCHAR *get_argument_offset(const TCHAR *const argstr)
+{
+	if(argstr[0] == T('/'))
+	{
+		return &argstr[1];
+	}
+	if((argstr[0] == T('-')) && (argstr[1] == T('-')))
+	{
+		return &argstr[2];
+	}
+	return NULL;
+}
+
 static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
-	const TCHAR *separator = STRCHR(argstr, T('='));
-	if(!separator)
+	const TCHAR *arg_offset = get_argument_offset(argstr);
+	if(arg_offset && arg_offset[0] && (ISALNUM(arg_offset[0]) || (arg_offset[0] == T('_'))))
 	{
-		if((argstr[0] == T('/')) && (STRICMP(&argstr[1], arg_name) == 0))
+		const TCHAR *separator = STRCHR(arg_offset, T('='));
+		if(!(separator && separator[0]))
 		{
-			if(dest_buff && (dest_size > 0))
+			if(STRICMP(arg_offset, arg_name) == 0)
 			{
-				dest_buff[0] = T('\0');
+				if(dest_buff && (dest_size > 0))
+				{
+					dest_buff[0] = T('\0');
+				}
+				return true;
 			}
-			return true;
 		}
-		return false;
+		else
+		{
+			const size_t arg_len = STRLEN(arg_name);
+			if((separator - arg_offset == arg_len) && (STRNICMP(arg_offset, arg_name, arg_len) == 0))
+			{
+				if(dest_buff && (dest_size > 0))
+				{
+					STRNCPY(dest_buff, ++separator, dest_size);
+					dest_buff[dest_size-1] = T('\0');
+				}
+				return true;
+			}
+		}
 	}
 
-	const size_t arg_len = STRLEN(arg_name);
-	if((separator - argstr) == (arg_len + 1))
-	{
-		if((argstr[0] == T('/')) && (STRNICMP(&argstr[1], arg_name, arg_len) == 0))
-		{
-			if(dest_buff && (dest_size > 0))
-			{
-				STRNCPY(dest_buff, ++separator, dest_size);
-				dest_buff[dest_size-1] = T('\0');
-			}
-			return true;
-		}
-	}
-	
 	return false;
 }
 
