@@ -25,7 +25,7 @@
 # - Please see "Examples\StdUtils\StdUtilsTest.nsi" for usage examples!
 
 #################################################################################
-# FUNCTION DECLARTIONS
+# FUNCTION DECLARATIONS
 #################################################################################
 
 !define StdUtils.Time             '!insertmacro _StdUtils_Time'          #time(), as in C standard library
@@ -42,9 +42,9 @@
 !define StdUtils.ScanStr          '!insertmacro _StdUtils_ScanStr'       #sscanf(), as in C standard library, one '%d' placeholder
 !define StdUtils.ScanStr2         '!insertmacro _StdUtils_ScanStr2'      #sscanf(), as in C standard library, two '%d' placeholders
 !define StdUtils.ScanStr3         '!insertmacro _StdUtils_ScanStr3'      #sscanf(), as in C standard library, three '%d' placeholders
-!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'       #Remove whitspaces from string, left and right
-!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'   #Remove whitspaces from string, left side only
-!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight'  #Remove whitspaces from string, right side only
+!define StdUtils.TrimStr          '!insertmacro _StdUtils_TrimStr'       #Remove whitespace from string, left and right
+!define StdUtils.TrimStrLeft      '!insertmacro _StdUtils_TrimStrLeft'   #Remove whitespace from string, left side only
+!define StdUtils.TrimStrRight     '!insertmacro _StdUtils_TrimStrRight'  #Remove whitespace from string, right side only
 !define StdUtils.RevStr           '!insertmacro _StdUtils_RevStr'        #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    '!insertmacro _StdUtils_ValidFileName' #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    '!insertmacro _StdUtils_ValidPathSpec' #Test whether string is a valid full(!) path specification

@@ -32,7 +32,7 @@
 <h1><u>StdUtils - Swiss Army Knife for NSIS</u></h1>
 
 <p>This plug-in provides access to a number of "standard" functions from the <a href="http://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>, which programmers are used to from C/C++ and other "high level" languages, but which are <i>not</i> normally available in NSIS. In order to keep the plug-in size as small as possible and for maximum compatibility, the Visual C++ Runtime v6.0 "MSVCRT.DLL" is used, which is an integral part of all versions of Windows (since Windows 2000). This means that the C++ Runtime neither needs to be shipped as a separate DLL nor does it need to be linked <i>statically</i> into the plug-in.
-<p>Many additional functions, <i>not</i> directly related to the C Standard Library, have been added over the years: For example, this plug-in provides a number convenience functions to deal with <i>strings</i>, such as trimming whitespaces or validating a given file name. There also are some functions to conveniently access the <i>command-line parameters</i> that have been passed to the installer. Furthermore, there is a wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function, which can be used to <i>copy or move files</i> using the Windows Shell, as well as a function to efficiently <i>append</i> the contents of one file to another file. Moreover, the plug-in provides a method for launching programs in a <i>non-elevated</i> way (aka "user mode") from an installer that is running in <i>elevated</i> context (aka "admin mode"). In addition to that, there is a set of functions that can be used to detect the <i>real</i> Windows version that the installer is running on, which still work correctly/reliably on Windows 8.1 (and later) where Microsoft has <i style="color:darkred">broken</i> the GetVersionEx() system function. And, as if this wasn't enough, the plug-in can compute the <i>cryptographic hash</i> of a given file or text message, using various state-of-the-art hash functions, including SHA-{1,2,3}. Last but not least, the plug-in provides a variant of <tt>ExecShell</tt> with "wait for process termination" feature, based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>, as well as a function for invoking "shell verbs" &ndash; useful for programmatically <i>pinning shortcuts to the Taskbar</i>.</p>
+<p>Many additional functions, <i>not</i> directly related to the C Standard Library, have been added over the years: For example, this plug-in provides a number convenience functions to deal with <i>strings</i>, such as trimming whitespace or validating a given file name. There also are some functions to conveniently access the <i>command-line parameters</i> that have been passed to the installer. Furthermore, there is a wrapper for the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762164%28v=vs.85%29.aspx">SHFileOperation</a> function, which can be used to <i>copy or move files</i> using the Windows Shell, as well as a function to efficiently <i>append</i> the contents of one file to another file. Moreover, the plug-in provides a method for launching programs in a <i>non-elevated</i> way (aka "user mode") from an installer that is running in <i>elevated</i> context (aka "admin mode"). In addition to that, there is a set of functions that can be used to detect the <i>real</i> Windows version that the installer is running on, which still work correctly/reliably on Windows 8.1 (and later) where Microsoft has <i style="color:darkred">broken</i> the GetVersionEx() system function. And, as if this wasn't enough, the plug-in can compute the <i>cryptographic hash</i> of a given file or text message, using various state-of-the-art hash functions, including SHA-{1,2,3}. Last but not least, the plug-in provides a variant of <tt>ExecShell</tt> with "wait for process termination" feature, based on <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762154%28v=vs.85%29.aspx">ShellExecuteEx</a>, as well as a function for invoking "shell verbs" &ndash; useful for programmatically <i>pinning shortcuts to the Taskbar</i>.</p>
 <p>Overall I use this plug-in as my "Swiss Army Knife" for all the small things I needed in my NSIS-based installers but that NSIS didn't provide out-of-the-box. <b>ANSI</b> <i>and</i> <b>Unicode</b> builds are provided. Supports all Windows versions, starting with <b>Windows XP</b>.</p>
 
 <br>
@@ -86,9 +86,9 @@
 !define StdUtils.ScanStr          #sscanf(), as in C standard library, one '%d' placeholder
 !define StdUtils.ScanStr2         #sscanf(), as in C standard library, two '%d' placeholders
 !define StdUtils.ScanStr3         #sscanf(), as in C standard library, three '%d' placeholders
-!define StdUtils.TrimStr          #Remove whitspaces from string, left and right
-!define StdUtils.TrimStrLeft      #Remove whitspaces from string, left side only
-!define StdUtils.TrimStrRight     #Remove whitspaces from string, right side only
+!define StdUtils.TrimStr          #Remove whitespace from string, left and right
+!define StdUtils.TrimStrLeft      #Remove whitespace from string, left side only
+!define StdUtils.TrimStrRight     #Remove whitespace from string, right side only
 !define StdUtils.RevStr           #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    #Test whether string is a valid full(!) path specification
@@ -143,7 +143,7 @@ Section
 	DetailPrint "Random number obtained via StdUtils::Rand is: $1"
 SectionEnd</pre>
 
-<p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defind macros, which ensures that the plug-in functions are used in the "proper" way.</p>
+<p>Note: We highly recommend to <u>not</u> call the plug-in functions directly. Instead, use the pre-defined macros, which ensures that the plug-in functions are used in the "proper" way.</p>
 <p>For more details, please have a look at the example scripts located in the <tt>StdUtils\Examples\StdUtils</tt> directory!</p>
 
 <br>
@@ -326,7 +326,7 @@ SectionEnd</pre>
 	StrCpy $0 $1
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
-	
+
 	StrCpy $1 "Some Text"
 	DetailPrint "String: '$1'"
 	StrCpy $0 $1
@@ -350,7 +350,7 @@ SectionEnd</pre>
 	StrCpy $0 $1
 	${StdUtils.TrimStrRight} $0
 	DetailPrint "TrimStrRight: '$0'"
-	
+
 	StrCpy $1 "   "
 	DetailPrint "String: '$1'"
 	StrCpy $0 $1
@@ -384,7 +384,7 @@ SectionEnd</pre>
 	DetailPrint "String: $0"
 	${StdUtils.RevStr} $0
 	DetailPrint "RevStr: $0"
-	
+
 	StrCpy $0 "ABCD"
 	DetailPrint "String: $0"
 	${StdUtils.RevStr} $0
@@ -406,7 +406,7 @@ SectionEnd</pre>
 
 	${StdUtils.ValidFileName} $0 "Is this a valid name?"
 	DetailPrint 'ValidFileName("Is this a valid name?") = $0'
-	
+
 	${StdUtils.ValidPathSpec} $0 "C:\Folder\File.foo"
 	DetailPrint 'ValidPathSpec("C:\Folder\File.foo") = $0'
 SectionEnd</pre>
@@ -428,7 +428,7 @@ SectionEnd</pre>
 	File "${NSISDIR}\Contrib\Graphics\Header\*.*"
 	CreateDirectory "$PLUGINSDIR\SubDirX"
 	CreateDirectory "$PLUGINSDIR\SubDirY"
-	
+
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirX\TestDirB" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
 	${StdUtils.SHFileMove} $0 "$PLUGINSDIR\TestDirA" "$PLUGINSDIR\SubDirY\TestDirC" $HWNDPARENT
@@ -441,11 +441,11 @@ Section
 
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
-	
+
 	${StdUtils.SetVerbose} 1
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
-	
+
 	${StdUtils.SetVerbose} 0
 	${StdUtils.SHFileCopy} $0 "$PLUGINSDIR\TestDirXYZ" "$PLUGINSDIR\SubDirX\TestDirZ" $HWNDPARENT
 	DetailPrint "SHFileCopy: $0"
@@ -464,7 +464,7 @@ SectionEnd</pre>
 <pre>Section
 	${StdUtils.AppendToFile} $0 "$EXEDIR\SourceFile1.bin" "$OUTDIR\OutputFile.bin" 0 0
 	DetailPrint "AppendToFile: $0"
-	
+
 	${StdUtils.AppendToFile} $0 "$EXEDIR\SourceFile2.bin" "$OUTDIR\OutputFile.bin" 0 0
 	DetailPrint "AppendToFile: $0"
 SectionEnd</pre>
@@ -480,18 +480,18 @@ SectionEnd</pre>
 <p>Please note that "einval" indicates that the function was called with invalid parameters, "not_found" indicates that the specified file doesn't exist, and "timeout" indicates that the function encountered a deadlock. Furthermore, note that "ok" indicates that the process was created using the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb774138%28v=vs.85%29.aspx">IShellDispatch2</a> COM interface, which is the <i>default</i> behaviour on modern systems (allows the new process to <i>not</i> be elevated), while "fallback" indicates that the normal <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx">ShellExecute()</a> method was used, which is the expected behaviour on legacy systems <i>without</i> UAC support.</p>
 
 <pre>!include 'StdUtils.nsh'
- 
+
 ; make sure the installer will get elevated rights on UAC-enabled system (Vista+)
 RequestExecutionLevel <span style="color:darkred">admin</span>
 ShowInstDetails show
- 
+
 Section
 	DetailPrint 'ExecShell: "$SYSDIR\mspaint.exe"'
 	; this instance of MS Paint will be *elevated*, just like the installer!
 	ExecShell "open" "$SYSDIR\mspaint.exe"
 	MessageBox MB_TOPMOST "Close Paint and click 'OK' to continue..."
 SectionEnd
- 
+
 Section
 	DetailPrint 'ExecShellAsUser: "$SYSDIR\mspaint.exe"'
 	Sleep 1000
@@ -503,13 +503,13 @@ SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.ExecShellWaitEx} <i>user_var(output_1)</i> <i>user_var(output_2)</i> <i>file</i> <i>verb</i> <i>args</i><br>${StdUtils.WaitForProcEx} <i>user_var(output)</i> <i>handle</i></tt></b></p>
 <p>The <tt>${StdUtils.ExecShellWaitEx}</tt> function works like the built-in <tt>ExecShell</tt> command, except that you can wait for the process to terminate. The function expects three arguments: The path to the file to be executed, the <i>verb</i> that shall be used to execute the file (e.g. "open") and the arguments to be passed to the new process. The last two arguments are optional and can be specified as <i>empty</i> strings (""). Furthermore, the function returns two values: The <i>first</i> value is either "ok", "no_wait" or "error", while the <i>second</i> value provides additional info. "ok" indicates that the process was created successfully and can be waited for, "no_wait" indicates that we cannot wait for the process (because <tt>ShellExecuteEx</tt> did not create a new process, but passed the file/URL to a running instance) and "error" indicates that something went wrong.</p>
-<p>If the <i>first</i> return value is "ok", the <i>second</i> return value contains the handle of the new process. If the <i>first</i> return value is "error", the <i>second</i> return value contains the Win32 error code. And if the <i>first</i> return value is "no_wait", the <i>second</i> return value is zero. Only if "ok" <i>and</i> a process handle were returned, you can call <tt>${StdUtils.WaitForProcEx}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the <i>first</i> return value of <tt>${StdUtils.ExecShellWaitEx}</tt> before you pass the <i>second</i> return value to <tt>${StdUtils.WaitForProcEx}</tt>. The behavior of <tt>${StdUtils.WaitForProcEx}</tt> is undefined if you pass something that isn't a valid process handle! If successfull, <tt>${StdUtils.WaitForProcEx}</tt> returns the exit code of the process after it has terminated. The function returns "error" if something went wrong.</p>
+<p>If the <i>first</i> return value is "ok", the <i>second</i> return value contains the handle of the new process. If the <i>first</i> return value is "error", the <i>second</i> return value contains the Win32 error code. And if the <i>first</i> return value is "no_wait", the <i>second</i> return value is zero. Only if "ok" <i>and</i> a process handle were returned, you can call <tt>${StdUtils.WaitForProcEx}</tt> in order to wait until the process has terminated. This means that you must <i>always</i> carefully check the <i>first</i> return value of <tt>${StdUtils.ExecShellWaitEx}</tt> before you pass the <i>second</i> return value to <tt>${StdUtils.WaitForProcEx}</tt>. The behavior of <tt>${StdUtils.WaitForProcEx}</tt> is undefined if you pass something that isn't a valid process handle! If successful, <tt>${StdUtils.WaitForProcEx}</tt> returns the exit code of the process after it has terminated. The function returns "error" if something went wrong.</p>
 
 <pre>!include 'StdUtils.nsh'
- 
+
 RequestExecutionLevel user
 ShowInstDetails show
- 
+
 Section
 	DetailPrint 'ExecShellWait: "$SYSDIR\mspaint.exe"'
 	Sleep 1000
@@ -520,13 +520,13 @@ Section
 	StrCmp $0 "no_wait" WaitNotPossible ;check if process can be waited for - always check this!
 	StrCmp $0 "ok" WaitForProc ;make sure process was created successfully
 	Abort
-	
+
 	WaitForProc:
 	DetailPrint "Waiting for process. ZZZzzzZZZzzz..."
 	${StdUtils.WaitForProcEx} $2 $1
 	DetailPrint "Process just terminated (exit code: $2)"
 	Goto WaitDone
-	
+
 	ExecFailed:
 	DetailPrint "Failed to create process (error code: $1)"
 	Goto WaitDone
@@ -534,7 +534,7 @@ Section
 	WaitNotPossible:
 	DetailPrint "Can not wait for process."
 	Goto WaitDone
-	
+
 	WaitDone:
 SectionEnd</pre>
 
@@ -559,10 +559,10 @@ SectionEnd</pre>
 <p><small><b style="color:red;font-family:monospace">*</b> Using this syntax is <u>not</u> recommended, but it is supported anyway, for consistency with the way that Visual C++ handles command-line arguments!</small></p>
 
 <pre>!include 'StdUtils.nsh'
- 
+
 RequestExecutionLevel user
 ShowInstDetails show
- 
+
 Section
 	${StdUtils.TestParameter} $R0 "Foobar"
 	StrCmp "$R0" "true" 0 +3
@@ -581,10 +581,10 @@ SectionEnd</pre>
 <p>Hint: In contrast to the <a href="http://en.cppreference.com/w/cpp/language/main_function">main()</a> function, where the <i>first</i> token (index = 0) always contains the executable name, the <tt>${StdUtils.ParameterCnt}</tt> and <tt>${StdUtils.ParameterStr}</tt> functions will <u>omit</u> the executable name. Simply use the built-in <tt>$EXEFILE</tt> or <tt>$EXEPATH</tt> constants instead!</p>
 
 <pre>!include 'StdUtils.nsh'
- 
+
 RequestExecutionLevel user
 ShowInstDetails show
- 
+
 Section
 	StrCpy $R0 0                                    #Init counter to zero
 	${StdUtils.ParameterCnt} $R1                    #Get number of command-line tokens
@@ -603,10 +603,10 @@ SectionEnd</pre>
 <p>Furthermore you can use <tt>${StdUtils.GetAllParameters}</tt> to get the <i>complete</i> command-line string, but <u>without</u> the executable name. This is useful, for example, to forward all command-line parameters to an <i><a href="http://nsis.sourceforge.net/Embedding_other_installers">embedded</a></i> installer. The <tt>truncate</tt> parameters controls the behavior of this function, if the command-line is too long to fit into an NSIS string. With <tt>truncate</tt> set to <b>1</b>, the command-line will be truncated to a length of <tt>NSIS_MAX_STRLEN</tt> characters. With <tt>truncate</tt> set to <b>0</b>, the function returns "too_long", if the command-line doesn't fit into an NSIS string.</p>
 
 <pre>!include 'StdUtils.nsh'
- 
+
 RequestExecutionLevel user
 ShowInstDetails show
- 
+
 Section
 	${StdUtils.GetAllParameters} $R0 0
 	DetailPrint "Complete command-line: '$R0'"
@@ -622,7 +622,7 @@ SectionEnd</pre>
 <a name="d452a779"></a><h2>InvokeShellVerb</h2>
 
 <p><b><tt>${StdUtils.InvokeShellVerb} <i>user_var(output)</i> <i>path</i> <i>file</i> <i>verb_id</i></tt></b></p>
-<p>The <tt>${StdUtils.InvokeShellVerb}</tt> function can be used to invoke a so-called "Shell Verb" on an arbitary item. The most common use for this is (un)pinning an item to/from the Taskbar or the Startmenu, on Windows 7 and later. The function expects three arguments: The directory where the item (e.g. executable file or shortcut) is located, the name of the item, and the <i>id</i> of the shell verb to be invoked. We need the <i>id</i> of the verb, because the verb's name (string), which is used to select the desired verb from the list of available verbs, is <i>language-specific</i>; it depends on the Windows system language. However, we certainly do <b>not</b> want to make our installer specific to a certain system language. Resource id's, on the other hand, are <i>language-independant</i>. By using resource id's, we can load the actual verb name (string) <i>at runtime</i>. Note that while this function works on Windows 7 (and later) only, it still is perfectly safe to call on older versions of Windows. If the function succeeded, then it returns "ok"; if the function is called with invalid parameters, then it returns "einval"; if the requested verb could <i>not</i> be found, if the request verb is unavailable for the specified item, or if the specified item does <i>not</i> exist, then "not_found" will be returned; if this function is used on Windows versions prior to Windows 7 (e.g. Vista or XP), then it will return "unsupported"; and if the function failed for another reason, then it will return "error".</p>
+<p>The <tt>${StdUtils.InvokeShellVerb}</tt> function can be used to invoke a so-called "Shell Verb" on an arbitrary item. The most common use for this is (un)pinning an item to/from the Taskbar or the Startmenu, on Windows 7 and later. The function expects three arguments: The directory where the item (e.g. executable file or shortcut) is located, the name of the item, and the <i>id</i> of the shell verb to be invoked. We need the <i>id</i> of the verb, because the verb's name (string), which is used to select the desired verb from the list of available verbs, is <i>language-specific</i>; it depends on the Windows system language. However, we certainly do <b>not</b> want to make our installer specific to a certain system language. Resource id's, on the other hand, are <i>language-independent</i>. By using resource id's, we can load the actual verb name (string) <i>at runtime</i>. Note that while this function works on Windows 7 (and later) only, it still is perfectly safe to call on older versions of Windows. If the function succeeded, then it returns "ok"; if the function is called with invalid parameters, then it returns "einval"; if the requested verb could <i>not</i> be found, if the request verb is unavailable for the specified item, or if the specified item does <i>not</i> exist, then "not_found" will be returned; if this function is used on Windows versions prior to Windows 7 (e.g. Vista or XP), then it will return "unsupported"; and if the function failed for another reason, then it will return "error".</p>
 <p>Supported shell verbs IDs are:</p>
 <ul>
 <li><tt>${StdUtils.Const.ShellVerb.PinToTaskbar}</tt>
@@ -658,7 +658,7 @@ Section
 	DetailPrint "Going to un-pin MSPaint..."
 	${StdUtils.InvokeShellVerb} $0 "$SYSDIR" "mspaint.exe" ${StdUtils.Const.ShellVerb.UnpinFromTaskbar}
 	DetailPrint "Result: $0"
-	
+
 	StrCmp "$0" "ok" 0 +3
 	MessageBox MB_TOPMOST "Paint should have been un-pinned from Taskbar now!"
 	Goto +2
@@ -716,7 +716,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.VerifyOSVersion} <i>user_var(out)</i> <i>expected_major</i> <i>expected_minor</i> <i>expected_spack</i></tt></b></p>
-<p><tt>${StdUtils.VerifyOSVersion}</tt> is a convenience function to compare the installed Windows version against some expected one. The expected <a href="#b26a3e82">Windows NT version</a> (e.g. "6.2" for Windows 8.0) is specified by the <tt>expected_major</tt>, <tt>expected_minor</tt> and <tt>expected_spack</tt> parameters. The function returns "ok" when the installed Windows version matches the expected one <i>exactly</i>; it returns "older" when the installed version is <i>older</i> than expected; it returns "newer" when the installed version is <i>newer</i> than expected; and it retruns "error" if something went wrong.</p>
+<p><tt>${StdUtils.VerifyOSVersion}</tt> is a convenience function to compare the installed Windows version against some expected one. The expected <a href="#b26a3e82">Windows NT version</a> (e.g. "6.2" for Windows 8.0) is specified by the <tt>expected_major</tt>, <tt>expected_minor</tt> and <tt>expected_spack</tt> parameters. The function returns "ok" when the installed Windows version matches the expected one <i>exactly</i>; it returns "older" when the installed version is <i>older</i> than expected; it returns "newer" when the installed version is <i>newer</i> than expected; and it returns "error" if something went wrong.</p>
 <p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows version that will be compared to the expected version, so it will give the expected result on Windows 8.1 and later.</p>
 
 <pre>!include 'StdUtils.nsh'
@@ -745,7 +745,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.VerifyOSBuildNo} <i>user_var(out)</i> <i>expected_build</i></tt></b></p>
-<p><tt>${StdUtils.VerifyOSBuildNo}</tt> is a convenience function to compare the installed Windows version against some expected version. The expected <a href="#b26a3e82">Windows NT build number</a> is specified by <tt>expected_build</tt> (e.g. "7600" on Windows 7 RTM). The function will retrun "ok" when the installed Windows build matches the expected one <i>exactly</i>; it returns "older" when the installed build is <i>older</i> than the expected one; it returns "newer" when the installed version is <i>newer</i> than the expected one; and it retruns "error" if something went wrong.</p>
+<p><tt>${StdUtils.VerifyOSBuildNo}</tt> is a convenience function to compare the installed Windows version against some expected version. The expected <a href="#b26a3e82">Windows NT build number</a> is specified by <tt>expected_build</tt> (e.g. "7600" on Windows 7 RTM). The function will return "ok" when the installed Windows build matches the expected one <i>exactly</i>; it returns "older" when the installed build is <i>older</i> than the expected one; it returns "newer" when the installed version is <i>newer</i> than the expected one; and it returns "error" if something went wrong.</p>
 <p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows build number that will be compared to the expected build number, so it will give the expected result on Windows 8.1 and later.</p>
 
 <pre>!include 'StdUtils.nsh'
@@ -768,7 +768,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.GetOSEdition} <i>user_var(out)</i></tt></b></p>
-<p><tt>${StdUtils.GetOSEdition}</tt> returns the Windows edition, i.e. either "workstation" or "server". It retruns "error" if something went wrong.</p>
+<p><tt>${StdUtils.GetOSEdition}</tt> returns the Windows edition, i.e. either "workstation" or "server". It returns "error" if something went wrong.</p>
 
 <pre>!include 'StdUtils.nsh'
 
@@ -815,13 +815,13 @@ ShowInstDetails show
 Section
 	${StdUtils.HashText} $0 "SHA3-224" "The quick brown fox jumps over the lazy dog"
 	DetailPrint 'SHA3-224("The quick brown fox jumps over the lazy dog") = "$0"'
-	
+
 	${StdUtils.HashText} $0 "SHA3-256" "The quick brown fox jumps over the lazy dog"
 	DetailPrint 'SHA3-256("The quick brown fox jumps over the lazy dog") = "$0"'
 
 	${StdUtils.HashText} $0 "SHA3-384" "The quick brown fox jumps over the lazy dog"
 	DetailPrint 'SHA3-384("The quick brown fox jumps over the lazy dog") = "$0"'
-	
+
 	${StdUtils.HashText} $0 "SHA3-512" "The quick brown fox jumps over the lazy dog"
 	DetailPrint 'SHA3-512("The quick brown fox jumps over the lazy dog") = "$0"'
 SectionEnd</pre>
@@ -837,13 +837,13 @@ ShowInstDetails show
 Section
 	${StdUtils.HashFile} $0 "SHA3-224" "$WINDIR\Explorer.exe"
 	DetailPrint 'SHA3-224($WINDIR\Explorer.exe) = "$0"'
-	
+
 	${StdUtils.HashFile} $0 "SHA3-256" "$WINDIR\Explorer.exe"
 	DetailPrint 'SHA3-256($WINDIR\Explorer.exe) = "$0"'
 
 	${StdUtils.HashFile} $0 "SHA3-384" "$WINDIR\Explorer.exe"
 	DetailPrint 'SHA3-384($WINDIR\Explorer.exe) = "$0"'
-	
+
 	${StdUtils.HashFile} $0 "SHA3-512" "$WINDIR\Explorer.exe"
 	DetailPrint 'SHA3-512($WINDIR\Explorer.exe) = "$0"'
 SectionEnd</pre>
@@ -934,7 +934,7 @@ SectionEnd</pre>
 
 <a name="db579654"></a><h1>License</h1>
 
-<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;. It is distribiuted under the <b><a href="https://www.gnu.org/licenses/lgpl-2.1.html">GNU LGPL v2.1</a></b>.</p>
+<p>The <b>StdUtils</b> plug-in for NSIS was created by LoRd_MuldeR &lt;mulder2@gmx.de&gt;. It is distributed under the <b><a href="https://www.gnu.org/licenses/lgpl-2.1.html">GNU LGPL v2.1</a></b>.</p>
 
 <pre>StdUtils plug-in for NSIS
 Copyright (C) 2004-2016 LoRd_MuldeR &lt;mulder2@gmx.de&gt;
@@ -1066,7 +1066,7 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 	<li><b>Version 1.06, released 2015-06-14</b>
 	<ul>
 		<li>Added new workaround to make the <tt>GetRealOSVersion</tt>, <tt>GetRealOSName</tt> and <tt>VerifyOSVersion</tt> functions work correctly on Windows 10<br>
-			Mircosoft has <u>broken</u> the <tt>VerifyVersionInfo()</tt> API in Windows 10, so we need to read the version of <tt>kernel32.dll</tt> directly now
+			Microsoft has <u>broken</u> the <tt>VerifyVersionInfo()</tt> API in Windows 10, so we need to read the version of <tt>kernel32.dll</tt> directly now
 		<li>Various fixes and improvements
 	</ul>
 </ul>
