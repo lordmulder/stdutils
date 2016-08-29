@@ -28,6 +28,9 @@
 # FUNCTION DECLARTIONS
 #################################################################################
 
+!ifndef ___STDUTILS__NSH___
+!define ___STDUTILS__NSH___
+
 !define StdUtils.Time             '!insertmacro _StdUtils_Time'          #time(), as in C standard library
 !define StdUtils.GetMinutes       '!insertmacro _StdUtils_GetMinutes'    #GetSystemTimeAsFileTime(), returns the number of minutes
 !define StdUtils.GetHours         '!insertmacro _StdUtils_GetHours'      #GetSystemTimeAsFileTime(), returns the number of hours
@@ -385,3 +388,5 @@
 !define StdUtils.Const.ShellVerb.UnpinFromTaskbar 1
 !define StdUtils.Const.ShellVerb.PinToStart       2
 !define StdUtils.Const.ShellVerb.UnpinFromStart   3
+
+!endif # !___STDUTILS__NSH___
