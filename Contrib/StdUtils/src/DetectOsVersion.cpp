@@ -290,34 +290,34 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 /*
  * Get friendly OS version name
  */
-const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
+const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor, const bool server)
 {
 	static const size_t NAME_COUNT = 9;
-
 	static const struct
 	{
 		const DWORD major;
 		const DWORD minor;
-		const TCHAR name[20];
+		const TCHAR name_ws[32];
+		const TCHAR name_sv[32];
 	}
 	s_names[NAME_COUNT] =
 	{
-		{  4, 0, T("Windows NT 4.0"  ) },
-		{  5, 0, T("Windows 2000"    ) },
-		{  5, 1, T("Windows XP"      ) },
-		{  5, 2, T("Windows XP (x64)") },
-		{  6, 0, T("Windows Vista"   ) },
-		{  6, 1, T("Windows 7"       ) },
-		{  6, 2, T("Windows 8"       ) },
-		{  6, 3, T("Windows 8.1"     ) },
-		{ 10, 0, T("Windows 10"      ) }
+		{  4, 0, T("Windows NT 4.0"  ), T("Windows NT 4.0 (Server)") },
+		{  5, 0, T("Windows 2000"    ), T("Windows 2000 (Server)"  ) },
+		{  5, 1, T("Windows XP"      ), T("Windows XP (Server)"    ) },
+		{  5, 2, T("Windows XP (x64)"), T("Windows Server 2003"    ) },
+		{  6, 0, T("Windows Vista"   ), T("Windows Server 2008"    ) },
+		{  6, 1, T("Windows 7"       ), T("Windows Server 2008 R2" ) },
+		{  6, 2, T("Windows 8"       ), T("Windows Server 2012"    ) },
+		{  6, 3, T("Windows 8.1"     ), T("Windows Server 2012 R2" ) },
+		{ 10, 0, T("Windows 10"      ), T("Windows Server 2016"    ) }
 	};
 
 	for(size_t i = 0; i < NAME_COUNT; i++)
 	{
 		if((s_names[i].major == major) && (s_names[i].minor == minor))
 		{
-			return &s_names[i].name[0];
+			return server ? (&s_names[i].name_sv[0]) : (&s_names[i].name_ws[0]);
 		}
 	}
 
@@ -335,9 +335,8 @@ const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor)
 /*
  * Checks whether OS is a "server" (or "workstation") edition
  */
-bool get_os_server_edition(bool &bIsServer)
+bool get_os_server_edition(bool *const bIsServer)
 {
-	bIsServer = false;
 	bool success = false;
 
 	//Initialize local variables
@@ -346,18 +345,18 @@ bool get_os_server_edition(bool &bIsServer)
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	//Check for server/workstation edition
-	if(get_os_info(&osvi) != FALSE)
+	if(get_os_info(&osvi))
 	{
 		switch(osvi.wProductType)
 		{
 		case VER_NT_SERVER:
 		case VER_NT_DOMAIN_CONTROLLER:
 			success = true;
-			bIsServer = true;
+			*bIsServer = true;
 			break;
 		case VER_NT_WORKSTATION:
 			success = true;
-			bIsServer = false;
+			*bIsServer = false;
 			break;
 		}
 	}

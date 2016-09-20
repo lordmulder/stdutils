@@ -707,8 +707,8 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.GetRealOSName} <i>user_var(out)</i></tt></b></p>
-<p><tt>${StdUtils.GetRealOSName}</tt> is a convenience function that returns the installed Windows version as a <a href="#b26a3e82">friendly name</a> string. Currently the return value can be "Windows NT 4.0", "Windows 2000", "Windows XP", "Windows XP (x64)", "Windows Vista", "Windows 7", "Windows 8", "Windows 8.1" or "Windows 10". If an <i>unknown</i> Windows version is encountered, e.g. some future version that is not yet supported, the function will return "unknown". And it will return "error", if something went wrong.</p>
-<p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> to determine the <i>real</i> Windows version. Subsequently, the <i>real</i> version will be converted to a friendly name, so it will give the expected result on Windows 8.1 and later.</p>
+<p><tt>${StdUtils.GetRealOSName}</tt> is a convenience function that returns the installed Windows version as a <a href="#b26a3e82">friendly name</a> string. Currently the return value can be "Windows NT 4.0", "Windows 2000", "Windows XP", "Windows XP (x64)", "Windows Vista", "Windows 7", "Windows 8", "Windows 8.1", "Windows 10" or any corresponding server edition. If an <i>unknown</i> Windows version is encountered, e.g. some future version that is not yet supported, the function will return "unknown". And it will return "error", if something else went wrong.</p>
+<p>Note: This function uses the same algorithm as <tt>${StdUtils.GetRealOSVersion}</tt> and <tt>${StdUtils.GetOSEdition}</tt>to determine the <i>real</i> Windows version. The <i>real</i> version will be converted to a friendly name, so it will give the expected result on Windows 8.1 and later.</p>
 
 <pre>!include 'StdUtils.nsh'
 
@@ -799,7 +799,7 @@ SectionEnd</pre>
 	<tr><td>Windows 7</td><td>Windows Server 2008 R2</td><td><tt>6.1</tt></td><td><tt>7600</tt> - <tt>7601</tt></td></tr>
 	<tr><td>Windows 8</td><td>Windows Server 2012</td><td><tt>6.2</tt></td><td><tt>9200</tt></td></tr>
 	<tr><td>Windows 8.1</td><td>Windows Server 2012 R2</td><td><tt>6.3</tt></td><td><tt>9600</tt></td></tr>
-	<tr><td>Windows 10</td><td>Windows Server 2016</td><td><tt>10.0</tt></td><td><tt>10240</tt></td></tr>
+	<tr><td>Windows 10</td><td>Windows Server 2016</td><td><tt>10.0</tt></td><td><tt>10240-14393</tt></td></tr>
 </table>
 
 <br><br>
@@ -1037,8 +1037,9 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 <ul>
 	<li><b>Version 1.11, 2016-09-??</b>
 	<ul>
-		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now supports the <tt>--name=value</tt> format in addition to the <tt>/name=value</tt> format.
-		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now support <i>names</i> containing any graphical characters, except for the <tt>=</tt> sign.
+		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now recognizes the <tt>--name=value</tt> format <i>in addition</i> to the <tt>/name=value</tt> format.
+		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now support <i>names</i> containing any graphical characters, except for the equality sign (<tt>=</tt>).
+		<li>The <tt>GetRealOSName</tt> function now returns the name of the corresponding Windows Server edition, if we are running on a Server edition.
 		<li>Minor fixes and improvements.
 	</ul>
 	<li><b>Version 1.10, 2016-05-14</b>

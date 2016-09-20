@@ -1091,7 +1091,12 @@ NSISFUNC(GetRealOsName)
 		return;
 	}
 
-	pushstring(get_os_friendly_name(detectedVersion[0], detectedVersion[1]));
+	if(!get_os_server_edition(&flag))
+	{
+		flag = false;
+	}
+
+	pushstring(get_os_friendly_name(detectedVersion[0], detectedVersion[1], flag));
 }
 
 NSISFUNC(GetOsEdition)
@@ -1100,7 +1105,7 @@ NSISFUNC(GetOsEdition)
 	REGSITER_CALLBACK(g_StdUtilsInstance);
 
 	bool isServerEdition;
-	if(!get_os_server_edition(isServerEdition))
+	if(!get_os_server_edition(&isServerEdition))
 	{
 		pushstring(T("error"));
 		return;
