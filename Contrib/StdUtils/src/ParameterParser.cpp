@@ -158,7 +158,7 @@ static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name
 				{
 					if(++separator)
 					{
-						STRNCPY(dest_buff, ++separator, dest_size);
+						STRNCPY(dest_buff, separator, dest_size);
 						dest_buff[dest_size-1] = T('\0');
 					}
 					else
