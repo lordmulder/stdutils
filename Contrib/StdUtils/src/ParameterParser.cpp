@@ -105,9 +105,13 @@ static bool init_mainargs(void)
 
 static bool valid_argname(const TCHAR *const arg_name)
 {
+	if((arg_name[0] == T('/')) || (arg_name[0] == T('\\')) || (arg_name[0] == T('-')))
+	{
+		return false;
+	}
 	for(size_t i = 0; arg_name[i]; i++)
 	{
-		if(!(ISALNUM(arg_name[i]) || (arg_name[i] == T('_')) || (arg_name[i] == T('-'))))
+		if((!ISGRAPH(arg_name[i])) || (arg_name[i] == T('=')))
 		{
 			return false;
 		}
@@ -117,11 +121,11 @@ static bool valid_argname(const TCHAR *const arg_name)
 
 static const TCHAR *get_argument_offset(const TCHAR *const argstr)
 {
-	if(argstr[0] == T('/'))
+	if((argstr[0] == T('/')) && argstr[1])
 	{
 		return &argstr[1];
 	}
-	if((argstr[0] == T('-')) && (argstr[1] == T('-')))
+	if((argstr[0] == T('-')) && (argstr[1] == T('-')) && argstr[2])
 	{
 		return &argstr[2];
 	}
@@ -131,7 +135,7 @@ static const TCHAR *get_argument_offset(const TCHAR *const argstr)
 static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name, TCHAR *const dest_buff, const size_t dest_size)
 {
 	const TCHAR *arg_offset = get_argument_offset(argstr);
-	if(arg_offset && arg_offset[0] && (ISALNUM(arg_offset[0]) || (arg_offset[0] == T('_'))))
+	if(arg_offset && ISGRAPH(arg_offset[0]) && (arg_offset[0] != T('=')))
 	{
 		const TCHAR *separator = STRCHR(arg_offset, T('='));
 		if(!(separator && separator[0]))
@@ -152,14 +156,20 @@ static bool try_parse_arg(const TCHAR *const argstr, const TCHAR *const arg_name
 			{
 				if(dest_buff && (dest_size > 0))
 				{
-					STRNCPY(dest_buff, ++separator, dest_size);
-					dest_buff[dest_size-1] = T('\0');
+					if(++separator)
+					{
+						STRNCPY(dest_buff, ++separator, dest_size);
+						dest_buff[dest_size-1] = T('\0');
+					}
+					else
+					{
+						dest_buff[0] = T('\0');
+					}
 				}
 				return true;
 			}
 		}
 	}
-
 	return false;
 }
 

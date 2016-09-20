@@ -552,11 +552,16 @@ SectionEnd</pre>
 <ul>
 	<li><tt>Installer.exe /ParameterName</tt>
 	<li><tt>Installer.exe /ParameterName=Value</tt>
-	<li><tt>Installer.exe "/ParameterName=Value Containing Spaces"</tt>
-	<li><tt>Installer.exe /ParameterName="Value Containing Spaces"</tt> <b style="color:red;font-family:monospace">*</b>
-	<li><tt>Installer.exe /ParameterName=Value" Containing "Spaces</tt> <b style="color:red;font-family:monospace">*</b>
+	<li><tt>Installer.exe --ParameterName</tt>
+	<li><tt>Installer.exe --ParameterName=Value</tt>
 </ul>
-<p><small><b style="color:red;font-family:monospace">*</b> Using this syntax is <u>not</u> recommended, but it is supported anyway, for consistency with the way that Visual C++ handles command-line arguments!</small></p>
+<p><b>If the value contains spaces, it needs to be wrapped in double quote (<tt>"</tt>) characters:</b></p>
+<ul>
+	<li><tt>Installer.exe "/ParameterName=Value Containing Spaces"</tt>
+	<li><tt>Installer.exe /ParameterName="Value Containing Spaces"</tt>
+	<li><tt>Installer.exe /ParameterName=Value" Containing "Spaces</tt>
+</ul>
+<p>Note: The parameter <i>name</i> may contain any graphical characters, as defined by <a href="http://www.cplusplus.com/reference/cctype/isgraph/">isgraph()</a>, except for the equality character (<tt>=</tt>). Also, the parameter <i>name</i> must <u>not</u> start with a minus (<tt>-</tt>), slash (<tt>/</tt>) or backslash (<tt>\</tt>) character. The prefix, i.e. <tt>/</tt> or <tt>--</tt>, is <u>not</u> part of the parameter <i>name</i>!</p>
 
 <pre>!include 'StdUtils.nsh'
 
@@ -1030,10 +1035,10 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 <a name="53c38996"></a><h1>Version History</h1>
 
 <ul>
-	<li><b>Version 1.11, 2016-06-??</b>
+	<li><b>Version 1.11, 2016-09-??</b>
 	<ul>
 		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now supports the <tt>--name=value</tt> format in addition to the <tt>/name=value</tt> format.
-		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now support <i>names</i> containing underscore (<tt>_</tt>) or minus (<tt>-</tt>) characters.
+		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now support <i>names</i> containing any graphical characters, except for the <tt>=</tt> sign.
 		<li>Minor fixes and improvements.
 	</ul>
 	<li><b>Version 1.10, 2016-05-14</b>
