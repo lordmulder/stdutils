@@ -4,7 +4,7 @@ REM ----------------------------------------------------------------------
 set "NSIS_ANSI=C:\Program Files (x86)\NSIS\ANSI"
 set "NSIS_Unicode=C:\Program Files (x86)\NSIS\Unicode"
 REM ----------------------------------------------------------------------
-set "NSIS_PROJECTS=StdUtilsTest,SHFileOperation,ShellExecAsUser,InvokeShellVerb,ShellExecWait,GetParameters,AppendToFile,HashFunctions,TimerCreate,OSVersion"
+set "NSIS_PROJECTS=StdUtilsTest,SHFileOperation,ShellExecAsUser,InvokeShellVerb,ShellExecWait,GetParameters,AppendToFile,HashFunctions,TimerCreate,OSVersion,PathUtils"
 REM ----------------------------------------------------------------------
 REM
 for %%i in (%NSIS_PROJECTS%) do (

@@ -262,6 +262,7 @@
     <ClCompile Include="src\HashUtils.cpp" />
     <ClCompile Include="src\InvokeShellVerb.cpp" />
     <ClCompile Include="src\ParameterParser.cpp" />
+    <ClCompile Include="src\PathUtils.cpp" />
     <ClCompile Include="src\RandUtils.cpp" />
     <ClCompile Include="src\rhash\byte_order.c" />
     <ClCompile Include="src\rhash\crc32.c" />
@@ -285,6 +286,7 @@
     <ClInclude Include="src\HashUtils.h" />
     <ClInclude Include="src\InvokeShellVerb.h" />
     <ClInclude Include="src\ParameterParser.h" />
+    <ClInclude Include="src\PathUtils.h" />
     <ClInclude Include="src\RandUtils.h" />
     <ClInclude Include="src\Resource.h" />
     <ClInclude Include="src\rhash\byte_order.h" />

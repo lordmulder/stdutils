@@ -45,7 +45,7 @@
 	<li><a href="#17095e85">Function Reference</a>
 	<ul>
 		<li><a href="#66dd4753">Time Functions: Time / GetMinutes / GetHours / GetDays</a>
-		<li><a href="#dc3f60d9">Pseudorandom Number Generator: </a>
+		<li><a href="#dc3f60d9">Pseudorandom Number Generator: Rand / RandMax / RandMinMax</a>
 		<li><a href="#23711935">String Functions: FormatStr / ScanStr / TrimStr / RevStr / ValidFileName / ValidPathSpec</a>
 		<li><a href="#df333b53">Shell File Operation: SHFileCopy / SHFileMove</a>
 		<li><a href="#18e9c5cb">AppendToFile</a>
@@ -54,6 +54,7 @@
 		<li><a href="#d452a779">InvokeShellVerb</a>
 		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
+		<li><a href="#fe8b67bc">Path Utility Functions: NormalizePath / GetParentPath</a>
 		<li><a href="#5247e2cd">Window Timer Functions</a>
 		<li><a href="#14863bf9">Debugging Functions</a>
 	</ul>
@@ -884,6 +885,44 @@ SectionEnd</pre>
 
 <!-- ---------------- -->
 
+<a name="fe8b67bc"></a><h2>Path Utility Functions</h2>
+
+<p><b><tt>${StdUtils.NormalizePath} <i>user_var(out)</i> <i>path</i></tt></b></p>
+<p>The <tt>${StdUtils.NormalizePath}</tt> function <i>normalizes</i> the given path. The function will remove any navigation elements (such as <tt>.</tt> or <tt>..</tt>) in order to produce a direct, well-formed path. Also, if a <i>relative</i> path is given the function, that path will be expanded to an <i>absolute</i> path, based on the current working directory. Furthermore, any forward slash (<tt>/</tt>) in the path will be replaced by a backslash (<tt>\</tt>). Last but not least, multiple backslash characters in a row will be replaced by a single backslash character and any <i>trailing</i> backslash characters are removed.</p>
+<p>This function does <i>not</i> care whether the given path points to a file or to a directory. The given path does <i>not</i> need to point to an existing file-system object. The function does <i>not</i> check whether the target file-system object exists. If the function fails, an empty string (<tt>""</tt>) will be returned.</p>
+
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	StrCpy $0 "C:\Foo\\Bar/Test\.\..\Test\."
+	${StdUtils.NormalizePath} $1 "$0"
+	DetailPrint 'NormalizePath: "$0" -> "$1"'
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.GetParentPath} <i>user_var(out)</i> <i>path</i></tt></b></p>
+<p>The <tt>${StdUtils.GetParentPath}</tt> function returns the <i>parent</i> path of the given path. If the given path points to a <i>file</i>, the function will return the path of directory where the file is located. If the given path points to a <i>directory</i>, the function will return the path of the directory that is located one level above the given directory. In any case, the given path will first be <i>normalized</i>, according to the <tt>${StdUtils.NormalizePath}</tt> function, and then the <i>last</i> (rightmost) path-component will be chopped off.</p>
+<p>The given path does <i>not</i> need to point to an existing file-system object. The function does <i>not</i> check whether the target file-system object exists. If the function fails, an empty string (<tt>""</tt>) will be returned. If the given path already points to the drive's <i>root</i> directory, the function will fail.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	StrCpy $0 "C:\Foo\Bar\Test\Honk\Sponk"
+DoLoop:
+	${StdUtils.GetParentPath} $1 "$0"
+	DetailPrint 'GetParentPath: "$0" -> "$1"'
+	StrCpy $0 "$1"
+	StrCmp "$0" "" 0 DoLoop
+SectionEnd</pre>
+
+<br>
+
+<!-- ---------------- -->
+
 <a name="5247e2cd"></a><h2>Window Timer Functions</h2>
 
 <p><b><tt>${StdUtils.TimerCreate} <i>user_var(out)</i> <i>callback</i> <i>interval</i><br>${StdUtils.TimerDestroy} <i>user_var(out)</i> <i>timer_id</i></tt></b></p>
@@ -1037,6 +1076,7 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 <ul>
 	<li><b>Version 1.11, 2016-09-??</b>
 	<ul>
+		<li>Added new functions <tt>${StdUtils.NormalizePath}</tt> and <tt>${StdUtils.GetParentPath}</tt> for processing path strings
 		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now recognizes the <tt>--name=value</tt> format <i>in addition</i> to the <tt>/name=value</tt> format.
 		<li>The <tt>GetParameter</tt> and <tt>TestParameter</tt> functions now support <i>names</i> containing any graphical characters, except for the equality sign (<tt>=</tt>).
 		<li>The <tt>GetRealOSName</tt> function now returns the name of the corresponding Windows Server edition, if we are running on a Server edition.

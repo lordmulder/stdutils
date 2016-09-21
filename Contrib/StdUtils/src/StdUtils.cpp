@@ -29,6 +29,7 @@
 #include "FileUtils.h"
 #include "HashUtils.h"
 #include "TimerUtils.h"
+#include "PathUtils.h"
 #include "CleanUp.h"
 
 //External
@@ -1220,6 +1221,54 @@ NSISFUNC(HashText)
 	}
 
 	delete [] text;
+	delete [] temp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PATH UTILITY FUNCTIONS
+///////////////////////////////////////////////////////////////////////////////
+
+NSISFUNC(NormalizePath)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+	
+	popstringn(path, 0);
+
+	if(Path_Normalize(path, temp, g_stringsize))
+	{
+		pushstring(temp);
+	}
+	else
+	{
+		pushstring(T(""));
+	}
+
+	delete [] path;
+	delete [] temp;
+}
+
+NSISFUNC(GetParentPath)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(path, 0);
+
+	if(Path_GetParent(path, temp, g_stringsize))
+	{
+		pushstring(temp);
+	}
+	else
+	{
+		pushstring(T(""));
+	}
+
+	delete [] path;
 	delete [] temp;
 }
 
