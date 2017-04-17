@@ -56,6 +56,7 @@ for %%c in (%CONFIG_NAMES%) do (
 )
 copy /Y "%~dp0\Include\*.nsh"           "%PACK_PATH%\Include"
 copy /Y "%~dp0\Examples\StdUtils\*.nsi" "%PACK_PATH%\Examples\StdUtils"
+copy /Y "%~dp0\*.txt"                   "%PACK_PATH%"
 copy /Y "%~dp0\Docs\StdUtils\*.html"    "%PACK_PATH%\Docs\StdUtils"
 REM -------------------------------------------------------------------------
 pushd "%~dp0"
@@ -63,7 +64,7 @@ git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_D
 popd
 REM -------------------------------------------------------------------------
 echo StdUtils plug-in for NSIS >                               "%PACK_PATH%\BUILD_TAG.txt"
-echo Copyright (C) 2004-2016 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%PACK_PATH%\BUILD_TAG.txt"
+echo Copyright (C) 2004-2017 LoRd_MuldeR ^<MuldeR2@GMX.de^> >> "%PACK_PATH%\BUILD_TAG.txt"
 echo. >>                                                       "%PACK_PATH%\BUILD_TAG.txt"
 echo Built on %DATE%, at %TIME%. >>                            "%PACK_PATH%\BUILD_TAG.txt"
 REM -------------------------------------------------------------------------
