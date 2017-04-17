@@ -1115,6 +1115,23 @@ NSISFUNC(GetOsEdition)
 	pushstring(isServerEdition ? T("server") : T("workstation"));
 }
 
+NSISFUNC(GetOsReleaseId)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+
+	DWORD releaseId;
+	const int result = get_os_release_id(releaseId);
+	if(result > 0)
+	{
+		pushint((releaseId > DWORD(INT_MAX)) ? INT_MAX : static_cast<int>(releaseId));
+	}
+	else
+	{
+		pushstring((result < 0) ? T("error") : T("unavail"));
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // HASH COMPUTATION
 ///////////////////////////////////////////////////////////////////////////////

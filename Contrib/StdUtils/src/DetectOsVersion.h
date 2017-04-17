@@ -24,6 +24,7 @@
 bool get_real_os_version(unsigned int *const major, unsigned int *const minor, unsigned int *const spack, bool *const pbOverride);
 bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride);
 bool get_os_server_edition(bool *const bIsServer);
+int get_os_release_id(DWORD &releaseId);
 const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor, const bool server);
 
 /*eof*/

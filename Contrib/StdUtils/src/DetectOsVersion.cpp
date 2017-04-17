@@ -364,6 +364,57 @@ bool get_os_server_edition(bool *const bIsServer)
 	return success;
 }
 
+int get_os_release_id(DWORD &releaseId)
+{
+	releaseId = DWORD(-1);
+	int result = (-1);
+	HKEY hKeyCurrentVersion;
+	if(RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, STANDARD_RIGHTS_READ | KEY_QUERY_VALUE, &hKeyCurrentVersion) == ERROR_SUCCESS)
+	{
+		const DWORD buffSize = 256;
+		BYTE data[buffSize];
+		DWORD type = REG_NONE, size = buffSize;
+		switch(RegQueryValueExW(hKeyCurrentVersion, L"ReleaseId", NULL, &type, &data[0], &size))
+		{
+		case ERROR_SUCCESS:
+			if(((type == REG_SZ) || (type == REG_EXPAND_SZ) || (type == REG_MULTI_SZ)) && (size >= sizeof(WCHAR)))
+			{
+				if(const WCHAR *const regIdStr = reinterpret_cast<const WCHAR*>(&data[0]))
+				{
+					unsigned long regIdVal;
+					if(swscanf(regIdStr, L"%lu", &regIdVal) == 1)
+					{
+						releaseId = regIdVal;
+						result = 1;
+					}
+				}
+			}
+			else if((type == REG_DWORD) && (size >= sizeof(DWORD)))
+			{
+				if(const DWORD *const regIdPtr = reinterpret_cast<const DWORD*>(&data[0]))
+				{
+					releaseId = (*regIdPtr);
+					result = 1;
+				}
+			}
+			else if((type == REG_QWORD) && (size >= sizeof(ULARGE_INTEGER)))
+			{
+				if(const ULARGE_INTEGER *const regIdPtr = reinterpret_cast<const ULARGE_INTEGER*>(&data[0]))
+				{
+					releaseId = regIdPtr->LowPart;
+					result = 1;
+				}
+			}
+			break;
+		case ERROR_FILE_NOT_FOUND:
+			result = 0; /*value "ReleaseId" does NOT exist*/
+			break;
+		}
+		RegCloseKey(hKeyCurrentVersion);
+	}
+	return result;
+}
+
 //===========================================================================
 // INTERNAL FUNCTIONS
 //===========================================================================
