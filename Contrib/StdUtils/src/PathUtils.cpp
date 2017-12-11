@@ -80,6 +80,11 @@ bool Path_GetParent(const TCHAR *const path, TCHAR *const parentPath, const size
 	return false;
 }
 
+void Path_Split(const TCHAR *const path, TCHAR *const drive, TCHAR *const dir, TCHAR *const fname, TCHAR *const ext)
+{
+	SPLITPATH(path, drive, dir, fname, ext);
+}
+
 //===========================================================================
 // INTERNAL FUNCTIONS
 //===========================================================================

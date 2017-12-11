@@ -23,5 +23,11 @@
 
 #include "StdUtils.h"
 
+static const size_t MAX_DRIVE =   3;
+static const size_t MAX_DIR   = 256;
+static const size_t MAX_FNAME = 256;
+static const size_t MAX_EXT   = 256;
+
 bool Path_Normalize(const TCHAR *const path, TCHAR *const normalized, const size_t buff_size);
 bool Path_GetParent(const TCHAR *const path, TCHAR *const normalized, const size_t buff_size);
+void Path_Split(const TCHAR *const path, TCHAR *const drive, TCHAR *const dir, TCHAR *const fname, TCHAR *const ext);

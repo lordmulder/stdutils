@@ -76,7 +76,7 @@ Section
 SectionEnd
 
 # -----------------------------------------
-# GeParentPath
+# GetParentPath
 # -----------------------------------------
 
 !macro TestGetParentPath input
@@ -101,8 +101,6 @@ Section
 	DetailPrint "--------------"
 SectionEnd
 
-
-
 Section
 	StrCpy $0 "C:\Foo\\Bar/Test\.\..\Test\."
 	${StdUtils.NormalizePath} $1 "$0"
@@ -116,4 +114,45 @@ Loop:
 	DetailPrint 'GetParentPath: "$0" -> "$1"'
 	StrCpy $0 "$1"
 	StrCmp "$0" "" 0 Loop
+	
+	DetailPrint "--------------"
+SectionEnd
+
+# -----------------------------------------
+# SplitPath
+# -----------------------------------------
+
+Section
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.SplitPath} $1 $2 $3 $4 "$0"
+	DetailPrint 'SplitPath [1]: "$0" -> "$1"'
+	DetailPrint 'SplitPath [2]: "$0" -> "$2"'
+	DetailPrint 'SplitPath [3]: "$0" -> "$3"'
+	DetailPrint 'SplitPath [4]: "$0" -> "$4"'
+	
+	DetailPrint "--------------"
+SectionEnd
+
+# -----------------------------------------
+# GetFoobarPart
+# -----------------------------------------
+
+Section
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.GetDrivePart} $1 "$0"
+	DetailPrint 'GetDrivePart: "$0" -> "$1"'
+	
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.GetDirectoryPart} $1 "$0"
+	DetailPrint 'GetDirectoryPart: "$0" -> "$1"'
+	
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.GetFileNamePart} $1 "$0"
+	DetailPrint 'GetFileNamePart: "$0" -> "$1"'
+	
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.GetExtensionPart} $1 "$0"
+	DetailPrint 'GetExtensionPart: "$0" -> "$1"'
+	
+	DetailPrint "--------------"
 SectionEnd

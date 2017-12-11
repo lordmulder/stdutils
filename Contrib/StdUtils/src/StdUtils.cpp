@@ -1289,6 +1289,90 @@ NSISFUNC(GetParentPath)
 	delete [] temp;
 }
 
+NSISFUNC(SplitPath)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(out1, g_stringsize);
+	MAKESTR(out2, g_stringsize);
+	MAKESTR(out3, g_stringsize);
+	MAKESTR(out4, g_stringsize);
+
+	popstringn(path, 0);
+	Path_Split(path, out1, out2, out3, out4);
+	pushstring(out4);
+	pushstring(out3);
+	pushstring(out2);
+	pushstring(out1);
+
+	delete [] path;
+	delete [] out1;
+	delete [] out2;
+	delete [] out3;
+	delete [] out4;
+}
+
+NSISFUNC(GetDrivePart)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(path, 0);
+	Path_Split(path, temp, NULL, NULL, NULL);
+	pushstring(temp);
+
+	delete [] path;
+	delete [] temp;
+}
+
+NSISFUNC(GetDirectoryPart)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(path, 0);
+	Path_Split(path, NULL, temp, NULL, NULL);
+	pushstring(temp);
+
+	delete [] path;
+	delete [] temp;
+}
+
+NSISFUNC(GetFileNamePart)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(path, 0);
+	Path_Split(path, NULL, NULL, temp, NULL);
+	pushstring(temp);
+
+	delete [] path;
+	delete [] temp;
+}
+
+NSISFUNC(GetExtensionPart)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(path, g_stringsize);
+	MAKESTR(temp, g_stringsize);
+
+	popstringn(path, 0);
+	Path_Split(path, NULL, NULL, NULL, temp);
+	pushstring(temp);
+
+	delete [] path;
+	delete [] temp;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CREATE/DESTROY TIMER
 ///////////////////////////////////////////////////////////////////////////////

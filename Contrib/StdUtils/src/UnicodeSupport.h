@@ -51,6 +51,7 @@ bool wcs_whitespace(const wchar_t c);
 	#define ISALNUM iswalnum
 	#define ISGRAPH iswgraph
 	#define WHITESPACE wcs_whitespace
+	#define SPLITPATH _wsplitpath
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
 #else
@@ -68,6 +69,7 @@ bool wcs_whitespace(const wchar_t c);
 	#define ISALPHA isalpha
 	#define ISALNUM isalnum
 	#define ISGRAPH isgraph
+	#define SPLITPATH _splitpath
 	#define WHITESPACE str_whitespace
 	#define T(X) X
 #endif

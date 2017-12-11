@@ -34,6 +34,8 @@ long __declspec(dllimport) time(long *time);
 int  __declspec(dllimport) rand(void);
 void __declspec(dllimport) srand(unsigned int _Seed);
 int  __declspec(dllimport) abs(_In_ int _X);
+void __declspec(dllimport) _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext);
+void __declspec(dllimport) _wsplitpath(const wchar_t *path, wchar_t *drive, wchar_t *dir, wchar_t *fname, wchar_t *ext);
 #endif //_INC_STDLIB
 
 int __declspec(dllimport) _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
