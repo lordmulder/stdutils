@@ -54,7 +54,7 @@
 		<li><a href="#d452a779">InvokeShellVerb</a>
 		<li><a href="#f57ec206">OS Version Functions: GetRealOSVersion / GetRealOSName / VerifyOSVersion / GetOSEdition</a>
 		<li><a href="#e1f7e07b">Cryptographic Hash Functions: HashText / HashFile</a>
-		<li><a href="#fe8b67bc">Path Utility Functions: NormalizePath / GetParentPath</a>
+		<li><a href="#fe8b67bc">Path Utility Functions: NormalizePath / GetParentPath / SplitPath</a>
 		<li><a href="#5247e2cd">Window Timer Functions</a>
 		<li><a href="#14863bf9">Debugging Functions</a>
 	</ul>
@@ -87,9 +87,9 @@
 !define StdUtils.ScanStr          #sscanf(), as in C standard library, one '%d' placeholder
 !define StdUtils.ScanStr2         #sscanf(), as in C standard library, two '%d' placeholders
 !define StdUtils.ScanStr3         #sscanf(), as in C standard library, three '%d' placeholders
-!define StdUtils.TrimStr          #Remove whitespace from string, left and right
-!define StdUtils.TrimStrLeft      #Remove whitespace from string, left side only
-!define StdUtils.TrimStrRight     #Remove whitespace from string, right side only
+!define StdUtils.TrimStr          #Remove whitspaces from string, left and right
+!define StdUtils.TrimStrLeft      #Remove whitspaces from string, left side only
+!define StdUtils.TrimStrRight     #Remove whitspaces from string, right side only
 !define StdUtils.RevStr           #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    #Test whether string is a valid full(!) path specification
@@ -109,10 +109,18 @@
 !define StdUtils.GetRealOSBuildNo #Get the *real* Windows build number, even on Windows 8.1+
 !define StdUtils.GetRealOSName    #Get the *real* Windows version, as a "friendly" name
 !define StdUtils.GetOSEdition     #Get the Windows edition, i.e. "workstation" or "server"
+!define StdUtils.GetOSReleaseId   #Get the Windows release identifier (on Windows 10)
 !define StdUtils.VerifyOSVersion  #Compare *real* operating system to an expected version number
 !define StdUtils.VerifyOSBuildNo  #Compare *real* operating system to an expected build number
 !define StdUtils.HashText         #Compute hash from text string (CRC32, MD5, SHA1/2/3, BLAKE2)
 !define StdUtils.HashFile         #Compute hash from file (CRC32, MD5, SHA1/2/3, BLAKE2)
+!define StdUtils.NormalizePath    #Simplifies the path to produce a direct, well-formed path
+!define StdUtils.GetParentPath    #Get parent path by removing the last component from the path
+!define StdUtils.SplitPath        #Split the components of the given path
+!define StdUtils.GetDrivePart     #Get drive component of path
+!define StdUtils.GetDirectoryPart #Get directory component of path
+!define StdUtils.GetFileNamePart  #Get file name component of path
+!define StdUtils.GetExtensionPart #Get file extension component of path
 !define StdUtils.TimerCreate      #Create a new event-timer that will be triggered periodically
 !define StdUtils.TimerDestroy     #Destroy a running timer created with TimerCreate()
 !define StdUtils.GetLibVersion    #Get the current StdUtils library version (for debugging)
@@ -919,6 +927,45 @@ DoLoop:
 	StrCmp "$0" "" 0 DoLoop
 SectionEnd</pre>
 
+<p><br><b><tt>${StdUtils.SplitPath} <i>user_var(out_drive)</i> <i>user_var(out_dir)</i> <i>user_var(out_fname)</i> <i>user_var(out_ext)</i> <i>path</i></tt></b></p>
+<p>The <tt>${StdUtils.SplitPath}</tt> function splits the given path into the separate components. These components are <i>drive letter</i>, <i>directory path</i>, <i>file name</i>, and <i>file extension</i>. Each component is returned separately.</p>
+<p>The given path does <i>not</i> need to point to an existing file-system object. The function does <i>not</i> check whether the target file-system object exists. If a certain component is missing in the given path, an empty string (<tt>""</tt>) will be returned for that component.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	StrCpy $0 "C:\Windows\System32\kernel32.dll"
+	${StdUtils.SplitPath} $1 $2 $3 $4 "$0"
+	DetailPrint 'SplitPath [1]: "$0" -> "$1"' # "C:"
+	DetailPrint 'SplitPath [2]: "$0" -> "$2"' # "\Windows\System32\"
+	DetailPrint 'SplitPath [3]: "$0" -> "$3"' # "kernel32"
+	DetailPrint 'SplitPath [4]: "$0" -> "$4"' # ".dll"
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.GetDrivePart} <i>user_var(out)</i> <i>path</i><br>${StdUtils.GetDirectoryPart} <i>user_var(out)</i> <i>path</i><br>${StdUtils.GetFileNamePart} <i>user_var(out)</i> <i>path</i><br>${StdUtils.GetExtensionPart} <i>user_var(out)</i> <i>path</i></tt></b></p>
+<p>The <tt>${StdUtils.GetDrivePart}</tt>, <tt>${StdUtils.GetDirectoryPart}</tt>, <tt>${StdUtils.GetFileNamePart}</tt> and <tt>${StdUtils.GetExtensionPart}</tt> functions return the <i>drive letter</i>, <i>directory path</i>, <i>file name</i>, and <i>file extension</i> component of the given path, respectively.</p>
+<p>The given path does <i>not</i> need to point to an existing file-system object. The function does <i>not</i> check whether the target file-system object exists. If a certain component is missing in the given path, an empty string (<tt>""</tt>) will be returned for that component.</p>
+<pre>!include 'StdUtils.nsh'
+
+RequestExecutionLevel user
+ShowInstDetails show
+
+Section
+	${StdUtils.GetDrivePart} $1 "C:\Windows\System32\kernel32.dll"
+	DetailPrint 'GetDrivePart: "$1"'     # "C:"
+	
+	${StdUtils.GetDirectoryPart} $1 "C:\Windows\System32\kernel32.dll"
+	DetailPrint 'GetDirectoryPart: "$1"' # "\Windows\System32\"
+	
+	${StdUtils.GetFileNamePart} $1 "C:\Windows\System32\kernel32.dll"
+	DetailPrint 'GetFileNamePart: "$1"'  # "kernel32"
+	
+	${StdUtils.GetExtensionPart} $1 "C:\Windows\System32\kernel32.dll"
+	DetailPrint 'GetExtensionPart: "$1"' # ".dll"
+SectionEnd</pre>
+
 <br>
 
 <!-- ---------------- -->
@@ -1076,8 +1123,13 @@ this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/
 <a name="53c38996"></a><h1>Version History</h1>
 
 <ul>
-	<li><b>Version 1.12, 2017-??-??</b>
+	<li><b>Version 1.12, 2017-12-12</b>
 	<ul>
+		<li>Added new function <tt>${StdUtils.SplitPath}</tt> to split a given path into separate components.
+		<li>Added new function <tt>${StdUtils.GetDrivePart}</tt> to get the <i>drive letter</i> component of a given path.
+		<li>Added new function <tt>${StdUtils.GetDirectoryPart}</tt> to get the <i>directory path</i> component of a given path.
+		<li>Added new function <tt>${StdUtils.GetFileNamePart}</tt> to get the <i>file name</i> component of a given path.
+		<li>Added new function <tt>${StdUtils.GetExtensionPart}</tt> to get the <i>file extension</i> component of a given path.
 		<li>Added new function <tt>${StdUtils.GetOSReleaseId}</tt> to get the "Release Id" of Windows 10 (supersedes the "Service Pack" number)
 	</ul>
 	<li><b>Version 1.11, 2017-04-17</b>
