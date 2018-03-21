@@ -24,57 +24,58 @@
 #include "Mutex.h"
 #include "UnicodeSupport.h"
 #include "msvc_utils.h"
-
-//Global
-extern RTL_CRITICAL_SECTION g_pStdUtilsMutex;
+#include <intrin.h> 
 
 //Prototype
 typedef BOOLEAN (__stdcall *TRtlGenRandom)(PVOID RandomBuffer, ULONG RandomBufferLength);
 
-static bool s_secure_rand_init = false;
+//State
+static volatile long s_secure_rand_init = 0;
 static TRtlGenRandom s_pRtlGenRandom = NULL;
 
-static inline unsigned int my_rand(void)
+//Helper macro
+#define RANDU32() (((static_cast<unsigned int>(rand()) & 0xFFFF) << 16) | (static_cast<unsigned int>(rand()) & 0xFFFF))
+
+/*initialize rand*/
+static __forceinline void init_rand(void)
 {
-	return (static_cast<unsigned int>(rand()) << 16) ^ static_cast<unsigned int>(rand());
+	long state;
+	while((state = _InterlockedCompareExchange( &s_secure_rand_init, -1, 0 )) != 0)
+	{
+		if(state > 0)
+		{
+			return; /*already initialized*/
+		}
+	}
+
+	srand(static_cast<unsigned int>(time(NULL)));
+	if(const HMODULE advapi32 = GetModuleHandle(T("Advapi32.dll")))
+	{
+		s_pRtlGenRandom = reinterpret_cast<TRtlGenRandom>(GetProcAddress(advapi32, "SystemFunction036"));
+	}
+
+	_InterlockedExchange(&s_secure_rand_init, 1);
 }
 
 /* Robert Jenkins' 96 bit Mix Function */
-static unsigned int mix_function(const unsigned int x, const unsigned int y, const unsigned int z)
+static inline unsigned int mix_function(unsigned int a, unsigned int b, unsigned int c)
 {
-	unsigned int a = x;
-	unsigned int b = y;
-	unsigned int c = z;
-	
 	a=a-b;  a=a-c;  a=a^(c >> 13);
-	b=b-c;  b=b-a;  b=b^(a << 8); 
+	b=b-c;  b=b-a;  b=b^(a <<  8);
 	c=c-a;  c=c-b;  c=c^(b >> 13);
 	a=a-b;  a=a-c;  a=a^(c >> 12);
 	b=b-c;  b=b-a;  b=b^(a << 16);
-	c=c-a;  c=c-b;  c=c^(b >> 5);
-	a=a-b;  a=a-c;  a=a^(c >> 3);
+	c=c-a;  c=c-b;  c=c^(b >>  5);
+	a=a-b;  a=a-c;  a=a^(c >>  3);
 	b=b-c;  b=b-a;  b=b^(a << 10);
 	c=c-a;  c=c-b;  c=c^(b >> 15);
-
 	return c;
 }
 
-static inline void init_rand(void)
+//32-Bit rand() version
+static inline unsigned int fallback_rand()
 {
-	MutexLocker locker(&g_pStdUtilsMutex);
-
-	if(!s_secure_rand_init)
-	{
-		srand(static_cast<unsigned int>(time(NULL)));
-
-		HMODULE advapi32 = GetModuleHandle(T("Advapi32.dll"));
-		if(advapi32)
-		{
-			s_pRtlGenRandom = reinterpret_cast<TRtlGenRandom>(GetProcAddress(advapi32, "SystemFunction036"));
-		}
-
-		s_secure_rand_init = true;
-	}
+	return mix_function(RANDU32(), RANDU32(), RANDU32());
 }
 
 unsigned int next_rand(void)
@@ -90,9 +91,31 @@ unsigned int next_rand(void)
 		}
 	}
 
-	const unsigned int x = my_rand();
-	const unsigned int y = my_rand();
-	const unsigned int z = my_rand();
-	
-	return mix_function(x, y, z);
+	/*fallback implementation*/
+	return fallback_rand();
+}
+
+void rand_bytes(unsigned char *const buffer, const size_t size)
+{
+	init_rand();
+
+	if(s_pRtlGenRandom)
+	{
+		if(s_pRtlGenRandom(buffer, size))
+		{
+			return; /*success*/
+		}
+	}
+
+	/*fallback implementation*/
+	unsigned int rnd;
+	for(size_t i = 0; i < size; ++i)
+	{
+		if(!(i & 3U))
+		{
+			rnd = fallback_rand();
+		}
+		buffer[i] = (unsigned char)(rnd & 0xFF);
+		rnd >>= 8;
+	}
 }

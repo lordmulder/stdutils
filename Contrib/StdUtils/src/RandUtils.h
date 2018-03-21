@@ -22,3 +22,4 @@
 #pragma once
 
 unsigned int next_rand(void);
+void rand_bytes(unsigned char *const buffer, const size_t size);
