@@ -229,7 +229,7 @@ NSISFUNC(RandBytes)
 
 	if((count < 0) || (base64_encode_len((size_t)count) >= g_stringsize))
 	{
-		pushstring((count >= 0) ? T("too_long") : T("invalid"));
+		pushstring((count >= 0) ? T("@too_long") : T("@invalid"));
 		return;
 	}
 
@@ -239,7 +239,7 @@ NSISFUNC(RandBytes)
 	TCHAR *const rand_base64 = base64_raw2encoded(rand_buffer, (size_t)count);
 	if(!rand_base64)
 	{
-		pushstring(T("error"));
+		pushstring(T("@error"));
 		memset(rand_buffer, 0, ((size_t)count) * sizeof(BYTE));
 		delete [] rand_buffer;
 		return;
