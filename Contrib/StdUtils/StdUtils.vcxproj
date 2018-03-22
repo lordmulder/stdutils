@@ -139,9 +139,10 @@
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\unicode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -224,9 +225,10 @@
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\include\common;$(SolutionDir)\include\ansi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -253,6 +255,7 @@
     <ResourceCompile Include="StdUtils.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Base64.cpp" />
     <ClCompile Include="src\blake2\blake2.cpp" />
     <ClCompile Include="src\ByteToHex.cpp" />
     <ClCompile Include="src\CleanUp.cpp" />
@@ -278,6 +281,7 @@
     <ClCompile Include="src\UnicodeSupport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Base64.h" />
     <ClInclude Include="src\blake2\blake2.h" />
     <ClInclude Include="src\CleanUp.h" />
     <ClInclude Include="src\ComUtils.h" />

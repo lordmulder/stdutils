@@ -251,6 +251,45 @@ SectionEnd
 !insertmacro NextTest
 
 Section
+	${StdUtils.RandList} 50 100
+	Pop $1
+	StrCmp $1 EOL +3
+	DetailPrint "RandList: $1"
+	Goto -3
+SectionEnd
+
+!insertmacro NextTest
+
+Section
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 100
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 500000
+	DetailPrint "RandBytes: $1"
+	${StdUtils.RandBytes} $1 -42
+	DetailPrint "RandBytes: $1"
+SectionEnd
+
+!insertmacro NextTest
+
+# -----------------------------------------
+# String functions
+# -----------------------------------------
+
+########## FormatStr ########## 
+
+Section
 	${StdUtils.FormatStr} $1 "Hello World is %05d woha!" 89
 	DetailPrint "FormatStr: $1"
 	${StdUtils.FormatStr2} $1 "Hello World is %05d and %05d woha!" 89 384
@@ -262,20 +301,6 @@ Section
 SectionEnd
 
 !insertmacro NextTest
-
-Section
-	${StdUtils.RandList} 50 100
-	Pop $1
-	StrCmp $1 EOL +3
-	DetailPrint "RandList: $1"
-	Goto -3
-SectionEnd
-
-!insertmacro NextTest
-
-# -----------------------------------------
-# String functions
-# -----------------------------------------
 
 ########## ScanStr ########## 
 

@@ -34,28 +34,7 @@ static volatile long s_secure_rand_init = 0;
 static TRtlGenRandom s_pRtlGenRandom = NULL;
 
 //Helper macro
-#define RANDU32() (((static_cast<unsigned int>(rand()) & 0xFFFF) << 16) | (static_cast<unsigned int>(rand()) & 0xFFFF))
-
-/*initialize rand*/
-static __forceinline void init_rand(void)
-{
-	long state;
-	while((state = _InterlockedCompareExchange( &s_secure_rand_init, -1, 0 )) != 0)
-	{
-		if(state > 0)
-		{
-			return; /*already initialized*/
-		}
-	}
-
-	srand(static_cast<unsigned int>(time(NULL)));
-	if(const HMODULE advapi32 = GetModuleHandle(T("Advapi32.dll")))
-	{
-		s_pRtlGenRandom = reinterpret_cast<TRtlGenRandom>(GetProcAddress(advapi32, "SystemFunction036"));
-	}
-
-	_InterlockedExchange(&s_secure_rand_init, 1);
-}
+#define MKRAND() (((static_cast<unsigned int>(rand()) & 0xFFFF) << 16) | (static_cast<unsigned int>(rand()) & 0xFFFF))
 
 /* Robert Jenkins' 96 bit Mix Function */
 static inline unsigned int mix_function(unsigned int a, unsigned int b, unsigned int c)
@@ -72,12 +51,48 @@ static inline unsigned int mix_function(unsigned int a, unsigned int b, unsigned
 	return c;
 }
 
-//32-Bit rand() version
-static inline unsigned int fallback_rand()
+/* make seed value */
+static inline unsigned int make_seed(void)
 {
-	return mix_function(RANDU32(), RANDU32(), RANDU32());
+	return mix_function(static_cast<unsigned int>(time(NULL)), static_cast<unsigned int>(clock()), static_cast<unsigned int>(_getpid()));
 }
 
+/* fallback rand() function */
+static inline unsigned int fallback_rand(void)
+{
+	unsigned int rand_val = make_seed();
+	for(int i = 0; i < 42; ++i)
+	{
+		rand_val = mix_function(rand_val, MKRAND(), MKRAND());
+		rand_val = mix_function(MKRAND(), rand_val, MKRAND());
+		rand_val = mix_function(MKRAND(), MKRAND(), rand_val);
+	}
+	return rand_val;
+}
+
+/* initialize random */
+static inline void init_rand(void)
+{
+	long state;
+	while((state = _InterlockedCompareExchange( &s_secure_rand_init, -1, 0 )) != 0)
+	{
+		if(state > 0)
+		{
+			return; /*already initialized*/
+		}
+	}
+
+	srand(make_seed());
+
+	if(const HMODULE advapi32 = GetModuleHandle(T("Advapi32.dll")))
+	{
+		s_pRtlGenRandom = reinterpret_cast<TRtlGenRandom>(GetProcAddress(advapi32, "SystemFunction036"));
+	}
+
+	_InterlockedExchange(&s_secure_rand_init, 1);
+}
+
+/* return the next random number */
 unsigned int next_rand(void)
 {
 	init_rand();
@@ -95,7 +110,8 @@ unsigned int next_rand(void)
 	return fallback_rand();
 }
 
-void rand_bytes(unsigned char *const buffer, const size_t size)
+/* fill buffer with randomized bytes */
+void rand_bytes(BYTE *const buffer, const size_t size)
 {
 	init_rand();
 

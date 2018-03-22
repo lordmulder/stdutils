@@ -39,6 +39,7 @@
 !define StdUtils.RandMax          '!insertmacro _StdUtils_RandMax'       #rand(), as in C standard library, with maximum value
 !define StdUtils.RandMinMax       '!insertmacro _StdUtils_RandMinMax'    #rand(), as in C standard library, with minimum/maximum value
 !define StdUtils.RandList         '!insertmacro _StdUtils_RandList'      #rand(), as in C standard library, with list support
+!define StdUtils.RandBytes        '!insertmacro _StdUtils_RandBytes'     #Generates random bytes, returned as Base64-encoded string
 !define StdUtils.FormatStr        '!insertmacro _StdUtils_FormatStr'     #sprintf(), as in C standard library, one '%d' placeholder
 !define StdUtils.FormatStr2       '!insertmacro _StdUtils_FormatStr2'    #sprintf(), as in C standard library, two '%d' placeholders
 !define StdUtils.FormatStr3       '!insertmacro _StdUtils_FormatStr3'    #sprintf(), as in C standard library, three '%d' placeholders
@@ -131,6 +132,12 @@
 	push ${max}
 	push ${count}
 	StdUtils::RandList /NOUNLOAD
+!macroend
+
+!macro _StdUtils_RandBytes out count
+	push ${count}
+	StdUtils::RandBytes /NOUNLOAD
+	pop ${out}
 !macroend
 
 !macro _StdUtils_FormatStr out format val

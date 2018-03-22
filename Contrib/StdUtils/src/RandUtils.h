@@ -21,5 +21,10 @@
 
 #pragma once
 
+#ifndef _WINDOWS_
+#define WIN32_LEAN_AND_MEAN 1
+#include <Windows.h>
+#endif
+
 unsigned int next_rand(void);
-void rand_bytes(unsigned char *const buffer, const size_t size);
+void rand_bytes(BYTE *const buffer, const size_t size);

@@ -31,6 +31,8 @@ extern "C" {
 
 #ifndef _INC_STDLIB
 long __declspec(dllimport) time(long *time);
+long __declspec(dllimport) clock(void);
+long __declspec(dllimport) _getpid(void);
 int  __declspec(dllimport) rand(void);
 void __declspec(dllimport) srand(unsigned int _Seed);
 int  __declspec(dllimport) abs(_In_ int _X);

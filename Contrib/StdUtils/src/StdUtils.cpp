@@ -30,6 +30,7 @@
 #include "HashUtils.h"
 #include "TimerUtils.h"
 #include "PathUtils.h"
+#include "Base64.h"
 #include "CleanUp.h"
 
 //External
@@ -107,7 +108,7 @@ NSISFUNC(Time)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	long t = time(NULL);
+	const long t = time(NULL);
 	pushint(t);
 }
 
@@ -115,7 +116,7 @@ NSISFUNC(GetMinutes)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	unsigned __int64 ftime = getFileTime() / FTIME_MINUTE;
+	const unsigned __int64 ftime = getFileTime() / FTIME_MINUTE;
 	pushint(static_cast<int>(ftime));
 }
 
@@ -123,7 +124,7 @@ NSISFUNC(GetHours)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	unsigned __int64 ftime = getFileTime() / FTIME_HOUR;
+	const unsigned __int64 ftime = getFileTime() / FTIME_HOUR;
 	pushint(static_cast<int>(ftime));
 }
 
@@ -131,7 +132,7 @@ NSISFUNC(GetDays)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	unsigned __int64 ftime = getFileTime() / FTIME_DAY;
+	const unsigned __int64 ftime = getFileTime() / FTIME_DAY;
 	pushint(static_cast<int>(ftime));
 }
 
@@ -145,7 +146,7 @@ NSISFUNC(Rand)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	unsigned int r = next_rand() % static_cast<unsigned int>(INT_MAX);
+	const unsigned int r = next_rand() % static_cast<unsigned int>(INT_MAX);
 	pushint(r);
 }
 
@@ -153,7 +154,7 @@ NSISFUNC(RandMax)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	int m = abs(popint()) + 1;
+	const int m = abs(popint()) + 1;
 	unsigned int r = next_rand() % static_cast<unsigned int>(m);
 	pushint(r);
 }
@@ -162,8 +163,8 @@ NSISFUNC(RandMinMax)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	int max = popint();
-	int min = popint();
+	const int max = popint();
+	const int min = popint();
 	
 	if(min > max)
 	{
@@ -180,9 +181,8 @@ NSISFUNC(RandList)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK(g_StdUtilsInstance);
-	int count = popint();
-	int max = popint() + 1;
-	int done = 0;
+	const int count = popint();
+	const int max = popint() + 1;
 
 	if(count > max)
 	{
@@ -200,6 +200,7 @@ NSISFUNC(RandList)
 		list[idx] = false;
 	}
 
+	int done = 0;
 	while(done < count)
 	{
 		unsigned int rnd = next_rand() % static_cast<unsigned int>(max);
@@ -218,6 +219,39 @@ NSISFUNC(RandList)
 			pushint(idx);
 		}
 	}
+}
+
+NSISFUNC(RandBytes)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	const int count = popint();
+
+	if((count < 0) || (base64_encode_len((size_t)count) >= g_stringsize))
+	{
+		pushstring((count >= 0) ? T("too_long") : T("invalid"));
+		return;
+	}
+
+	BYTE *const rand_buffer = new BYTE[(size_t)count];
+	rand_bytes(rand_buffer, (size_t)count);
+
+	TCHAR *const rand_base64 = base64_raw2encoded(rand_buffer, (size_t)count);
+	if(!rand_base64)
+	{
+		pushstring(T("error"));
+		memset(rand_buffer, 0, ((size_t)count) * sizeof(BYTE));
+		delete [] rand_buffer;
+		return;
+	}
+
+	pushstring(rand_base64);
+
+	memset(rand_buffer, 0, ((size_t)count) * sizeof(BYTE));
+	memset(rand_base64, 0, STRLEN(rand_base64) * sizeof(TCHAR));
+
+	delete [] rand_buffer;
+	delete [] rand_base64;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
