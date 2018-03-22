@@ -227,9 +227,9 @@ NSISFUNC(RandBytes)
 	REGSITER_CALLBACK(g_StdUtilsInstance);
 	const int count = popint();
 
-	if((count < 0) || (base64_encode_len((size_t)count) >= g_stringsize))
+	if((count <= 0) || (base64_encode_len((size_t)count) >= g_stringsize))
 	{
-		pushstring((count >= 0) ? T("@too_long") : T("@invalid"));
+		pushstring((count > 0) ? T("@too_long") : T("@invalid"));
 		return;
 	}
 
