@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "HashUtils.h"
-#ifndef STDUTILS_DISABLE_HASHES
+#ifndef STDUTILS_TINY_MODE
 
 //RHash
 #include "rhash/crc32.h"
@@ -328,4 +328,4 @@ bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR
 	return true;
 };
 
-#endif //STDUTILS_DISABLE_HASHES
+#endif //STDUTILS_TINY_MODE

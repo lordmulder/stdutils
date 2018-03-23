@@ -31,6 +31,7 @@
 #include "TimerUtils.h"
 #include "PathUtils.h"
 #include "Base64.h"
+#include "ProtectedData.h"
 #include "CleanUp.h"
 
 //External
@@ -229,29 +230,27 @@ NSISFUNC(RandBytes)
 
 	if((count <= 0) || (base64_encode_len((size_t)count) >= g_stringsize))
 	{
-		pushstring((count > 0) ? T("@too_long") : T("@invalid"));
+		extra->exec_flags->exec_error++;
+		pushstring((count > 0) ? T("too_long") : T("einval"));
 		return;
 	}
 
-	BYTE *const rand_buffer = new BYTE[(size_t)count];
+	BYTE *rand_buffer = new BYTE[(size_t)count];
 	rand_bytes(rand_buffer, (size_t)count);
 
-	TCHAR *const rand_base64 = base64_raw2encoded(rand_buffer, (size_t)count);
+	TCHAR *rand_base64 = base64_raw2encoded(rand_buffer, (size_t)count);
 	if(!rand_base64)
 	{
-		pushstring(T("@error"));
-		memset(rand_buffer, 0, ((size_t)count) * sizeof(BYTE));
-		delete [] rand_buffer;
+		extra->exec_flags->exec_error++;
+		pushstring(T("error"));
+		DELETE_ARR(rand_buffer, BYTE, count);
 		return;
 	}
 
 	pushstring(rand_base64);
 
-	memset(rand_buffer, 0, ((size_t)count) * sizeof(BYTE));
-	memset(rand_base64, 0, STRLEN(rand_base64) * sizeof(TCHAR));
-
-	delete [] rand_buffer;
-	delete [] rand_base64;
+	DELETE_ARR(rand_buffer, BYTE, count);
+	DELETE_STR(rand_base64, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -274,8 +273,9 @@ NSISFUNC(FormatStr)
 	}
 
 	pushstring(out);
-	delete [] fmt;
-	delete [] out;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(out, g_stringsize);
 }
 
 NSISFUNC(FormatStr2)
@@ -295,8 +295,9 @@ NSISFUNC(FormatStr2)
 	}
 
 	pushstring(out);
-	delete [] fmt;
-	delete [] out;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(out, g_stringsize);
 }
 
 NSISFUNC(FormatStr3)
@@ -317,8 +318,9 @@ NSISFUNC(FormatStr3)
 	}
 
 	pushstring(out);
-	delete [] fmt;
-	delete [] out;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(out, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -341,8 +343,9 @@ NSISFUNC(ScanStr)
 	}
 
 	pushint(out);
-	delete [] fmt;
-	delete [] in;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(in, g_stringsize);
 }
 
 NSISFUNC(ScanStr2)
@@ -373,8 +376,9 @@ NSISFUNC(ScanStr2)
 
 	pushint(out2);
 	pushint(out1);
-	delete [] fmt;
-	delete [] in;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(in, g_stringsize);
 }
 
 NSISFUNC(ScanStr3)
@@ -413,8 +417,10 @@ NSISFUNC(ScanStr3)
 	pushint(out3);
 	pushint(out2);
 	pushint(out1);
-	delete [] fmt;
-	delete [] in;
+
+	DELETE_STR(fmt, g_stringsize);
+	DELETE_STR(in, g_stringsize);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,7 +434,8 @@ NSISFUNC(TrimStr)
 	popstringn(str, 0);
 	pushstring(STRTRIM(str));
 
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
+
 }
 
 NSISFUNC(TrimStrLeft)
@@ -440,7 +447,7 @@ NSISFUNC(TrimStrLeft)
 	popstringn(str, 0);
 	pushstring(STRTRIM_LEFT(str));
 
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
 }
 
 NSISFUNC(TrimStrRight)
@@ -452,7 +459,7 @@ NSISFUNC(TrimStrRight)
 	popstringn(str, 0);
 	pushstring(STRTRIM_RIGHT(str));
 
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -478,7 +485,7 @@ NSISFUNC(RevStr)
 	}
 
 	pushstring(str);
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -527,7 +534,7 @@ NSISFUNC(ValidFileName)
 
 exit209:
 	pushstring(flag ? T("ok") : T("invalid"));
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
 }
 
 NSISFUNC(ValidPathSpec)
@@ -579,7 +586,8 @@ NSISFUNC(ValidPathSpec)
 
 exit209:
 	pushstring(flag ? T("ok") : T("invalid"));
-	delete [] str;
+	DELETE_STR(str, g_stringsize);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -618,8 +626,8 @@ NSISFUNC(SHFileMove)
 		MessageBoxA(NULL, temp, "StdUtils::SHFileMove", MB_TOPMOST|MB_ICONERROR);
 	}
 
-	delete [] from;
-	delete [] dest;
+	DELETE_STR(from, g_stringsize);
+	DELETE_STR(dest, g_stringsize);
 }
 
 NSISFUNC(SHFileCopy)
@@ -654,8 +662,8 @@ NSISFUNC(SHFileCopy)
 		MessageBoxA(NULL, temp, "StdUtils::SHFileCopy", MB_TOPMOST|MB_ICONERROR);
 	}
 
-	delete [] from;
-	delete [] dest;
+	DELETE_STR(from, g_stringsize);
+	DELETE_STR(dest, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -684,13 +692,15 @@ NSISFUNC(AppendToFile)
 		pushstring(T("error"));
 	}
 
-	delete [] from;
-	delete [] dest;
+	DELETE_STR(from, g_stringsize);
+	DELETE_STR(dest, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXEC SHELL AS USER
 ///////////////////////////////////////////////////////////////////////////////
+
+#ifndef STDUTILS_TINY_MODE
 
 NSISFUNC(ExecShellAsUser)
 {
@@ -704,17 +714,14 @@ NSISFUNC(ExecShellAsUser)
 	popstringn(verb, 0);
 	popstringn(file, 0);
 	
-	if(_tcslen(file) < 1) { delete [] file; file = NULL; }
-	if(_tcslen(verb) < 1) { delete [] verb; verb = NULL; }
-	if(_tcslen(args) < 1) { delete [] args; args = NULL; }
+	if (!file[0]) DELETE_STR(file, g_stringsize);
+	if (!verb[0]) DELETE_STR(verb, g_stringsize);
+	if (!args[0]) DELETE_STR(args, g_stringsize);
 
 	if(!(file))
 	{
 		pushstring(T("einval"));
-		if(file) delete [] file;
-		if(verb) delete [] verb;
-		if(args) delete [] args;
-		return;
+		goto exit209;
 	}
 
 	int result = ShellExecAsUser(verb, file, args, hWndParent, true);
@@ -744,14 +751,19 @@ NSISFUNC(ExecShellAsUser)
 		break;
 	}
 
-	if(file) delete [] file;
-	if(verb) delete [] verb;
-	if(args) delete [] args;
+exit209:
+	DELETE_STR(verb, g_stringsize);
+	DELETE_STR(file, g_stringsize);
+	DELETE_STR(args, g_stringsize);
 }
+
+#endif //STDUTILS_TINY_MODE
 
 ///////////////////////////////////////////////////////////////////////////////
 // INVOKE SHELL VERB
 ///////////////////////////////////////////////////////////////////////////////
+
+#ifndef STDUTILS_TINY_MODE
 
 NSISFUNC(InvokeShellVerb)
 {
@@ -772,8 +784,8 @@ NSISFUNC(InvokeShellVerb)
 	popstringn(file, 0);
 	popstringn(path, 0);
 	
-	if(_tcslen(file) < 1) { delete [] file; file = NULL; }
-	if(_tcslen(path) < 1) { delete [] path; path = NULL; }
+	if (!file[0]) DELETE_STR(file, g_stringsize);
+	if (!path[0]) DELETE_STR(path, g_stringsize);
 
 	if(!(file && path))
 	{
@@ -782,9 +794,7 @@ NSISFUNC(InvokeShellVerb)
 			MessageBox(NULL, T("Specified file name and/or path is missing!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
 		}
 		pushstring(T("einval"));
-		if(file) delete [] file;
-		if(path) delete [] path;
-		return;
+		goto exit209;
 	}
 
 	if((verb < 0) || (verb > 3))
@@ -794,9 +804,7 @@ NSISFUNC(InvokeShellVerb)
 			MessageBox(NULL, T("And invalid verb id has been specified!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
 		}
 		pushstring(T("einval"));
-		if(file) delete [] file;
-		if(path) delete [] path;
-		return;
+		goto exit209;
 	}
 
 	int result = MyInvokeShellVerb(path, file, ID_LUT[verb], true);
@@ -823,9 +831,12 @@ NSISFUNC(InvokeShellVerb)
 		break;
 	}
 
-	if(file) delete [] file;
-	if(path) delete [] path;
+exit209:
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(file, g_stringsize);
 }
+
+#endif //STDUTILS_TINY_MODE
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXEC SHELL WAIT
@@ -874,9 +885,9 @@ NSISFUNC(ExecShellWaitEx)
 		pushstring(T("error"));
 	}
 
-	delete [] file;
-	delete [] verb;
-	delete [] args;
+	DELETE_STR(file, g_stringsize);
+	DELETE_STR(verb, g_stringsize);
+	DELETE_STR(args, g_stringsize);
 }
 
 NSISFUNC(WaitForProcEx)
@@ -913,7 +924,7 @@ NSISFUNC(WaitForProcEx)
 		pushstring(T("error"));
 	}
 
-	delete [] temp;
+	DELETE_STR(temp, g_stringsize);
 }
 
 
@@ -933,8 +944,8 @@ NSISFUNC(GetParameter)
 	commandline_get_arg(STRTRIM(name), aval, g_stringsize);
 	pushstring(STRTRIM(aval));
 
-	delete [] aval;
-	delete [] name;
+	DELETE_STR(aval, g_stringsize);
+	DELETE_STR(name, g_stringsize);
 }
 
 NSISFUNC(TestParameter)
@@ -946,7 +957,7 @@ NSISFUNC(TestParameter)
 	popstringn(name, 0);
 	pushstring(commandline_get_arg(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
 
-	delete [] name;
+	DELETE_STR(name, g_stringsize);
 }
 
 NSISFUNC(ParameterStr)
@@ -965,7 +976,7 @@ NSISFUNC(ParameterStr)
 		pushstring(T("error"));
 	}
 
-	delete [] value;
+	DELETE_STR(value, g_stringsize);
 }
 
 NSISFUNC(ParameterCnt)
@@ -1170,6 +1181,8 @@ NSISFUNC(GetOsReleaseId)
 // HASH COMPUTATION
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef STDUTILS_TINY_MODE
+
 static int GetHashType(const TCHAR *const type)
 {
 	static const struct
@@ -1237,11 +1250,11 @@ NSISFUNC(HashFile)
 	}
 	else
 	{
-		pushstring(T("invalid"));
+		pushstring(T("einval"));
 	}
 
-	delete [] file;
-	delete [] temp;
+	DELETE_STR(file, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(HashText)
@@ -1268,12 +1281,14 @@ NSISFUNC(HashText)
 	}
 	else
 	{
-		pushstring(T("invalid"));
+		pushstring(T("einval"));
 	}
 
-	delete [] text;
-	delete [] temp;
+	DELETE_STR(text, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
+
+#endif //STDUTILS_TINY_MODE
 
 ///////////////////////////////////////////////////////////////////////////////
 // PATH UTILITY FUNCTIONS
@@ -1297,8 +1312,8 @@ NSISFUNC(NormalizePath)
 		pushstring(T(""));
 	}
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(GetParentPath)
@@ -1319,8 +1334,8 @@ NSISFUNC(GetParentPath)
 		pushstring(T(""));
 	}
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(SplitPath)
@@ -1340,11 +1355,11 @@ NSISFUNC(SplitPath)
 	pushstring(out2);
 	pushstring(out1);
 
-	delete [] path;
-	delete [] out1;
-	delete [] out2;
-	delete [] out3;
-	delete [] out4;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(out1, g_stringsize);
+	DELETE_STR(out2, g_stringsize);
+	DELETE_STR(out3, g_stringsize);
+	DELETE_STR(out4, g_stringsize);
 }
 
 NSISFUNC(GetDrivePart)
@@ -1358,8 +1373,8 @@ NSISFUNC(GetDrivePart)
 	Path_Split(path, temp, NULL, NULL, NULL);
 	pushstring(temp);
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(GetDirectoryPart)
@@ -1373,8 +1388,8 @@ NSISFUNC(GetDirectoryPart)
 	Path_Split(path, NULL, temp, NULL, NULL);
 	pushstring(temp);
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(GetFileNamePart)
@@ -1388,8 +1403,8 @@ NSISFUNC(GetFileNamePart)
 	Path_Split(path, NULL, NULL, temp, NULL);
 	pushstring(temp);
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 NSISFUNC(GetExtensionPart)
@@ -1403,13 +1418,15 @@ NSISFUNC(GetExtensionPart)
 	Path_Split(path, NULL, NULL, NULL, temp);
 	pushstring(temp);
 
-	delete [] path;
-	delete [] temp;
+	DELETE_STR(path, g_stringsize);
+	DELETE_STR(temp, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // CREATE/DESTROY TIMER
 ///////////////////////////////////////////////////////////////////////////////
+
+#ifndef STDUTILS_TINY_MODE
 
 NSISFUNC(TimerCreate)
 {
@@ -1448,8 +1465,121 @@ NSISFUNC(TimerDestroy)
 	}
 
 	pushstring(success ? T("ok") : T("error"));
-	delete [] temp;
+	DELETE_STR(temp, g_stringsize);
 }
+
+#endif //STDUTILS_TINY_MODE
+
+///////////////////////////////////////////////////////////////////////////////
+// DPAPI SUPPORT
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef STDUTILS_TINY_MODE
+
+NSISFUNC(ProtectStr)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(pscp, g_stringsize);
+	MAKESTR(salt, g_stringsize);
+	MAKESTR(data, g_stringsize);
+
+	popstringn(data, 0);
+	popstringn(salt, 0);
+	popstringn(pscp, 0);
+
+	bool machine_scope = false;
+	if (!((STRICMP(pscp, T("CU")) == 0) || (machine_scope = (STRICMP(pscp, T("LM")) == 0))))
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("einval"));
+		goto exit209;
+	}
+
+	TCHAR *protected_str;
+	const int ret = dpapi_protect_text(&protected_str, data, salt[0] ? salt : NULL, machine_scope);
+
+	if ((ret <= 0) || (!protected_str))
+	{
+		extra->exec_flags->exec_error++;
+		pushstring((ret < 0) ? T("encr_failed") : T("error"));
+		goto exit209;
+	}
+
+	const size_t len = STRLEN(protected_str);
+	if (len < g_stringsize)
+	{
+		pushstring(protected_str);
+	}
+	else
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("too_long"));
+	}
+
+	DELETE_STR(protected_str, len);
+
+exit209:
+	DELETE_STR(pscp, g_stringsize);
+	DELETE_STR(salt, g_stringsize);
+	DELETE_STR(data, g_stringsize);
+}
+
+NSISFUNC(UnprotectStr)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK(g_StdUtilsInstance);
+	MAKESTR(salt, g_stringsize);
+	MAKESTR(data, g_stringsize);
+
+	popstringn(data, 0);
+	popstringn(salt, 0);
+	const int truncate = popint();
+
+	if (!data[0])
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("einval"));
+		goto exit209;
+	}
+
+	TCHAR *palintext_str;
+	const int ret = dpapi_unprotect_text(&palintext_str, data, salt[0] ? salt : NULL);
+
+	if ((ret <= 0) || (!palintext_str))
+	{
+		extra->exec_flags->exec_error++;
+		pushstring((ret < 0) ? T("decr_failed") : T("error"));
+		goto exit209;
+	}
+
+	const size_t len = STRLEN(palintext_str);
+	if (len < g_stringsize)
+	{
+		pushstring(palintext_str);
+	}
+	else
+	{
+		if (truncate > 0)
+		{
+			palintext_str[g_stringsize - 1] = T('\0');
+			pushstring(palintext_str);
+		}
+		else
+		{
+			extra->exec_flags->exec_error++;
+			pushstring(T("too_long"));
+		}
+	}
+
+	DELETE_STR(palintext_str, len);
+
+exit209:
+	DELETE_STR(salt, g_stringsize);
+	DELETE_STR(data, g_stringsize);
+}
+
+#endif //STDUTILS_TINY_MODE
 
 ///////////////////////////////////////////////////////////////////////////////
 // FOR DEBUGGING

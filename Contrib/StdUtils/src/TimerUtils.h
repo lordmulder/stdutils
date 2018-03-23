@@ -21,9 +21,13 @@
 
 #pragma once
 
+#ifndef STDUTILS_TINY_MODE
+
 #define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
 #include "nsis/pluginapi.h"
 
 bool timer_create(const int procAddress, const int interval, const HWND hWndParent, const extra_parameters *const extra, UINT_PTR &id_out);
 bool timer_destroy(const UINT_PTR id);
+
+#endif //STDUTILS_TINY_MODE

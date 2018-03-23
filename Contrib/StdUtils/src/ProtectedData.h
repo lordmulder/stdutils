@@ -19,38 +19,17 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STDUTILS_H__
-#define __STDUTILS_H__
-
+#ifndef _WINDOWS_
 #define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
-#include <Shellapi.h>
-#include "nsis/pluginapi.h"
-#include "msvc_utils.h"
+#endif
 
-#define NSISFUNC(name) extern "C" void __declspec(dllexport) name(HWND hWndParent, int string_size, TCHAR* variables, stack_t** stacktop, extra_parameters* extra)
+#ifndef STDUTILS_TINY_MODE
 
-#define MAKESTR(VAR,LEN) \
-	TCHAR *VAR = new TCHAR[LEN]; \
-	memset((VAR), 0, sizeof(TCHAR) * (LEN))
+int dpapi_protect_data(BYTE **const protected_out, size_t *const protected_len, const BYTE *const plaintext_in, const size_t plaintext_len, const BYTE *const salt_in = NULL, const size_t salt_len = 0U, const bool machine_scope = false);
+int dpapi_unprotect_data(BYTE **const plaintext_out, size_t *const plaintext_len, const BYTE *const protected_in, const size_t protected_len, const BYTE *const salt_in = NULL, const size_t salt_len = 0U);
 
-#define DELETE_ARR(VAR,TYPE,LEN) do \
-{ \
-	if(VAR) \
-	{ \
-		memset((VAR), 0, sizeof(TYPE) * ((size_t)(LEN))); \
-		delete [] (VAR); (VAR) = NULL; \
-	} \
-} \
-while(0)
+int dpapi_protect_text(TCHAR **const protected_out, const TCHAR *const plaintext_in, const TCHAR *const salt_in = NULL, const bool machine_scope = false);
+int dpapi_unprotect_text(TCHAR **const plaintext_out, const TCHAR *const protected_in, const TCHAR *const salt_in = NULL);
 
-#define DELETE_STR(VAR,LEN)	\
-	DELETE_ARR(VAR, TCHAR, (((size_t)(LEN)) > 0U) ? ((size_t)(LEN)) : STRLEN(VAR))
-
-#define REGSITER_CALLBACK(INST) do \
-{ \
-	if(!g_bCallbackRegistred) g_bCallbackRegistred = (extra->RegisterPluginCallback((HMODULE)(INST), PluginCallback) == 0); \
-} \
-while(0)
-
-#endif //__STDUTILS_H__
+#endif //STDUTILS_TINY_MODE

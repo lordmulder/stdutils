@@ -40,14 +40,9 @@
 #define STD_HASHTYPE_BLK2_512 0xF
 
 
-#ifndef STDUTILS_DISABLE_HASHES
+#ifndef STDUTILS_TINY_MODE
 
 bool ComputeHash_FromFile(const int hashType, const TCHAR *const fileName, TCHAR *const hashOut, const size_t hashOutSize);
 bool ComputeHash_FromText(const int hashType, const TCHAR *const textData, TCHAR *const hashOut, const size_t hashOutSize);
 
-#else //STDUTILS_DISABLE_HASHES
-
-#define ComputeHash_FromFile(W,X,Y,Z) (false)
-#define ComputeHash_FromText(W,X,Y,Z) (false)
-
-#endif //STDUTILS_DISABLE_HASHES
+#endif //STDUTILS_TINY_MODE

@@ -96,6 +96,9 @@
     <ClCompile Include="src\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ProtectedData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ComUtils.h">
@@ -167,10 +170,13 @@
     <ClInclude Include="src\ShellDispatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\PathUtils.h">
+    <ClInclude Include="src\Base64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Base64.h">
+    <ClInclude Include="src\ProtectedData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

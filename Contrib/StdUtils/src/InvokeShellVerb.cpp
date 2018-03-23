@@ -26,6 +26,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "InvokeShellVerb.h"
+#ifndef STDUTILS_TINY_MODE
+
 #include "ShellDispatch.h"
 #include "nsis_tchar.h"
 
@@ -215,3 +217,5 @@ int MyInvokeShellVerb(const TCHAR *const pcDirectoryName, const TCHAR *const pcF
 
 	return iSuccess;
 }
+
+#endif //STDUTILS_TINY_MODE

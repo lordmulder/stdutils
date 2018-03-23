@@ -21,6 +21,8 @@
 
 #pragma once
 
+#ifndef STDUTILS_TINY_MODE
+
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
@@ -37,3 +39,5 @@ typedef enum
 shell_exec_as_user_err_t;
 
 int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileName, const TCHAR *const pcParameters, const HWND &hwnd, const bool &threaded = true);
+
+#endif //STDUTILS_TINY_MODE

@@ -21,6 +21,8 @@
 
 #pragma once
 
+#ifndef STDUTILS_TINY_MODE
+
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
@@ -39,3 +41,5 @@ shell_dispatch_err_t;
 
 typedef int (*shell_dispatch_handler_t)(IShellDispatch2 *const dispatch, const void *const data);
 int MyShellDispatch(const shell_dispatch_handler_t handler, void *const data, const bool &threaded = true);
+
+#endif //STDUTILS_TINY_MODE

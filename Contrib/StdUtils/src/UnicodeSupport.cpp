@@ -23,49 +23,104 @@
 #include <Windows.h>
 
 //-----------------------------------------------------------------------------
+// UTILITIES
+//-----------------------------------------------------------------------------
+
+static void release_wstr(wchar_t *const str)
+{
+	if (str)
+	{
+		const size_t len = wcslen(str);
+		if (len > 0)
+		{
+			SecureZeroMemory(str, len * sizeof(wchar_t));
+		}
+		delete[] str;
+	}
+}
+
+//-----------------------------------------------------------------------------
 // CHARSET CONVERSION FUNCTIONS
 //-----------------------------------------------------------------------------
 
-/*
-wchar_t *utf8_to_utf16(const char *const input)
+static char *wide_char_to_multi_byte(const wchar_t *const input, const UINT cp)
 {
-	wchar_t *Buffer;
+	char *Buffer;
 	int BuffSize, Result;
-	BuffSize = MultiByteToWideChar(CP_UTF8, 0, input, -1, NULL, 0);
-	if(BuffSize > 0)
+	BuffSize = WideCharToMultiByte(cp, 0, input, -1, NULL, 0, NULL, NULL);
+	if (BuffSize > 0)
 	{
-		Buffer = new wchar_t[BuffSize];
-		Result = MultiByteToWideChar(CP_UTF8, 0, input, -1, Buffer, BuffSize);
-		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+		Buffer = new char[BuffSize];
+		Result = WideCharToMultiByte(cp, 0, input, -1, Buffer, BuffSize, NULL, NULL);
+		if ((Result > 0) && (Result <= BuffSize))
+		{
+			return Buffer;
+		}
+		SecureZeroMemory(Buffer, BuffSize * sizeof(char));
+		delete[] Buffer;
 	}
 	return NULL;
 }
-*/
 
-wchar_t *ansi_to_utf16(const char *const input)
+wchar_t *multi_byte_to_wide_char(const char *const input, const UINT cp)
 {
 	wchar_t *Buffer;
 	int BuffSize, Result;
-	BuffSize = MultiByteToWideChar(CP_ACP, 0, input, -1, NULL, 0);
-	if(BuffSize > 0)
+	BuffSize = MultiByteToWideChar(cp, 0, input, -1, NULL, 0);
+	if (BuffSize > 0)
 	{
 		Buffer = new wchar_t[BuffSize];
-		Result = MultiByteToWideChar(CP_ACP, 0, input, -1, Buffer, BuffSize);
-		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+		Result = MultiByteToWideChar(cp, 0, input, -1, Buffer, BuffSize);
+		if ((Result > 0) && (Result <= BuffSize))
+		{
+			return Buffer;
+		}
+		SecureZeroMemory(Buffer, BuffSize * sizeof(wchar_t));
+		delete[] Buffer;
 	}
 	return NULL;
 }
 
 char *utf16_to_utf8(const wchar_t *const input)
 {
-	char *Buffer;
-	int BuffSize, Result;
-	BuffSize = WideCharToMultiByte(CP_UTF8, 0, input, -1, NULL, 0, NULL, NULL);
-	if(BuffSize > 0)
+	return wide_char_to_multi_byte(input, CP_UTF8);
+}
+
+char *utf16_to_ansi(const wchar_t *const input)
+{
+	return wide_char_to_multi_byte(input, CP_ACP);
+}
+
+wchar_t *utf8_to_utf16(const char *const input)
+{
+	return multi_byte_to_wide_char(input, CP_UTF8);
+}
+
+wchar_t *ansi_to_utf16(const char *const input)
+{
+	return multi_byte_to_wide_char(input, CP_ACP);
+}
+
+char *ansi_to_utf8(const char *const input)
+{
+	wchar_t *const utf16_str = multi_byte_to_wide_char(input, CP_ACP);
+	if (utf16_str)
 	{
-		Buffer = new char[BuffSize];
-		Result = WideCharToMultiByte(CP_UTF8, 0, input, -1, Buffer, BuffSize, NULL, NULL);
-		return ((Result > 0) && (Result <= BuffSize)) ? Buffer : NULL;
+		char *const utf8_str = wide_char_to_multi_byte(utf16_str, CP_UTF8);
+		release_wstr(utf16_str);
+		return utf8_str;
+	}
+	return NULL;
+}
+
+char *utf8_to_ansi(const char *const input)
+{
+	wchar_t *const utf16_str = multi_byte_to_wide_char(input, CP_UTF8);
+	if (utf16_str)
+	{
+		char *const ansi_str = wide_char_to_multi_byte(utf16_str, CP_ACP);
+		release_wstr(utf16_str);
+		return ansi_str;
 	}
 	return NULL;
 }

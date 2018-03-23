@@ -21,6 +21,8 @@
 
 #include "TimerUtils.h"
 
+#ifndef STDUTILS_TINY_MODE
+
 #include "Mutex.h"
 #include "UnicodeSupport.h"
 #include "CleanUp.h"
@@ -209,3 +211,5 @@ bool timer_destroy(const UINT_PTR id)
 	}
 	return success;
 }
+
+#endif //STDUTILS_TINY_MODE

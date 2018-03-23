@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ShellDispatch.h"
+#ifndef STDUTILS_TINY_MODE
 
 typedef struct
 {
@@ -157,3 +158,5 @@ int MyShellDispatch(const shell_dispatch_handler_t handler, void *const data, co
 	
 	return iSuccess;
 }
+
+#endif //STDUTILS_TINY_MODE

@@ -20,6 +20,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ShellExecAsUser.h"
+#ifndef STDUTILS_TINY_MODE
+
 #include "ShellDispatch.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,3 +99,5 @@ int ShellExecAsUser(const TCHAR *const pcOperation, const TCHAR *const pcFileNam
 
 	return iSuccess;
 }
+
+#endif //STDUTILS_TINY_MODE

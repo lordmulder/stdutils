@@ -19,6 +19,8 @@
 // http://www.gnu.org/licenses/lgpl-2.1.txt
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef STDUTILS_TINY_MODE
+
 #ifndef _WINDOWS_
 //#define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
@@ -35,3 +37,5 @@ typedef enum
 invoke_shellverb_err_t;
 
 int MyInvokeShellVerb(const TCHAR *const pcDirectoryName, const TCHAR *const pcFileName, const DWORD *uiVerbIds, const bool threaded = true);
+
+#endif //STDUTILS_TINY_MODE
