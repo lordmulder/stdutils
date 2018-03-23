@@ -40,7 +40,7 @@ RTL_CRITICAL_SECTION g_pStdUtilsMutex;
 HINSTANCE g_StdUtilsInstance = NULL;
 
 //Global
-static volatile bool g_bCallbackRegistred = false;
+static volatile long g_bCallbackRegistred = 0L;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DLL MAIN
@@ -51,7 +51,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	if(fdwReason == DLL_PROCESS_ATTACH)
 	{
 		InitializeCriticalSection(&g_pStdUtilsMutex);
-		g_bCallbackRegistred = false;
+		g_bCallbackRegistred = 0;
 		g_bStdUtilsVerbose = false;
 		g_StdUtilsInstance = hinstDLL;
 	}
@@ -108,7 +108,7 @@ static unsigned __int64 getFileTime(void)
 NSISFUNC(Time)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const long t = time(NULL);
 	pushint(t);
 }
@@ -116,7 +116,7 @@ NSISFUNC(Time)
 NSISFUNC(GetMinutes)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const unsigned __int64 ftime = getFileTime() / FTIME_MINUTE;
 	pushint(static_cast<int>(ftime));
 }
@@ -124,7 +124,7 @@ NSISFUNC(GetMinutes)
 NSISFUNC(GetHours)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const unsigned __int64 ftime = getFileTime() / FTIME_HOUR;
 	pushint(static_cast<int>(ftime));
 }
@@ -132,7 +132,7 @@ NSISFUNC(GetHours)
 NSISFUNC(GetDays)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const unsigned __int64 ftime = getFileTime() / FTIME_DAY;
 	pushint(static_cast<int>(ftime));
 }
@@ -146,7 +146,7 @@ NSISFUNC(GetDays)
 NSISFUNC(Rand)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const unsigned int r = next_rand() % static_cast<unsigned int>(INT_MAX);
 	pushint(r);
 }
@@ -154,7 +154,7 @@ NSISFUNC(Rand)
 NSISFUNC(RandMax)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const int m = abs(popint()) + 1;
 	unsigned int r = next_rand() % static_cast<unsigned int>(m);
 	pushint(r);
@@ -163,13 +163,13 @@ NSISFUNC(RandMax)
 NSISFUNC(RandMinMax)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const int max = popint();
 	const int min = popint();
 	
 	if(min > max)
 	{
-		MessageBoxW(NULL, L"RandMinMax() was called with bad arguments!", L"StdUtils::RandMinMax", MB_ICONERROR | MB_TASKMODAL);
+		SHOW_VERBOSE(T("RandMinMax() was called with bad arguments!"));
 		pushint(0);
 	}
 
@@ -181,16 +181,13 @@ NSISFUNC(RandMinMax)
 NSISFUNC(RandList)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const int count = popint();
 	const int max = popint() + 1;
 
 	if(count > max)
 	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBoxW(NULL, L"RandList() was called with bad arguments!", L"StdUtils::RandList", MB_ICONERROR | MB_TASKMODAL);
-		}
+		SHOW_VERBOSE(T("RandList() was called with bad arguments!"));
 		pushstring(T("EOL"));
 		return;
 	}
@@ -225,7 +222,7 @@ NSISFUNC(RandList)
 NSISFUNC(RandBytes)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	const int count = popint();
 
 	if((count <= 0) || (base64_encode_len((size_t)count) >= g_stringsize))
@@ -260,7 +257,7 @@ NSISFUNC(RandBytes)
 NSISFUNC(FormatStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -281,7 +278,7 @@ NSISFUNC(FormatStr)
 NSISFUNC(FormatStr2)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -303,7 +300,7 @@ NSISFUNC(FormatStr2)
 NSISFUNC(FormatStr3)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(fmt, g_stringsize);
 	MAKESTR(out, g_stringsize);
 
@@ -328,7 +325,7 @@ NSISFUNC(FormatStr3)
 NSISFUNC(ScanStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
 
@@ -351,7 +348,7 @@ NSISFUNC(ScanStr)
 NSISFUNC(ScanStr2)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
 
@@ -384,7 +381,7 @@ NSISFUNC(ScanStr2)
 NSISFUNC(ScanStr3)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(in, g_stringsize);
 	MAKESTR(fmt, g_stringsize);
 
@@ -428,7 +425,7 @@ NSISFUNC(ScanStr3)
 NSISFUNC(TrimStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -441,7 +438,7 @@ NSISFUNC(TrimStr)
 NSISFUNC(TrimStrLeft)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -453,7 +450,7 @@ NSISFUNC(TrimStrLeft)
 NSISFUNC(TrimStrRight)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -467,7 +464,7 @@ NSISFUNC(TrimStrRight)
 NSISFUNC(RevStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 	
 	popstringn(str, 0);
@@ -495,7 +492,7 @@ NSISFUNC(ValidFileName)
 	static const TCHAR *const RESERVED = T("<>:\"/\\|?*");
 
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 
 	popstringn(str, 0);
@@ -542,7 +539,7 @@ NSISFUNC(ValidPathSpec)
 	static const TCHAR *const RESERVED = T("<>\"|?*");
 
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
 
 	popstringn(str, 0);
@@ -597,7 +594,7 @@ exit209:
 NSISFUNC(SHFileMove)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(from, g_stringsize);
 	MAKESTR(dest, g_stringsize);
 
@@ -620,10 +617,10 @@ NSISFUNC(SHFileMove)
 
 	if((result != 0) && g_bStdUtilsVerbose)
 	{
-		char temp[1024];
-		_snprintf(temp, 1024, "Failed with error code: 0x%X", result);
-		temp[1023] = '\0';
-		MessageBoxA(NULL, temp, "StdUtils::SHFileMove", MB_TOPMOST|MB_ICONERROR);
+		TCHAR temp[1024];
+		SNPRINTF(temp, 1024, T("Failed with error code: 0x%X"), result);
+		temp[1023] = T('\0');
+		MessageBox(NULL, temp, T("StdUtils::SHFileMove"), MB_TOPMOST|MB_ICONERROR);
 	}
 
 	DELETE_STR(from, g_stringsize);
@@ -633,7 +630,7 @@ NSISFUNC(SHFileMove)
 NSISFUNC(SHFileCopy)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(from, g_stringsize);
 	MAKESTR(dest, g_stringsize);
 
@@ -673,7 +670,7 @@ NSISFUNC(SHFileCopy)
 NSISFUNC(AppendToFile)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(from, g_stringsize);
 	MAKESTR(dest, g_stringsize);
 
@@ -705,7 +702,7 @@ NSISFUNC(AppendToFile)
 NSISFUNC(ExecShellAsUser)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(file, g_stringsize);
 	MAKESTR(verb, g_stringsize);
 	MAKESTR(args, g_stringsize);
@@ -776,7 +773,7 @@ NSISFUNC(InvokeShellVerb)
 	};
 
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(file, g_stringsize);
 
@@ -789,20 +786,14 @@ NSISFUNC(InvokeShellVerb)
 
 	if(!(file && path))
 	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(NULL, T("Specified file name and/or path is missing!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
-		}
+		SHOW_VERBOSE(T("InvokeShellVerb: Specified file name and/or path is missing!"));
 		pushstring(T("einval"));
 		goto exit209;
 	}
 
 	if((verb < 0) || (verb > 3))
 	{
-		if(g_bStdUtilsVerbose)
-		{
-			MessageBox(NULL, T("And invalid verb id has been specified!"), T("StdUtils::InvokeShellVerb"), MB_TOPMOST | MB_ICONSTOP);
-		}
+		SHOW_VERBOSE(T("InvokeShellVerb: And invalid verb id has been specified!"));
 		pushstring(T("einval"));
 		goto exit209;
 	}
@@ -845,7 +836,7 @@ exit209:
 NSISFUNC(ExecShellWaitEx)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(file, g_stringsize);
 	MAKESTR(verb, g_stringsize);
 	MAKESTR(args, g_stringsize);
@@ -893,7 +884,7 @@ NSISFUNC(ExecShellWaitEx)
 NSISFUNC(WaitForProcEx)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(temp, g_stringsize);
 	popstringn(temp, 0);
 
@@ -935,7 +926,7 @@ NSISFUNC(WaitForProcEx)
 NSISFUNC(GetParameter)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(aval, g_stringsize);
 	MAKESTR(name, g_stringsize);
 
@@ -951,7 +942,7 @@ NSISFUNC(GetParameter)
 NSISFUNC(TestParameter)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(name, g_stringsize);
 
 	popstringn(name, 0);
@@ -963,7 +954,7 @@ NSISFUNC(TestParameter)
 NSISFUNC(ParameterStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(value, g_stringsize);
 
 	const int index = popint();
@@ -982,7 +973,7 @@ NSISFUNC(ParameterStr)
 NSISFUNC(ParameterCnt)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	const int index = commandline_get_cnt();
 	if(index >= 0)
@@ -997,7 +988,7 @@ NSISFUNC(ParameterCnt)
 NSISFUNC(GetAllParameters)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	int truncate = popint();
 	const TCHAR *cmd = commandline_get_all();
 
@@ -1018,7 +1009,7 @@ NSISFUNC(GetAllParameters)
 NSISFUNC(GetRealOsVersion)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool flag;
 	unsigned int version[3];
@@ -1040,7 +1031,7 @@ NSISFUNC(GetRealOsVersion)
 NSISFUNC(GetRealOsBuildNo)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool flag;
 	unsigned int buildNumber;
@@ -1058,7 +1049,7 @@ NSISFUNC(GetRealOsBuildNo)
 NSISFUNC(VerifyRealOsVersion)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool flag;
 	unsigned int expectedVersion[3];
@@ -1095,7 +1086,7 @@ NSISFUNC(VerifyRealOsVersion)
 NSISFUNC(VerifyRealOsBuildNo)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool flag;
 	unsigned int expectedBuildNo;
@@ -1126,7 +1117,7 @@ NSISFUNC(VerifyRealOsBuildNo)
 NSISFUNC(GetRealOsName)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool flag;
 	unsigned int detectedVersion[3];
@@ -1148,7 +1139,7 @@ NSISFUNC(GetRealOsName)
 NSISFUNC(GetOsEdition)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	bool isServerEdition;
 	if(!get_os_server_edition(&isServerEdition))
@@ -1163,7 +1154,7 @@ NSISFUNC(GetOsEdition)
 NSISFUNC(GetOsReleaseId)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	DWORD releaseId;
 	const int result = get_os_release_id(releaseId);
@@ -1218,18 +1209,14 @@ static int GetHashType(const TCHAR *const type)
 		}
 	}
 
-	if(g_bStdUtilsVerbose)
-	{
-		MessageBox(NULL, T("And invalid hash function has been specified!"), T("StdUtils::GetHashType"), MB_TOPMOST | MB_ICONSTOP);
-	}
-
+	SHOW_VERBOSE(T("And invalid hash function has been specified!"));
 	return -1;
 }
 
 NSISFUNC(HashFile)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(file, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1260,7 +1247,7 @@ NSISFUNC(HashFile)
 NSISFUNC(HashText)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(temp, g_stringsize);
 	MAKESTR(text, g_stringsize);
 
@@ -1297,7 +1284,7 @@ NSISFUNC(HashText)
 NSISFUNC(NormalizePath)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 	
@@ -1319,7 +1306,7 @@ NSISFUNC(NormalizePath)
 NSISFUNC(GetParentPath)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1341,7 +1328,7 @@ NSISFUNC(GetParentPath)
 NSISFUNC(SplitPath)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(out1, g_stringsize);
 	MAKESTR(out2, g_stringsize);
@@ -1365,7 +1352,7 @@ NSISFUNC(SplitPath)
 NSISFUNC(GetDrivePart)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1380,7 +1367,7 @@ NSISFUNC(GetDrivePart)
 NSISFUNC(GetDirectoryPart)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1395,7 +1382,7 @@ NSISFUNC(GetDirectoryPart)
 NSISFUNC(GetFileNamePart)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1410,7 +1397,7 @@ NSISFUNC(GetFileNamePart)
 NSISFUNC(GetExtensionPart)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
 
@@ -1431,7 +1418,7 @@ NSISFUNC(GetExtensionPart)
 NSISFUNC(TimerCreate)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 
 	const int interval = popint();
 	const int procAddress = popint();
@@ -1452,7 +1439,7 @@ NSISFUNC(TimerCreate)
 NSISFUNC(TimerDestroy)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(temp, g_stringsize);
 
 	popstringn(temp, 0);
@@ -1479,7 +1466,7 @@ NSISFUNC(TimerDestroy)
 NSISFUNC(ProtectStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(pscp, g_stringsize);
 	MAKESTR(salt, g_stringsize);
 	MAKESTR(data, g_stringsize);
@@ -1491,6 +1478,7 @@ NSISFUNC(ProtectStr)
 	bool machine_scope = false;
 	if (!((STRICMP(pscp, T("CU")) == 0) || (machine_scope = (STRICMP(pscp, T("LM")) == 0))))
 	{
+		SHOW_VERBOSE(T("ProtectStr() was called with bad 'scope' value!"));
 		extra->exec_flags->exec_error++;
 		pushstring(T("einval"));
 		goto exit209;
@@ -1528,7 +1516,7 @@ exit209:
 NSISFUNC(UnprotectStr)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	MAKESTR(salt, g_stringsize);
 	MAKESTR(data, g_stringsize);
 
@@ -1538,6 +1526,7 @@ NSISFUNC(UnprotectStr)
 
 	if (!data[0])
 	{
+		SHOW_VERBOSE(T("UnprotectStr() was called with empty 'data' value!"));
 		extra->exec_flags->exec_error++;
 		pushstring(T("einval"));
 		goto exit209;
@@ -1588,14 +1577,14 @@ exit209:
 NSISFUNC(EnableVerboseMode)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	g_bStdUtilsVerbose = true;
 }
 
 NSISFUNC(DisableVerboseMode)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	g_bStdUtilsVerbose = false;
 }
 
@@ -1609,7 +1598,7 @@ static const TCHAR *dllVerString = T(DLL_VERSION_STRING);
 NSISFUNC(GetLibVersion)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 	pushstring(dllTimeStamp);
 	pushstring(dllVerString);
 }
@@ -1619,5 +1608,5 @@ NSISFUNC(GetLibVersion)
 NSISFUNC(Dummy)
 {
 	EXDLL_INIT();
-	REGSITER_CALLBACK(g_StdUtilsInstance);
+	REGSITER_CALLBACK();
 }

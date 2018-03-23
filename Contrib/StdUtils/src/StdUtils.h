@@ -25,6 +25,7 @@
 #define WIN32_LEAN_AND_MEAN 1
 #include <Windows.h>
 #include <Shellapi.h>
+#include <intrin.h>
 #include "nsis/pluginapi.h"
 #include "msvc_utils.h"
 
@@ -44,12 +45,30 @@
 } \
 while(0)
 
-#define DELETE_STR(VAR,LEN)	\
+#define DELETE_STR(VAR,LEN) \
 	DELETE_ARR(VAR, TCHAR, (((size_t)(LEN)) > 0U) ? ((size_t)(LEN)) : STRLEN(VAR))
 
-#define REGSITER_CALLBACK(INST) do \
+#define REGSITER_CALLBACK() do \
 { \
-	if(!g_bCallbackRegistred) g_bCallbackRegistred = (extra->RegisterPluginCallback((HMODULE)(INST), PluginCallback) == 0); \
+	long _state;\
+	do \
+	{ \
+		if((_state = _InterlockedCompareExchange(&g_bCallbackRegistred, -1, 0)) == 0) \
+		{ \
+			const int _ret = extra->RegisterPluginCallback(g_StdUtilsInstance, PluginCallback); \
+			_InterlockedExchange(&g_bCallbackRegistred, (_state = ((_ret >= 0) ? 1 : 0))); \
+		} \
+	} \
+	while(_state < 0); \
+} \
+while(0)
+
+#define SHOW_VERBOSE(MSG) do \
+{ \
+	if(g_bStdUtilsVerbose) \
+	{ \
+		MessageBox(NULL, MSG, T("StdUtils"), MB_ICONERROR | MB_TASKMODAL); \
+	} \
 } \
 while(0)
 

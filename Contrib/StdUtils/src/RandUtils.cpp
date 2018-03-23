@@ -74,7 +74,7 @@ static inline unsigned int fallback_rand(void)
 static inline void init_rand(void)
 {
 	long state;
-	while((state = _InterlockedCompareExchange( &s_secure_rand_init, -1, 0 )) != 0)
+	while((state = _InterlockedCompareExchange(&s_secure_rand_init, -1, 0 )) != 0)
 	{
 		if(state > 0)
 		{
