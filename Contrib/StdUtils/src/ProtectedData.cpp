@@ -149,7 +149,8 @@ int dpapi_protect_data(BYTE **const protected_out, size_t *const protected_len, 
 
 	//Actually protect the given data!
 	DATA_BLOB blobIn = { plaintext_len, (BYTE*)plaintext_in }, blobEntropy = { salt_buff_len, salt_buffer }, blobOut = {};
-	if (!CryptProtectData(&blobIn, NULL, &blobEntropy, NULL, NULL, machine_scope ? CRYPTPROTECT_LOCAL_MACHINE : 0U, &blobOut))
+	const DWORD scope_value = machine_scope ? CRYPTPROTECT_LOCAL_MACHINE : 0U;
+	if (!CryptProtectData(&blobIn, NULL, &blobEntropy, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN | scope_value, &blobOut))
 	{
 		free_buffer(salt_buffer, salt_buff_len);
 		return (-1);
@@ -219,7 +220,7 @@ int dpapi_unprotect_data(BYTE **const plaintext_out, size_t *const plaintext_len
 
 	//Actually unprotect the given data!
 	DATA_BLOB blobIn = { protected_buff_len, (BYTE*)protected_buffer }, blobEntropy = { salt_buff_len, (BYTE*)salt_buffer }, blobOut = {};
-	if (!CryptUnprotectData(&blobIn, NULL, &blobEntropy, NULL, NULL, 0U, &blobOut))
+	if (!CryptUnprotectData(&blobIn, NULL, &blobEntropy, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &blobOut))
 	{
 		return (-1);
 	}

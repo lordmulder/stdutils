@@ -142,15 +142,26 @@ TheLoop:
 	DetailPrint 'RandomLength: $0'
 	${StdUtils.RandBytes} $1 $0
 	DetailPrint 'OriginalStr: "$1"'
+	
 	${StdUtils.ProtectStr} $2 "CU" "" "$1"
 	DetailPrint 'ProtectedStr: "$2"'
 	${StdUtils.UnprotectStr} $3 0 "" "$2"
 	DetailPrint 'UnrotectedStr: "$3"'
-	IfErrors 0 +3
-	DetailPrint "Whoops, failed unexpectedly!"
+	IfErrors Failure
+	StrCmp $1 $3 +3
+	DetailPrint "Miscompare !!!"
 	Abort
+	
+	${StdUtils.ProtectStr} $2 "LM" "" "$1"
+	DetailPrint 'ProtectedStr: "$2"'
+	${StdUtils.UnprotectStr} $3 0 "" "$2"
+	DetailPrint 'UnrotectedStr: "$3"'
 	StrCmp $1 $3 Success
 	DetailPrint "Miscompare !!!"
+	Abort
+
+Failure:
+	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
 
 Success:
