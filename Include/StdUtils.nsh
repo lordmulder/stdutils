@@ -441,10 +441,10 @@
 	pop ${out}
 !macroend
 
-!macro _StdU_UnprtctStr out trnc salt text
+!macro _StdU_UnprtctStr out trnc salt data
 	push '${trnc}'
 	push '${salt}'
-	push '${text}'
+	push '${data}'
 	StdUtils::UnprotectStr /NOUNLOAD
 	pop ${out}
 !macroend
