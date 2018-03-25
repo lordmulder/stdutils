@@ -143,21 +143,46 @@ NSISFUNC(GetDays)
 
 #include "RandUtils.h"
 
+static int rand_in_range(const int min = 0, const int max = INT_MAX)
+{
+	if(min <= max)
+	{
+		const ULONGLONG range = static_cast<ULONGLONG>(static_cast<LONGLONG>(max) - static_cast<LONGLONG>(min)) + 1U;
+		const ULONGLONG nbins = (static_cast<ULONGLONG>(NEXT_RAND_MAX) + 1ULL) / range;
+		const ULONGLONG limit = nbins * range;
+		ULONGLONG temp;
+		do
+		{
+			temp = next_rand();
+		}
+		while(temp >= limit);
+		return static_cast<int>(static_cast<LONGLONG>(temp / nbins) + static_cast<LONGLONG>(min));
+	}
+	return 0;
+}
+
 NSISFUNC(Rand)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
-	const unsigned int r = next_rand() % static_cast<unsigned int>(INT_MAX);
-	pushint(r);
+	pushint(rand_in_range());
 }
 
 NSISFUNC(RandMax)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
-	const int m = abs(popint()) + 1;
-	unsigned int r = next_rand() % static_cast<unsigned int>(m);
-	pushint(r);
+	const int max = popint();
+
+	if(max < 0)
+	{
+		extra->exec_flags->exec_error++;
+		SHOW_VERBOSE(T("RandMax() was called with bad arguments!"));
+		pushstring(T("einval"));
+		return;
+	}
+	
+	pushint(rand_in_range(0, max));
 }
 
 NSISFUNC(RandMinMax)
@@ -169,13 +194,13 @@ NSISFUNC(RandMinMax)
 	
 	if(min > max)
 	{
+		extra->exec_flags->exec_error++;
 		SHOW_VERBOSE(T("RandMinMax() was called with bad arguments!"));
-		pushint(0);
+		pushstring(T("einval"));
+		return;
 	}
 
-	int diff = abs(max - min) + 1;
-	unsigned int r = next_rand() % static_cast<unsigned int>(diff);
-	pushint(r + min);
+	pushint(rand_in_range(min, max));
 }
 
 NSISFUNC(RandList)
@@ -183,40 +208,35 @@ NSISFUNC(RandList)
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
 	const int count = popint();
-	const int max = popint() + 1;
+	const int max = popint() ;
 
-	if(count > max)
+	if((count < 1) || (count > SHRT_MAX) || (max < 0) || ((count - 1) > max))
 	{
+		extra->exec_flags->exec_error++;
 		SHOW_VERBOSE(T("RandList() was called with bad arguments!"));
-		pushstring(T("EOL"));
+		pushstring(T("einval"));
 		return;
 	}
 
-	bool *list = new bool[max];
-	for(int idx = 0; idx < max; idx++)
-	{
-		list[idx] = false;
-	}
+	bool *const list = new bool[max + 1];
+	memset(list, 0, (max + 1) * sizeof(bool));
+	
+	pushstring(T("EOL"));
 
 	int done = 0;
 	while(done < count)
 	{
-		unsigned int rnd = next_rand() % static_cast<unsigned int>(max);
+		const int rnd = rand_in_range(0, max);
 		if(!list[rnd])
 		{
+			pushint(rnd);
 			list[rnd] = true;
 			done++;
 		}
 	}
 
-	pushstring(T("EOL"));
-	for(int idx = max-1; idx >= 0; idx--)
-	{
-		if(list[idx])
-		{
-			pushint(idx);
-		}
-	}
+	memset(list, 0, (max + 1) * sizeof(bool));
+	delete [] list;
 }
 
 NSISFUNC(RandBytes)

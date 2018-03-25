@@ -92,7 +92,7 @@ static inline void init_rand(void)
 	_InterlockedExchange(&s_secure_rand_init, 1);
 }
 
-/* return the next random number */
+/* return the next random number in range [0..UNIT_MAX] */
 unsigned int next_rand(void)
 {
 	init_rand();
