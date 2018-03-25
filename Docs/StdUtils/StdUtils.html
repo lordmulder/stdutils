@@ -212,7 +212,7 @@ SectionEnd</pre>
 <a name="dc3f60d9"></a><h2>Pseudorandom Number Generator (PRNG)</h2>
 
 <p><b><tt>${StdUtils.Rand} <i>user_var(output)</i><br>${StdUtils.RandMax} <i>user_var(output)</i> <i>max</i><br>${StdUtils.RandMinMax} <i>user_var(output)</i> <i>min</i> <i>max</i></tt></b></p>
-<p>Returns a pseudo-random integral number, similar to the <a href="http://www.cplusplus.com/reference/clibrary/cstdlib/rand/">rand()</a> function, but without the need to call <tt>srand()</tt>. Optionally the <i>minimum</i> and/or <i>maximum</i> value can be specified, so a random number in the <tt>min</tt> to <tt>max</tt> range will be returned. If <i>no</i> minimum is specified, the minimum defaults to <i>zero</i>. And if <i>no</i> maximum is specified, the maximum defaults to <tt>INT_MAX</tt>. Note that this function will use <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694%28v=vs.85%29.aspx">RtlGenRandom()</a>, where possible; otherwise it falls back to a method based on <tt>rand()</tt>. In the latter case, <tt>srand()</tt> will be initialized with a suitable seed <i>automatically</i>.</p>
+<p>Returns a pseudo-random integral number, similar to the <a href="http://www.cplusplus.com/reference/clibrary/cstdlib/rand/">rand()</a> function, but <i>without</i> the requirement to explicitly call <a href="http://www.cplusplus.com/reference/cstdlib/srand/">srand()</a>. Optionally, the <i>minimum</i> and <i>maximum</i> value can be specified via the <tt>min</tt> and <tt>max</tt> parameters. The pseudo-random number returned is guaranteed to be in the range from <tt>min</tt> to <tt>max</tt>, with both endpoints of the interval <i>included</i>. If the minimum value is <i>not</i> specified, the minimum defaults to <tt>0</tt>; and if <i>no</i> maximum is specified, the maximum defaults to <tt>INT_MAX</tt>. Note that this function will use the <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694%28v=vs.85%29.aspx">RtlGenRandom()</a> API, whenever possible; otherwise it falls back to a method based on <tt>rand()</tt> and <tt>srand()</tt>. In the latter case, <tt>srand()</tt> will be initialized with a suitable seed <i>automatically</i> on the first invocation. If the function was called with invalid parameter, it return "einval" and sets the error flag.</p>
 
 <pre>Section
 	${StdUtils.Rand} $1
@@ -260,7 +260,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.RandList} <i>count</i> <i>max</i></tt></b></p>
-<p>Pushes a list of pseudo-random numbers onto the stack. The string "EOL" is pushed beforehand and thus will indicate the end of the list when popping the numbers off the stack. The <tt>count</tt> of the random numbers and the <tt>max</tt> value can be specified; the minimum value is <i>zero</i>.</p>
+<p>Pushes a list of pseudo-random numbers onto the stack. The string "EOL" is pushed beforehand and thus will indicate the end of the list when popping the numbers off the stack. The quantity of the random numbers in the list can be controlled via the <tt>count</tt> parameter. Each number is guaranteed to be in the range from <tt>0</tt> to <tt>max</tt>, with both endpoints of the interval <i>included</i>. Also, each number appears <i>at most</i> once in the list. If the function was called with invalid parameters, it returns "einval" and sets the error flag.</p></p>
 
 <pre>Section
 	${StdUtils.RandList} 50 100
