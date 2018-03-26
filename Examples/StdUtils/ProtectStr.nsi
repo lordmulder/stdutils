@@ -58,7 +58,7 @@ Section
 	${StdUtils.ProtectStr} $1 "CU" "" ""
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -66,7 +66,7 @@ Section
 	${StdUtils.ProtectStr} $1 "CU" "" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -74,7 +74,7 @@ Section
 	${StdUtils.ProtectStr} $1 "CU" "a7gzLbdwdbk4" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "a7gzLbdwdbk4" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -82,9 +82,9 @@ Section
 	${StdUtils.ProtectStr} $1 "CU" "a7gzLbdwdbk4" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2" (Expected to fail!)'
+	DetailPrint 'UnprotectedStr: "$2" (Expected to fail!)'
 	${StdUtils.UnprotectStr} $2 0 "HMJjUaUV4p9W" "$1"
-	DetailPrint 'UnrotectedStr: "$2" (Expected to fail!)'
+	DetailPrint 'UnprotectedStr: "$2" (Expected to fail!)'
 	IfErrors +3
 	DetailPrint "Whoops, succeeded unexpectedly!"
 	Abort
@@ -98,7 +98,7 @@ Section
 	${StdUtils.ProtectStr} $1 "LM" "" ""
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -106,7 +106,7 @@ Section
 	${StdUtils.ProtectStr} $1 "LM" "" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -114,7 +114,7 @@ Section
 	${StdUtils.ProtectStr} $1 "LM" "a7gzLbdwdbk4" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "a7gzLbdwdbk4" "$1"
-	DetailPrint 'UnrotectedStr: "$2"'
+	DetailPrint 'UnprotectedStr: "$2"'
 	IfErrors 0 +3
 	DetailPrint "Whoops, failed unexpectedly!"
 	Abort
@@ -122,9 +122,9 @@ Section
 	${StdUtils.ProtectStr} $1 "LM" "a7gzLbdwdbk4" "Five quacking Zephyrs jolt my wax bed."
 	DetailPrint 'ProtectedStr: "$1"'
 	${StdUtils.UnprotectStr} $2 0 "" "$1"
-	DetailPrint 'UnrotectedStr: "$2" (Expected to fail!)'
+	DetailPrint 'UnprotectedStr: "$2" (Expected to fail!)'
 	${StdUtils.UnprotectStr} $2 0 "HMJjUaUV4p9W" "$1"
-	DetailPrint 'UnrotectedStr: "$2" (Expected to fail!)'
+	DetailPrint 'UnprotectedStr: "$2" (Expected to fail!)'
 	IfErrors +3
 	DetailPrint "Whoops, succeeded unexpectedly!"
 	Abort
@@ -146,7 +146,7 @@ TheLoop:
 	${StdUtils.ProtectStr} $2 "CU" "" "$1"
 	DetailPrint 'ProtectedStr: "$2"'
 	${StdUtils.UnprotectStr} $3 0 "" "$2"
-	DetailPrint 'UnrotectedStr: "$3"'
+	DetailPrint 'UnprotectedStr: "$3"'
 	IfErrors Failure
 	StrCmp $1 $3 +3
 	DetailPrint "Miscompare !!!"
@@ -155,7 +155,7 @@ TheLoop:
 	${StdUtils.ProtectStr} $2 "LM" "" "$1"
 	DetailPrint 'ProtectedStr: "$2"'
 	${StdUtils.UnprotectStr} $3 0 "" "$2"
-	DetailPrint 'UnrotectedStr: "$3"'
+	DetailPrint 'UnprotectedStr: "$3"'
 	StrCmp $1 $3 Success
 	DetailPrint "Miscompare !!!"
 	Abort
