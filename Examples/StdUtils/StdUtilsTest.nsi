@@ -181,6 +181,14 @@ Section
 	DetailPrint "Random: $1"
 	${StdUtils.Rand} $1
 	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
+	${StdUtils.Rand} $1
+	DetailPrint "Random: $1"
 SectionEnd
 
 !insertmacro NextTest
@@ -224,7 +232,6 @@ Section
 	${StdUtils.RandMinMax} $1 -4 -2
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 -4 -2
-	${StdUtils.RandMinMax} $1 -4 -2
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 -4 -2
 	DetailPrint "Random Min/Max: $1"
@@ -240,11 +247,55 @@ Section
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"
+
 	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 20 21
 	DetailPrint "Random Min/Max: $1"
 	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 20 21
+	DetailPrint "Random Min/Max: $1"
+
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
+	DetailPrint "Random Min/Max: $1"
+	${StdUtils.RandMinMax} $1 -2147483648 2147483647
 	DetailPrint "Random Min/Max: $1"
 SectionEnd
 

@@ -145,20 +145,31 @@ NSISFUNC(GetDays)
 
 static int rand_in_range(const int min = 0, const int max = INT_MAX)
 {
-	if(min <= max)
+	if(min < max)
 	{
-		const ULONGLONG range = static_cast<ULONGLONG>(static_cast<LONGLONG>(max) - static_cast<LONGLONG>(min)) + 1U;
-		const ULONGLONG nbins = (static_cast<ULONGLONG>(NEXT_RAND_MAX) + 1ULL) / range;
-		const ULONGLONG limit = nbins * range;
-		ULONGLONG temp;
-		do
+		const unsigned int range = static_cast<unsigned int>(max - min) + 1U;
+		if(range)
 		{
-			temp = next_rand();
+			const unsigned int nbins = ((UINT_MAX - (range - 1U)) / range) + 1U;
+			const unsigned int limit = nbins * range;
+			unsigned int temp;
+			do
+			{
+				
+				temp = next_rand();
+			}
+			while(limit && (temp >= limit));
+			return min + static_cast<int>(temp / nbins);
 		}
-		while(temp >= limit);
-		return static_cast<int>(static_cast<LONGLONG>(temp / nbins) + static_cast<LONGLONG>(min));
+		else
+		{
+			return static_cast<int>(next_rand()); /*use the full range*/
+		}
 	}
-	return 0;
+	else
+	{
+		return min; /*shortcut*/
+	}
 }
 
 NSISFUNC(Rand)

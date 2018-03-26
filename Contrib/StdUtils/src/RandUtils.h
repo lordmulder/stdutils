@@ -30,7 +30,5 @@
 #include <limits.h>
 #endif
 
-static const unsigned int NEXT_RAND_MAX = UINT_MAX;
-
 unsigned int next_rand(void);
 void rand_bytes(BYTE *const buffer, const size_t size);
