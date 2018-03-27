@@ -52,6 +52,8 @@
 !define StdUtils.RevStr           '!insertmacro _StdU_RevStr'        #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    '!insertmacro _StdU_ValidFileName' #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    '!insertmacro _StdU_ValidPathSpec' #Test whether string is a valid full(!) path specification
+!define StdUtils.StrToUtf8        '!insertmacro _StdU_StrToUtf8'     #Convert string from Unicode (UTF-16) or ANSI to UTF-8 bytes
+!define StdUtils.StrFromUtf8      '!insertmacro _StdU_StrFromUtf8'   #Convert string from UTF-8 bytes to Unicode (UTF-16) or ANSI
 !define StdUtils.SHFileMove       '!insertmacro _StdU_SHFileMove'    #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       '!insertmacro _StdU_SHFileCopy'    #SHFileOperation(), using the FO_COPY operation
 !define StdUtils.AppendToFile     '!insertmacro _StdU_AppendToFile'  #Append contents of an existing file to another file
@@ -229,6 +231,19 @@
 !macro _StdU_ValidPathSpec out test
 	push '${test}'
 	StdUtils::ValidPathSpec /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdU_StrToUtf8 out str
+	push '${str}'
+	StdUtils::StrToUtf8 /NOUNLOAD
+	pop ${out}
+!macroend
+
+!macro _StdU_StrFromUtf8 out trnc str
+	push ${trnc}
+	push '${str}'
+	StdUtils::StrFromUtf8 /NOUNLOAD
 	pop ${out}
 !macroend
 
