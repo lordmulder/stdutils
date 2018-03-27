@@ -177,7 +177,7 @@ size_t base64_encode(TCHAR *const encoded, const BYTE *const data, const size_t 
 	TCHAR *p;
 
 	p = encoded;
-	for (i = 0; i < len - 2; i += 3)
+	for (i = 0; i + 2 < len; i += 3)
 	{
 		*p++ = basis_64[(data[i] >> 2) & 0x3F];
 		*p++ = basis_64[((data[i] & 0x3) << 4) | ((size_t)(data[i + 1] & 0xF0) >> 4)];
