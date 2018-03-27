@@ -619,6 +619,103 @@ exit209:
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+NSISFUNC(StrToUtf8)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK();
+	MAKESTR(str, g_stringsize);
+
+	popstringn(str, 0);
+
+	BYTE *utf8_string = (BYTE*)STR_TO_UTF8(str);
+	if(!utf8_string)
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("error"));
+		goto exit209;
+	}
+
+	const size_t utf8_len = strlen((const char*)utf8_string) + 1U;
+	TCHAR *base64_string = base64_raw2encoded(utf8_string, utf8_len);
+	if(!base64_string)
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("error"));
+		goto exit210;
+	}
+
+	const size_t base64_len = STRLEN(base64_string);
+	if(base64_len >= g_stringsize)
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("too_long"));
+		goto exit211;
+	}
+
+	pushstring(base64_string);
+
+exit211:
+	DELETE_STR(base64_string, base64_len);
+exit210:
+	DELETE_ARR(utf8_string, BYTE, utf8_len);
+exit209:
+	DELETE_STR(str, g_stringsize);
+}
+
+NSISFUNC(StrFromUtf8)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK();
+	MAKESTR(str, g_stringsize);
+
+	popstringn(str, 0);
+	const int truncate = popint();
+
+	size_t utf8_len;
+	BYTE *utf8_string = base64_encoded2raw(str, utf8_len);
+	if(!utf8_string)
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("error"));
+		goto exit209;
+	}
+
+	utf8_string[utf8_len - 1U] = (BYTE)'\0';
+	TCHAR *native_string = UTF8_TO_STR((const char*)utf8_string);
+	if(!native_string)
+	{
+		extra->exec_flags->exec_error++;
+		pushstring(T("error"));
+		goto exit210;
+	}
+
+	const size_t native_len = STRLEN(native_string);
+	if(native_len >= g_stringsize)
+	{
+		if(truncate > 0)
+		{
+			native_string[g_stringsize - 1U] = T('\0');
+		}
+		else
+		{
+			extra->exec_flags->exec_error++;
+			pushstring(T("too_long"));
+			goto exit211;
+		}
+	}
+
+	pushstring(native_string);
+
+exit211:
+	DELETE_STR(native_string, native_len);
+exit210:
+	DELETE_ARR(utf8_string, char, utf8_len);
+exit209:
+	DELETE_STR(str, g_stringsize);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // SHELL FILE FUNCTIONS
 ///////////////////////////////////////////////////////////////////////////////
 

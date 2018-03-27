@@ -29,14 +29,6 @@
 #include <WinCrypt.h>
 //#include <Dpapi.h>
 
-#ifdef UNICODE
-#define TEXT2BYTES(X) ((const BYTE*)utf16_to_utf8((X)))
-#define BYTES2TEXT(X) (utf8_to_utf16((const char*)(X)))
-#else
-#define TEXT2BYTES(X) ((const BYTE*)ansi_to_utf8((X)))
-#define BYTES2TEXT(X) (utf8_to_ansi((const char*)(X)))
-#endif
-
 #define FREE_TEXT(X) free_buffer((X), ((X) && ((X)[0])) ? (strlen((const char*)(X))) : 0U)
 
 static const DWORD DEFAULT_SALT_LEN = 64;
@@ -257,7 +249,7 @@ int dpapi_protect_text(TCHAR **const protected_out, const TCHAR *const plaintext
 	}
 
 	//Convert given text to bytes
-	const BYTE *const plaintext_buffer = TEXT2BYTES(plaintext_in);
+	const BYTE *const plaintext_buffer = (const BYTE*)STR_TO_UTF8(plaintext_in);
 	if (!plaintext_buffer)
 	{
 		return 0;
@@ -267,7 +259,7 @@ int dpapi_protect_text(TCHAR **const protected_out, const TCHAR *const plaintext
 	const BYTE *salt_buffer = NULL;
 	if (salt_in && salt_in[0])
 	{
-		salt_buffer = TEXT2BYTES(salt_in);
+		salt_buffer = (const BYTE*)STR_TO_UTF8(salt_in);
 		if ((!salt_buffer) || (!salt_buffer[0]))
 		{
 			FREE_TEXT(plaintext_buffer);
@@ -320,7 +312,7 @@ int dpapi_unprotect_text(TCHAR **const plaintext_out, const TCHAR *const protect
 	const BYTE *salt_buffer = NULL;
 	if (salt_in && salt_in[0])
 	{
-		salt_buffer = TEXT2BYTES(salt_in);
+		salt_buffer = (const BYTE*)STR_TO_UTF8(salt_in);
 		if ((!salt_buffer) || (!salt_buffer[0]))
 		{
 			free_buffer(protected_buffer, protected_buff_len);
@@ -342,7 +334,7 @@ int dpapi_unprotect_text(TCHAR **const plaintext_out, const TCHAR *const protect
 
 	//Convert unprotected bytes to text
 	plaintext_buffer[plaintext_buff_len - 1U] = (BYTE)'\0'; /*just to be sure!*/
-	*plaintext_out = BYTES2TEXT(plaintext_buffer);
+	*plaintext_out = UTF8_TO_STR((const char*)plaintext_buffer);
 
 	//Clean up
 	free_buffer(protected_buffer, protected_buff_len);
