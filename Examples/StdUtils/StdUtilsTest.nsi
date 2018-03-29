@@ -437,21 +437,17 @@ SectionEnd
 
 ########## ValidDomainName ##########
 
+!macro MyValidDomainNameTest str
+	${StdUtils.ValidDomainName} $0 `${str}`
+	DetailPrint 'ValidDomainName: "${str}" --> $0'
+!macroend
+
 Section
-	${StdUtils.StdUtils.ValidDomainName} $0 "localhost"
-	DetailPrint 'ValidDomainName("localhost") = $0'
-
-	${StdUtils.ValidDomainName} $0 "de.wikipedia.org"
-	DetailPrint 'ValidDomainName("de.wikipedia.org") = $0'
-
-	${StdUtils.ValidDomainName} $0 "Ö La Palöma"
-	DetailPrint 'ValidDomainName("Ö La Palöma") = $0'
-
-	${StdUtils.ValidDomainName} $0 "-foo-"
-	DetailPrint 'ValidDomainName("-foo-") = $0'
-
-	${StdUtils.ValidDomainName} $0 ".bar."
-	DetailPrint 'ValidDomainName(".bar.") = $0'
+	!insertmacro MyValidDomainNameTest "localhost"
+	!insertmacro MyValidDomainNameTest "de.wiki-pedia.org"
+	!insertmacro MyValidDomainNameTest "-foo-"
+	!insertmacro MyValidDomainNameTest ".bar."
+	!insertmacro MyValidDomainNameTest "ba_z"
 SectionEnd
 
 !insertmacro NextTest

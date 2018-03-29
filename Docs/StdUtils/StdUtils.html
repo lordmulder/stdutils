@@ -443,20 +443,20 @@ SectionEnd</pre>
 <p>Note: A valid domain name consist of one or more <i>labels</i>. If multiple labels are present, each consecutive pair of labels is  separated by a single dot (<tt>.</tt>) character; leading or trailing dots are forbidden. Also, each label consist of one or more characters. The only characters allowed in a label are the upper-case letters <tt>A</tt> to <tt>Z</tt>, the lower-case letters <tt>a</tt> to <tt>z</tt>, the digits <tt>0</tt> to <tt>9</tt> as well as thy hyphen character (<tt>-</tt>). Last but not least, a label <i>must not</i> start or end with a hyphen character. There generally is <i>no</i> distinction between upper-case and lower-case letters.</p>
 
 <pre>Section
-	${StdUtils.StdUtils.ValidDomainName} $0 "localhost"
-	DetailPrint 'ValidDomainName("localhost") = $0'
+	${StdUtils.ValidDomainName} $0 "localhost"
+	DetailPrint 'ValidDomainName: "localhost" --> $0'
 
 	${StdUtils.ValidDomainName} $0 "de.wikipedia.org"
-	DetailPrint 'ValidDomainName("de.wikipedia.org") = $0'
+	DetailPrint 'ValidDomainName: "de.wikipedia.org" --> $0'
 
 	${StdUtils.ValidDomainName} $0 "Ö La Palöma"
-	DetailPrint 'ValidDomainName("Ö La Palöma") = $0'
+	DetailPrint 'ValidDomainName: "Ö La Palöma" --> $0'
 
 	${StdUtils.ValidDomainName} $0 "-foo-"
-	DetailPrint 'ValidDomainName("-foo-") = $0'
+	DetailPrint 'ValidDomainName: "-foo-" --> $0'
 
 	${StdUtils.ValidDomainName} $0 ".bar."
-	DetailPrint 'ValidDomainName(".bar.") = $0'
+	DetailPrint 'ValidDomainName: ".bar." --> $0'
 SectionEnd</pre>
 
 <br>
