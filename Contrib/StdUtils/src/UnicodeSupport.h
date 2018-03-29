@@ -41,6 +41,12 @@ wchar_t *wcstrim_right(wchar_t *const input);
 bool str_whitespace(const char c);
 bool wcs_whitespace(const wchar_t c);
 
+bool str_ascii_alpha(const char c);
+bool wcs_ascii_alpha(const wchar_t c);
+
+bool str_ascii_alnum(const char c);
+bool wcs_ascii_alnum(const wchar_t c);
+
 #ifdef UNICODE
 	#define STRLEN wcslen	
 	#define STRICMP _wcsicmp
@@ -53,13 +59,14 @@ bool wcs_whitespace(const wchar_t c);
 	#define SNPRINTF _snwprintf
 	#define SSCANF swscanf
 	#define ISCNTRL iswcntrl
-	#define ISALPHA iswalpha
-	#define ISALNUM iswalnum
 	#define ISGRAPH iswgraph
 	#define SPLITPATH _wsplitpath
 	#define WHITESPACE wcs_whitespace
 	#define STR_TO_UTF8 utf16_to_utf8
 	#define UTF8_TO_STR utf8_to_utf16
+	#define SETLOCALE _wsetlocale
+	#define ASCII_ALNUM wcs_ascii_alnum
+	#define ASCII_ALPHA wcs_ascii_alpha
 	#define __T__(X) L##X
 	#define T(X) __T__(X)
 #else
@@ -74,12 +81,12 @@ bool wcs_whitespace(const wchar_t c);
 	#define SNPRINTF _snprintf
 	#define SSCANF sscanf
 	#define ISCNTRL iscntrl
-	#define ISALPHA isalpha
-	#define ISALNUM isalnum
 	#define ISGRAPH isgraph
 	#define SPLITPATH _splitpath
 	#define WHITESPACE str_whitespace
 	#define STR_TO_UTF8 ansi_to_utf8
 	#define UTF8_TO_STR utf8_to_ansi
+	#define SETLOCALE setlocale
+	#define ASCII_ALNUM str_ascii_alnum
 	#define T(X) X
 #endif

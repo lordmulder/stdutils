@@ -25,7 +25,7 @@
 #include "UnicodeSupport.h"
 
 #define IS_SEPARATOR(X) (((X) == T('/')) || ((X) == T('\\')))
-#define IS_DRIVEROOT(X) (ISALPHA((X)[0]) && ((X)[1] == T(':')) && ((X)[2] == T('\0')))
+#define IS_DRIVEROOT(X) (ASCII_ALNUM((X)[0]) && ((X)[1] == T(':')) && ((X)[2] == T('\0')))
 
 static bool trim_trailing_component(TCHAR *const str);
 static bool trim_trailing_separator(TCHAR *const str);

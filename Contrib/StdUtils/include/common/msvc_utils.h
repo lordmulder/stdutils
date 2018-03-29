@@ -40,10 +40,12 @@ void __declspec(dllimport) _splitpath(const char *path, char *drive, char *dir, 
 void __declspec(dllimport) _wsplitpath(const wchar_t *path, wchar_t *drive, wchar_t *dir, wchar_t *fname, wchar_t *ext);
 #endif //_INC_STDLIB
 
-int __declspec(dllimport) _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
-int __declspec(dllimport) _snprintf(char *buffer, size_t count, const char *format, ...);
-int __declspec(dllimport) sscanf(const char *input, const char * format, ...);
-int __declspec(dllimport) swscanf(const wchar_t *input, const wchar_t * format, ...);
+int     __declspec(dllimport) _snwprintf(wchar_t *buffer, size_t count, const wchar_t *format, ...);
+int     __declspec(dllimport) _snprintf(char *buffer, size_t count, const char *format, ...);
+int     __declspec(dllimport) sscanf(const char *input, const char * format, ...);
+int     __declspec(dllimport) swscanf(const wchar_t *input, const wchar_t * format, ...);
+char    __declspec(dllimport) *setlocale(int category, const char *locale);
+wchar_t __declspec(dllimport) *_wsetlocale(int category, const wchar_t *locale);
 
 uintptr_t __declspec(dllimport) _beginthreadex( 
 	void *security,

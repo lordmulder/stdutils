@@ -525,15 +525,17 @@ NSISFUNC(ValidFileName)
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(str, 0);
 
-	bool flag = true;
+	bool valid = true;
 	TCHAR last = 0x0;
+
 
 	if(!str[0])
 	{
-		flag = false;
+		valid = false;
 		goto exit209;
 	}
 
@@ -541,14 +543,14 @@ NSISFUNC(ValidFileName)
 	{
 		if(ISCNTRL(str[i]))
 		{
-			flag = false;
+			valid = false;
 			goto exit209;
 		}
 		for(size_t j = 0; RESERVED[j]; j++)
 		{
 			if(str[i] == RESERVED[j])
 			{
-				flag = false;
+				valid = false;
 				goto exit209;
 			}
 		}
@@ -557,11 +559,11 @@ NSISFUNC(ValidFileName)
 
 	if((last == T(' ')) || (last == T('.')))
 	{
-		flag = false;
+		valid = false;
 	}
 
 exit209:
-	pushstring(flag ? T("ok") : T("invalid"));
+	pushstring(valid ? T("ok") : T("invalid"));
 	DELETE_STR(str, g_stringsize);
 }
 
@@ -572,15 +574,17 @@ NSISFUNC(ValidPathSpec)
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
 	MAKESTR(str, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(str, 0);
 
-	bool flag = true;
+	bool valid = true;
 	TCHAR last = 0x0;
+
 
 	if(!str[0])
 	{
-		flag = false;
+		valid = false;
 		goto exit209;
 	}
 
@@ -588,20 +592,20 @@ NSISFUNC(ValidPathSpec)
 	{
 		if(ISCNTRL(str[i]))
 		{
-			flag = false;
+			valid = false;
 			goto exit209;
 		}
 		for(size_t j = 0; RESERVED[j]; j++)
 		{
 			if(str[i] == RESERVED[j])
 			{
-				flag = false;
+				valid = false;
 				goto exit209;
 			}
 		}
-		if(((i == 0) && (!ISALPHA(str[i]))) || ((i == 1) && (str[i] != T(':'))) || ((i != 1) && (str[i] == T(':'))) || ((i == 2) && (str[i] != T('/')) && (str[i] != T('\\'))))
+		if(((i == 0) && (!ASCII_ALNUM(str[i]))) || ((i == 1) && (str[i] != T(':'))) || ((i != 1) && (str[i] == T(':'))) || ((i == 2) && (str[i] != T('/')) && (str[i] != T('\\'))))
 		{
-			flag = false;
+			valid = false;
 			goto exit209;
 		}
 		last = str[i];
@@ -609,13 +613,72 @@ NSISFUNC(ValidPathSpec)
 
 	if((last == T(' ')) || (last == T('.')))
 	{
-		flag = false;
+		valid = false;
 	}
 
 exit209:
-	pushstring(flag ? T("ok") : T("invalid"));
+	pushstring(valid ? T("ok") : T("invalid"));
 	DELETE_STR(str, g_stringsize);
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+NSISFUNC(ValidDomainName)
+{
+	EXDLL_INIT();
+	REGSITER_CALLBACK();
+	MAKESTR(str, g_stringsize);
+
+	popstringn(str, 0);
+	bool valid = true;
+
+	const size_t len = STRLEN(str);
+	if ((len < 1U) || (len > 255U))
+	{
+		valid = false;
+		goto exit209;
+	}
+	
+	TCHAR prev_c = T('\0');
+	size_t label_size = 0U;
+
+	for (size_t i = 0U; i < len; ++i)
+	{
+		const TCHAR c = str[i];
+		if (c == T('.'))
+		{
+			if ((label_size < 1U) || (prev_c == T('-')))
+			{
+				valid = false;
+				goto exit209;
+			}
+			prev_c = c;
+			label_size = 0U;
+			continue;
+		}
+		if (!(ASCII_ALNUM(c) || ((label_size > 0U) && (c == T('-')))))
+		{
+			valid = false;
+			goto exit209;
+		}
+		if (++label_size > 64U)
+		{
+			valid = false;
+			goto exit209;
+		}
+		prev_c = c; /*remember*/
+	}
+
+	if ((prev_c == T('-')) || (prev_c == T('.')))
+	{
+		valid = false;
+		goto exit209;
+	}
+
+exit209:
+	pushstring(valid ? T("ok") : T("invalid"));
+	DELETE_STR(str, g_stringsize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1057,9 +1120,11 @@ NSISFUNC(GetParameter)
 	REGSITER_CALLBACK();
 	MAKESTR(aval, g_stringsize);
 	MAKESTR(name, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(aval, 0);
 	popstringn(name, 0);
+
 	commandline_get_arg(STRTRIM(name), aval, g_stringsize);
 	pushstring(STRTRIM(aval));
 
@@ -1072,8 +1137,10 @@ NSISFUNC(TestParameter)
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
 	MAKESTR(name, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(name, 0);
+
 	pushstring(commandline_get_arg(STRTRIM(name), NULL, 0) ? T("true") : T("false"));
 
 	DELETE_STR(name, g_stringsize);
@@ -1084,6 +1151,7 @@ NSISFUNC(ParameterStr)
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
 	MAKESTR(value, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	const int index = popint();
 	if(commandline_get_raw(index, value, g_stringsize))
@@ -1102,6 +1170,7 @@ NSISFUNC(ParameterCnt)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
+	SETLOCALE(0, T("C"));
 
 	const int index = commandline_get_cnt();
 	if(index >= 0)
@@ -1117,6 +1186,8 @@ NSISFUNC(GetAllParameters)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
+	SETLOCALE(0, T("C"));
+
 	int truncate = popint();
 	const TCHAR *cmd = commandline_get_all();
 
@@ -1415,7 +1486,8 @@ NSISFUNC(NormalizePath)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
-	
+	SETLOCALE(0, T("C"));
+
 	popstringn(path, 0);
 
 	if(Path_Normalize(path, temp, g_stringsize))
@@ -1437,6 +1509,7 @@ NSISFUNC(GetParentPath)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
 
@@ -1462,9 +1535,12 @@ NSISFUNC(SplitPath)
 	MAKESTR(out2, g_stringsize);
 	MAKESTR(out3, g_stringsize);
 	MAKESTR(out4, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
+
 	Path_Split(path, out1, out2, out3, out4);
+
 	pushstring(out4);
 	pushstring(out3);
 	pushstring(out2);
@@ -1483,8 +1559,10 @@ NSISFUNC(GetDrivePart)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
+
 	Path_Split(path, temp, NULL, NULL, NULL);
 	pushstring(temp);
 
@@ -1498,8 +1576,10 @@ NSISFUNC(GetDirectoryPart)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
+
 	Path_Split(path, NULL, temp, NULL, NULL);
 	pushstring(temp);
 
@@ -1513,8 +1593,10 @@ NSISFUNC(GetFileNamePart)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
+
 	Path_Split(path, NULL, NULL, temp, NULL);
 	pushstring(temp);
 
@@ -1528,8 +1610,10 @@ NSISFUNC(GetExtensionPart)
 	REGSITER_CALLBACK();
 	MAKESTR(path, g_stringsize);
 	MAKESTR(temp, g_stringsize);
+	SETLOCALE(0, T("C"));
 
 	popstringn(path, 0);
+
 	Path_Split(path, NULL, NULL, NULL, temp);
 	pushstring(temp);
 
@@ -1702,18 +1786,11 @@ exit209:
 // FOR DEBUGGING
 ///////////////////////////////////////////////////////////////////////////////
 
-NSISFUNC(EnableVerboseMode)
+NSISFUNC(SetVerboseMode)
 {
 	EXDLL_INIT();
 	REGSITER_CALLBACK();
-	g_bStdUtilsVerbose = true;
-}
-
-NSISFUNC(DisableVerboseMode)
-{
-	EXDLL_INIT();
-	REGSITER_CALLBACK();
-	g_bStdUtilsVerbose = false;
+	g_bStdUtilsVerbose = (popint() > 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1729,12 +1806,4 @@ NSISFUNC(GetLibVersion)
 	REGSITER_CALLBACK();
 	pushstring(dllTimeStamp);
 	pushstring(dllVerString);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-NSISFUNC(Dummy)
-{
-	EXDLL_INIT();
-	REGSITER_CALLBACK();
 }

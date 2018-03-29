@@ -200,3 +200,31 @@ wchar_t *wcstrim(wchar_t *const input)
 {
 	return wcstrim_right((wchar_t*)wcstrim_left(input));
 }
+
+//-----------------------------------------------------------------------------
+// CHARSET TEST
+//-----------------------------------------------------------------------------
+
+bool str_ascii_alpha(const char c)
+{
+	return ((c >= 'a') && (c <= 'z'))
+		|| ((c >= 'A') && (c <= 'Z'));
+}
+
+bool wcs_ascii_alpha(const wchar_t c)
+{
+	return ((c >= L'a') && (c <= L'z'))
+		|| ((c >= L'A') && (c <= L'Z'));
+}
+
+bool str_ascii_alnum(const char c)
+{
+	return str_ascii_alpha(c)
+		|| ((c >= '0') && (c <= '9'));
+}
+
+bool wcs_ascii_alnum(const wchar_t c)
+{
+	return wcs_ascii_alpha(c)
+		|| ((c >= L'0') && (c <= L'9'));
+}

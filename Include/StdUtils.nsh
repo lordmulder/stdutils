@@ -52,6 +52,7 @@
 !define StdUtils.RevStr           '!insertmacro _StdU_RevStr'        #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    '!insertmacro _StdU_ValidFileName' #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    '!insertmacro _StdU_ValidPathSpec' #Test whether string is a valid full(!) path specification
+!define StdUtils.ValidDomainName  '!insertmacro _StdU_ValidDomain'   #Test whether string is a valid host name or domain name
 !define StdUtils.StrToUtf8        '!insertmacro _StdU_StrToUtf8'     #Convert string from Unicode (UTF-16) or ANSI to UTF-8 bytes
 !define StdUtils.StrFromUtf8      '!insertmacro _StdU_StrFromUtf8'   #Convert string from UTF-8 bytes to Unicode (UTF-16) or ANSI
 !define StdUtils.SHFileMove       '!insertmacro _StdU_SHFileMove'    #SHFileOperation(), using the FO_MOVE operation
@@ -145,14 +146,14 @@
 !macroend
 
 !macro _StdU_FormatStr out format val
-	push '${format}'
+	push `${format}`
 	push ${val}
 	StdUtils::FormatStr /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_FormatStr2 out format val1 val2
-	push '${format}'
+	push `${format}`
 	push ${val1}
 	push ${val2}
 	StdUtils::FormatStr2 /NOUNLOAD
@@ -160,7 +161,7 @@
 !macroend
 
 !macro _StdU_FormatStr3 out format val1 val2 val3
-	push '${format}'
+	push `${format}`
 	push ${val1}
 	push ${val2}
 	push ${val3}
@@ -169,16 +170,16 @@
 !macroend
 
 !macro _StdU_ScanStr out format input default
-	push '${format}'
-	push '${input}'
+	push `${format}`
+	push `${input}`
 	push ${default}
 	StdUtils::ScanStr /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_ScanStr2 out1 out2 format input default1 default2
-	push '${format}'
-	push '${input}'
+	push `${format}`
+	push `${input}`
 	push ${default1}
 	push ${default2}
 	StdUtils::ScanStr2 /NOUNLOAD
@@ -187,8 +188,8 @@
 !macroend
 
 !macro _StdU_ScanStr3 out1 out2 out3 format input default1 default2 default3
-	push '${format}'
-	push '${input}'
+	push `${format}`
+	push `${input}`
 	push ${default1}
 	push ${default2}
 	push ${default3}
@@ -223,49 +224,56 @@
 !macroend
 
 !macro _StdU_ValidFileName out test
-	push '${test}'
+	push `${test}`
 	StdUtils::ValidFileName /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_ValidPathSpec out test
-	push '${test}'
+	push `${test}`
 	StdUtils::ValidPathSpec /NOUNLOAD
 	pop ${out}
 !macroend
 
+!macro _StdU_ValidDomain out test
+	push `${test}`
+	StdUtils::ValidDomainName /NOUNLOAD
+	pop ${out}
+!macroend
+
+
 !macro _StdU_StrToUtf8 out str
-	push '${str}'
+	push `${str}`
 	StdUtils::StrToUtf8 /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_StrFromUtf8 out trnc str
 	push ${trnc}
-	push '${str}'
+	push `${str}`
 	StdUtils::StrFromUtf8 /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_SHFileMove out from to hwnd
-	push '${from}'
-	push '${to}'
+	push `${from}`
+	push `${to}`
 	push ${hwnd}
 	StdUtils::SHFileMove /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_SHFileCopy out from to hwnd
-	push '${from}'
-	push '${to}'
+	push `${from}`
+	push `${to}`
 	push ${hwnd}
 	StdUtils::SHFileCopy /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_AppendToFile out from dest offset maxlen
-	push '${from}'
-	push '${dest}'
+	push `${from}`
+	push `${dest}`
 	push ${offset}
 	push ${maxlen}
 	StdUtils::AppendToFile /NOUNLOAD
@@ -273,9 +281,9 @@
 !macroend
 
 !macro _StdU_ExecShlUser out file verb args
-	push '${file}'
-	push '${verb}'
-	push '${args}'
+	push `${file}`
+	push `${verb}`
+	push `${args}`
 	StdUtils::ExecShellAsUser /NOUNLOAD
 	pop ${out}
 !macroend
@@ -289,29 +297,29 @@
 !macroend
 
 !macro _StdU_ExecShlWaitEx out_res out_val file verb args
-	push '${file}'
-	push '${verb}'
-	push '${args}'
+	push `${file}`
+	push `${verb}`
+	push `${args}`
 	StdUtils::ExecShellWaitEx /NOUNLOAD
 	pop ${out_res}
 	pop ${out_val}
 !macroend
 
 !macro _StdU_WaitForProcEx out handle
-	push '${handle}'
+	push `${handle}`
 	StdUtils::WaitForProcEx /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_GetParameter out name default
-	push '${name}'
-	push '${default}'
+	push `${name}`
+	push `${default}`
 	StdUtils::GetParameter /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_TestParameter out name
-	push '${name}'
+	push `${name}`
 	StdUtils::TestParameter /NOUNLOAD
 	pop ${out}
 !macroend
@@ -328,7 +336,7 @@
 !macroend
 
 !macro _StdU_GetAllParams out truncate
-	push '${truncate}'
+	push `${truncate}`
 	StdUtils::GetAllParameters /NOUNLOAD
 	pop ${out}
 !macroend
@@ -351,15 +359,15 @@
 !macroend
 
 !macro _StdU_VrfyRealOSVer out major minor spack
-	push '${major}'
-	push '${minor}'
-	push '${spack}'
+	push `${major}`
+	push `${minor}`
+	push `${spack}`
 	StdUtils::VerifyRealOsVersion /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_VrfyRealOSBld out build
-	push '${build}'
+	push `${build}`
 	StdUtils::VerifyRealOsBuildNo /NOUNLOAD
 	pop ${out}
 !macroend
@@ -376,33 +384,33 @@
 !macroend
 
 !macro _StdU_HashText out type text
-	push '${type}'
-	push '${text}'
+	push `${type}`
+	push `${text}`
 	StdUtils::HashText /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_HashFile out type file
-	push '${type}'
-	push '${file}'
+	push `${type}`
+	push `${file}`
 	StdUtils::HashFile /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_NormalizePath out path
-	push '${path}'
+	push `${path}`
 	StdUtils::NormalizePath /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_GetParentPath out path
-	push '${path}'
+	push `${path}`
 	StdUtils::GetParentPath /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_SplitPath out_drive out_dir out_fname out_ext path
-	push '${path}'
+	push `${path}`
 	StdUtils::SplitPath /NOUNLOAD
 	pop ${out_drive}
 	pop ${out_dir}
@@ -411,25 +419,25 @@
 !macroend
 
 !macro _StdU_GetDrivePart out path
-	push '${path}'
+	push `${path}`
 	StdUtils::GetDrivePart /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_GetDirPart out path
-	push '${path}'
+	push `${path}`
 	StdUtils::GetDirectoryPart /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_GetFNamePart out path
-	push '${path}'
+	push `${path}`
 	StdUtils::GetFileNamePart /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_GetExtnPart out path
-	push '${path}'
+	push `${path}`
 	StdUtils::GetExtensionPart /NOUNLOAD
 	pop ${out}
 !macroend
@@ -449,17 +457,17 @@
 !macroend
 
 !macro _StdU_PrtctStr out dpsc salt text
-	push '${dpsc}'
-	push '${salt}'
-	push '${text}'
+	push `${dpsc}`
+	push `${salt}`
+	push `${text}`
 	StdUtils::ProtectStr /NOUNLOAD
 	pop ${out}
 !macroend
 
 !macro _StdU_UnprtctStr out trnc salt data
-	push '${trnc}'
-	push '${salt}'
-	push '${data}'
+	push `${trnc}`
+	push `${salt}`
+	push `${data}`
 	StdUtils::UnprotectStr /NOUNLOAD
 	pop ${out}
 !macroend
@@ -470,12 +478,9 @@
 	pop ${out_tst}
 !macroend
 
-!macro _StdU_SetVerbose on
-	!if "${on}" != "0"
-		StdUtils::EnableVerboseMode /NOUNLOAD
-	!else
-		StdUtils::DisableVerboseMode /NOUNLOAD
-	!endif
+!macro _StdU_SetVerbose enable
+	Push ${enable}
+	StdUtils::SetVerboseMode /NOUNLOAD
 !macroend
 
 
