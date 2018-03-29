@@ -47,7 +47,7 @@
 	<ul>
 		<li><a href="#66dd4753">Time Functions: <tt>Time</tt> / <tt>GetMinutes</tt> / <tt>GetHours</tt> / <tt>GetDays</tt></a>
 		<li><a href="#dc3f60d9">Pseudorandom Number Generator: <tt>Rand</tt> / <tt>RandMax</tt> / <tt>RandMinMax</tt> / <tt>RandList</tt> / <tt>RandBytes</tt></a>
-		<li><a href="#23711935">String Functions: <tt>FormatStr</tt> / <tt>ScanStr</tt> / <tt>TrimStr</tt> / <tt>RevStr</tt> / <tt>ValidFileName</tt> / <tt>ValidPathSpec</tt></a>
+		<li><a href="#23711935">String Functions: <tt>FormatStr</tt> / <tt>ScanStr</tt> / <tt>TrimStr</tt> / <tt>RevStr</tt> / <tt>Valid{FileName,PathSpec,DomainName}</tt></a>
 		<li><a href="#df333b53">Shell File Operation: <tt>SHFileCopy</tt> / <tt>SHFileMove</tt></a>
 		<li><a href="#18e9c5cb">File manipulation: <tt>AppendToFile</tt></a>
 		<li><a href="#a3d3af46">Create Process Functions: <tt>ExecShellAsUser</tt> / <tt>ExecShellWait</tt> / <tt>WaitForProcEx</tt></a>
@@ -436,6 +436,27 @@ SectionEnd</pre>
 
 	${StdUtils.ValidPathSpec} $0 "C:\Folder\File.foo"
 	DetailPrint 'ValidPathSpec("C:\Folder\File.foo") = $0'
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.ValidDomainName} <i>user_var(output)</i> <i>input</i></tt></b></p>
+<p>The <tt>${StdUtils.ValidDomainName}</tt> function checks whether the given <tt>input</tt> is a valid domain name. This can be a fully qualified domain name (FQDN) or just a single hostname. If the given string is a <i>valid</i> domain name, the function returns "ok"; otherwise it returns "invalid".
+<p>Note: A valid domain name consist of one or more <i>labels</i>. If multiple labels are present, each consecutive pair of labels is  separated by a single dot (<tt>.</tt>) character; leading or trailing dots are forbidden. Also, each label consist of one or more characters. The only characters allowed in a label are the upper-case letters <tt>A</tt> to <tt>Z</tt>, the lower-case letters <tt>a</tt> to <tt>z</tt>, the digits <tt>0</tt> to <tt>9</tt> as well as thy hyphen character (<tt>-</tt>). Last but not least, a label <i>must not</i> start or end with a hyphen character. There generally is <i>no</i> distinction between upper-case and lower-case letters.</p>
+
+<pre>Section
+	${StdUtils.StdUtils.ValidDomainName} $0 "localhost"
+	DetailPrint 'ValidDomainName("localhost") = $0'
+
+	${StdUtils.ValidDomainName} $0 "de.wikipedia.org"
+	DetailPrint 'ValidDomainName("de.wikipedia.org") = $0'
+
+	${StdUtils.ValidDomainName} $0 "Ö La Palöma"
+	DetailPrint 'ValidDomainName("Ö La Palöma") = $0'
+
+	${StdUtils.ValidDomainName} $0 "-foo-"
+	DetailPrint 'ValidDomainName("-foo-") = $0'
+
+	${StdUtils.ValidDomainName} $0 ".bar."
+	DetailPrint 'ValidDomainName(".bar.") = $0'
 SectionEnd</pre>
 
 <br>

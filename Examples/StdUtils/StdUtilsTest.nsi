@@ -434,3 +434,24 @@ Section
 SectionEnd
 
 !insertmacro NextTest
+
+########## ValidDomainName ##########
+
+Section
+	${StdUtils.StdUtils.ValidDomainName} $0 "localhost"
+	DetailPrint 'ValidDomainName("localhost") = $0'
+
+	${StdUtils.ValidDomainName} $0 "de.wikipedia.org"
+	DetailPrint 'ValidDomainName("de.wikipedia.org") = $0'
+
+	${StdUtils.ValidDomainName} $0 "Ö La Palöma"
+	DetailPrint 'ValidDomainName("Ö La Palöma") = $0'
+
+	${StdUtils.ValidDomainName} $0 "-foo-"
+	DetailPrint 'ValidDomainName("-foo-") = $0'
+
+	${StdUtils.ValidDomainName} $0 ".bar."
+	DetailPrint 'ValidDomainName(".bar.") = $0'
+SectionEnd
+
+!insertmacro NextTest
