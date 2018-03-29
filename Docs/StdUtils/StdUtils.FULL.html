@@ -268,7 +268,7 @@ Section
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.RandList} <i>count</i> <i>max</i></tt></b></p>
-<p>Pushes a list of pseudo-random numbers onto the stack. The string "EOL" is pushed beforehand and thus will indicate the end of the list when popping the numbers off the stack. The quantity of the random numbers in the list can be controlled via the <tt>count</tt> parameter. Each number is guaranteed to be in the range from <tt>0</tt> to <tt>max</tt>, with both endpoints of the interval <i>included</i>. Also, each number appears <i>at most</i> once in the list. If the function was called with invalid parameters, it returns "einval" and sets the error flag.</p></p>
+<p>Pushes a list of pseudo-random numbers onto the stack. The string "EOL" is pushed beforehand and thus will indicate the end of the list when popping the numbers off the stack. The quantity of the random numbers in the list can be controlled via the <tt>count</tt> parameter. Each number is guaranteed to be in the range from <tt>0</tt> to <tt>max</tt>, with both endpoints of the interval <i>included</i>. Also, each number appears <i>at most</i> once in the list. If the function was called with invalid parameters, it returns "einval" and sets the error flag.</p>
 
 <pre>Section
 	${StdUtils.RandList} 50 100
@@ -1223,7 +1223,7 @@ individuals on behalf of the Apache Group and was originally based
 on public domain software written at the National Center for
 Supercomputing Applications, University of Illinois, Urbana-Champaign.
 For more information on the Apache Group and the Apache HTTP server
-project, please see <http://www.apache.org/>.</pre>
+project, please see &lt;http://www.apache.org/&gt;.</pre>
 </ul>
 
 <br>
@@ -1269,7 +1269,7 @@ project, please see <http://www.apache.org/>.</pre>
 <a name="53c38996"></a><h1>Version History</h1>
 
 <ul>
-	<li><b>Version 1.13, 2018-03-??</b>
+	<li><b>Version 1.13, 2018-03-29</b>
 	<ul>
 		<li>Added new function <tt>${StdUtils.RandBytes}</tt> to generate a sequence of pseudo-random bytes.
 		<li>Added new functions <tt>${StdUtils.ProtectStr}</tt> and <tt>${StdUtils.UnprotectStr}</tt> to encrypt/decrypt strings using the <a href="https://msdn.microsoft.com/en-us/library/ms995355.aspx">DPAPI</a>.
