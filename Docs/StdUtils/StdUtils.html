@@ -47,7 +47,7 @@
 	<ul>
 		<li><a href="#66dd4753">Time Functions: <tt>Time</tt> / <tt>GetMinutes</tt> / <tt>GetHours</tt> / <tt>GetDays</tt></a>
 		<li><a href="#dc3f60d9">Pseudorandom Number Generator: <tt>Rand</tt> / <tt>RandMax</tt> / <tt>RandMinMax</tt> / <tt>RandList</tt> / <tt>RandBytes</tt></a>
-		<li><a href="#23711935">String Functions: <tt>FormatStr</tt> / <tt>ScanStr</tt> / <tt>TrimStr</tt> / <tt>RevStr</tt> / <tt>Valid{FileName,PathSpec,DomainName}</tt></a>
+		<li><a href="#23711935">String Functions: <tt>FormatStr</tt> / <tt>ScanStr</tt> / <tt>TrimStr</tt> / <tt>RevStr</tt> / <tt>Valid{FileName,PathSpec,DomainName}</tt> / <tt>Str{To,From}Utf8</tt></a>
 		<li><a href="#df333b53">Shell File Operation: <tt>SHFileCopy</tt> / <tt>SHFileMove</tt></a>
 		<li><a href="#18e9c5cb">File manipulation: <tt>AppendToFile</tt></a>
 		<li><a href="#a3d3af46">Create Process Functions: <tt>ExecShellAsUser</tt> / <tt>ExecShellWait</tt> / <tt>WaitForProcEx</tt></a>
@@ -75,8 +75,7 @@
 
 <p>The following functions are provided by the StdUtils plug-in:
 
-<pre>
-!define StdUtils.Time             #time(), as in C standard library
+<pre>!define StdUtils.Time             #time(), as in C standard library
 !define StdUtils.GetMinutes       #GetSystemTimeAsFileTime(), returns the number of minutes
 !define StdUtils.GetHours         #GetSystemTimeAsFileTime(), returns the number of hours
 !define StdUtils.GetDays          #GetSystemTimeAsFileTime(), returns the number of days
@@ -97,6 +96,9 @@
 !define StdUtils.RevStr           #Reverse a string, e.g. "reverse me" <-> "em esrever"
 !define StdUtils.ValidFileName    #Test whether string is a valid file name - no paths allowed
 !define StdUtils.ValidPathSpec    #Test whether string is a valid full(!) path specification
+!define StdUtils.ValidDomainName  #Test whether string is a valid host name or domain name
+!define StdUtils.StrToUtf8        #Convert string from Unicode (UTF-16) or ANSI to UTF-8 bytes
+!define StdUtils.StrFromUtf8      #Convert string from UTF-8 bytes to Unicode (UTF-16) or ANSI
 !define StdUtils.SHFileMove       #SHFileOperation(), using the FO_MOVE operation
 !define StdUtils.SHFileCopy       #SHFileOperation(), using the FO_COPY operation
 !define StdUtils.AppendToFile     #Append contents of an existing file to another file
@@ -439,7 +441,7 @@ SectionEnd</pre>
 SectionEnd</pre>
 
 <p><br><b><tt>${StdUtils.ValidDomainName} <i>user_var(output)</i> <i>input</i></tt></b></p>
-<p>The <tt>${StdUtils.ValidDomainName}</tt> function checks whether the given <tt>input</tt> is a valid domain name. This can be a fully qualified domain name (FQDN) or just a single hostname. If the given string is a <i>valid</i> domain name, the function returns "ok"; otherwise it returns "invalid".
+<p>The <tt>${StdUtils.ValidDomainName}</tt> function checks whether the given <tt>input</tt> is a valid domain name. This can be a fully qualified domain name (FQDN) or just a single hostname. If the given string is a <i>valid</i> domain name, the function returns "ok"; otherwise it returns "invalid".</p>
 <p>Note: A valid domain name consist of one or more <i>labels</i>. If multiple labels are present, each consecutive pair of labels is  separated by a single dot (<tt>.</tt>) character; leading or trailing dots are forbidden. Also, each label consist of one or more characters. The only characters allowed in a label are the upper-case letters <tt>A</tt> to <tt>Z</tt>, the lower-case letters <tt>a</tt> to <tt>z</tt>, the digits <tt>0</tt> to <tt>9</tt> as well as thy hyphen character (<tt>-</tt>). Last but not least, a label <i>must not</i> start or end with a hyphen character. There generally is <i>no</i> distinction between upper-case and lower-case letters.</p>
 
 <pre>Section
@@ -457,6 +459,26 @@ SectionEnd</pre>
 
 	${StdUtils.ValidDomainName} $0 ".bar."
 	DetailPrint 'ValidDomainName: ".bar." --> $0'
+SectionEnd</pre>
+
+<p><br><b><tt>${StdUtils.StrToUtf8} <i>user_var(output)</i> <i>text</i><br>${StdUtils.StringFromUtf8} <i>user_var(output)</i> <i>trnc</i> <i>data</i></tt></b></p>
+<p>The <tt>${StdUtils.StrToUtf8}</tt> function converts the given string  <tt>text</tt> from either UTF-16 (Unicode version) or the current ANSI codepage (ANSI version) string to the UTF-8 format. The resulting UTF-8 byte sequence, including the terminating NULL character, is returned as a <a href="https://en.wikipedia.org/wiki/Base64">Base64</a>-encoded string. If the length of the encoded data exceeds the maximum NSIS string length, then "too_long" is returned; and if other errors have occurred, then "error" is returned. Furthermore, if anything went wrong, the the error flag is set.
+<p>The <tt>${StdUtils.StrFromUtf8}</tt> function converts the given UTF-8 byte sequence <tt>data</tt> to a normal string in either UTF-16 format (Unicode version) or the current ANSI codepage (ANSI version). The given input is expected to be valid UTF-8 data, encoded as a Base64 string. Also, the given input sequence is supposed to end with a NULL terminator. The <tt>trnc</tt> parameter controls the behavior of the function, in case that the length of the decoded string exceeds the maximum NSIS string length: If the parameter is set to <tt>1</tt>, then the string is truncated; if the parameter is set to <tt>0</tt>, then the function fails. If the length of the decoded string exceeds the maximum NSIS string length, then "too_long" is returned; and if other errors have occurred, then "error" is returned. Furthermore, if anything went wrong, the the error flag is set.
+
+<pre>Section
+	ClearErrors
+
+	${StdUtils.StrToUtf8} $1 "The five boxing wizards jump quickly."
+	DetailPrint 'UTF-8: "$1"'
+	IfErrors 0 +3
+	DetailPrint "Whoops, failed unexpectedly!"
+	Abort
+	
+	${StdUtils.StrFromUtf8} $2 0 "$1"
+	DetailPrint 'Plain: "$2"'
+	IfErrors 0 +3
+	DetailPrint "Whoops, failed unexpectedly!"
+	Abort
 SectionEnd</pre>
 
 <br>
@@ -1150,7 +1172,7 @@ You should have received a copy of the CC0 Public Domain Dedication along with
 this software. If not, see &lt;http://creativecommons.org/publicdomain/zero/1.0/&gt;.</pre>
 	<li><p><b>Base64 encoder/decoder, originally from Apache</b><br>
 	<i>Copyright (c) 1995-1999 The Apache Group. All rights reserved.</i><br>
-	<a href="httpd.apache.org/">httpd.apache.org/</a></p>
+	<a href="http://httpd.apache.org/">http://httpd.apache.org/</a></p>
 	<pre>Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
 are met:
@@ -1251,6 +1273,8 @@ project, please see <http://www.apache.org/>.</pre>
 	<ul>
 		<li>Added new function <tt>${StdUtils.RandBytes}</tt> to generate a sequence of pseudo-random bytes.
 		<li>Added new functions <tt>${StdUtils.ProtectStr}</tt> and <tt>${StdUtils.UnprotectStr}</tt> to encrypt/decrypt strings using the <a href="https://msdn.microsoft.com/en-us/library/ms995355.aspx">DPAPI</a>.
+		<li>Added new function <tt>${StdUtils.StrToUtf8}</tt> and <tt>${StdUtils.StrFromUtf8}</tt> to convert a string to/from an UTF-8 byte sequence.
+		<li>Added new function <tt>${StdUtils.ValidDomainName}</tt> to validate a given domain name string.
 		<li>Various improvements to the pseudorandom number generator (<tt>${StdUtils.Rand*}</tt>) functions.
 	</ul>
 	<li><b>Version 1.12, 2017-12-12</b>
