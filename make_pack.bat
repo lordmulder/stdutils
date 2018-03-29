@@ -40,6 +40,7 @@ for %%c in (%CONFIG_NAMES%) do (
 		)
 	)
 )
+call "%~dp0\Docs\StdUtils\minify.cmd"
 REM -------------------------------------------------------------------------
 set "PACK_PATH=%TMP%\~%RANDOM%%RANDOM%.tmp"
 mkdir "%PACK_PATH%"
@@ -54,10 +55,10 @@ for %%c in (%CONFIG_NAMES%) do (
 	mkdir "%PACK_PATH%\Plugins\%%c"
 	copy /Y "%~dp0\Plugins\Release_%%c\*.dll" "%PACK_PATH%\Plugins\%%c"
 )
-copy /Y "%~dp0\Include\*.nsh"           "%PACK_PATH%\Include"
-copy /Y "%~dp0\Examples\StdUtils\*.nsi" "%PACK_PATH%\Examples\StdUtils"
-copy /Y "%~dp0\*.txt"                   "%PACK_PATH%"
-copy /Y "%~dp0\Docs\StdUtils\*.html"    "%PACK_PATH%\Docs\StdUtils"
+copy /Y "%~dp0\Include\*.nsh"               "%PACK_PATH%\Include"
+copy /Y "%~dp0\Examples\StdUtils\*.nsi"     "%PACK_PATH%\Examples\StdUtils"
+copy /Y "%~dp0\Docs\StdUtils\StdUtils.html" "%PACK_PATH%\Docs\StdUtils"
+copy /Y "%~dp0\*.txt"                       "%PACK_PATH%"
 REM -------------------------------------------------------------------------
 pushd "%~dp0"
 git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_DATE%.Sources.tar" HEAD
