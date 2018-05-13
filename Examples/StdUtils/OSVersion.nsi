@@ -60,11 +60,14 @@ Section
 	${StdUtils.GetOSEdition} $1
 	DetailPrint "Edition: $1"
 	
+	${StdUtils.GetRealOSName} $1
+	DetailPrint "Friendly name: $\"$1$\""
+	
 	${StdUtils.GetOSReleaseId} $1
 	DetailPrint "Release Id: v$1"
 	
-	${StdUtils.GetRealOSName} $1
-	DetailPrint "Friendly name: $\"$1$\""
+	${StdUtils.GetOSReleaseName} $1
+	DetailPrint "Release name: $\"$1$\""
 	
 	DetailPrint "--------------"
 SectionEnd

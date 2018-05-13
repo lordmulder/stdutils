@@ -290,7 +290,7 @@ bool get_real_os_buildNo(unsigned int *const buildNo, bool *const pbOverride)
 /*
  * Get friendly OS version name
  */
-const TCHAR *get_os_friendly_name(const DWORD major, const DWORD minor, const bool server)
+const TCHAR *get_os_friendly_name(const unsigned int major, const unsigned int minor, const bool server)
 {
 	static const size_t NAME_COUNT = 9;
 	static const struct
@@ -364,19 +364,68 @@ bool get_os_server_edition(bool *const bIsServer)
 	return success;
 }
 
-int get_os_release_id(DWORD &releaseId)
+/*
+ * Get the Windows 10 release ID
+ */
+int get_os_release_id(DWORD *const releaseId)
 {
-	releaseId = DWORD(-1);
-	int result = (-1);
+	static const size_t RELEASE_COUNT = 6;
+	static const struct
+	{
+		const DWORD buildNmbr;
+		const DWORD releaseId;
+	}
+	s_releases[RELEASE_COUNT] =
+	{
+		{ 10240, 1507 }, //Threshold 1
+		{ 10586, 1511 }, //Threshold 2
+		{ 14393, 1607 }, //Redstone 1
+		{ 15063, 1703 }, //Redstone 2
+		{ 16299, 1709 }, //Redstone 3
+		{ 17134, 1803 }  //Redstone 4
+	};
+
+	*releaseId = DWORD(-1);
+
+	//Check for Windows 10
+	unsigned int realOsMajor, realOsMinor, realOsSPack;
+	bool overrideFlag;
+	if(get_real_os_version(&realOsMajor, &realOsMinor, &realOsSPack, &overrideFlag))
+	{
+		if(realOsMajor < 10)
+		{
+			return 0; /*Not running on Windows 10+*/
+		}
+	}
+	else
+	{
+		return -1; /*failed to detect real OS version*/
+	}
+
+	//Read the real OS build number
+	unsigned int realOsBuild;
+	if(get_real_os_buildNo(&realOsBuild, &overrideFlag))
+	{
+		//Try to get release id from LUT
+		for(size_t i = 0; i < RELEASE_COUNT; ++i)
+		{
+			if(realOsBuild == s_releases[i].buildNmbr)
+			{
+				*releaseId = s_releases[i].releaseId;
+				return 1;
+			}
+		}
+	}
+
+	//Read the release id from registry
 	HKEY hKeyCurrentVersion;
 	if(RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, STANDARD_RIGHTS_READ | KEY_QUERY_VALUE, &hKeyCurrentVersion) == ERROR_SUCCESS)
 	{
 		const DWORD buffSize = 256;
 		BYTE data[buffSize];
 		DWORD type = REG_NONE, size = buffSize;
-		switch(RegQueryValueExW(hKeyCurrentVersion, L"ReleaseId", NULL, &type, &data[0], &size))
+		if(RegQueryValueExW(hKeyCurrentVersion, L"ReleaseId", NULL, &type, &data[0], &size) == ERROR_SUCCESS)
 		{
-		case ERROR_SUCCESS:
 			if(((type == REG_SZ) || (type == REG_EXPAND_SZ) || (type == REG_MULTI_SZ)) && (size >= sizeof(WCHAR)))
 			{
 				if(const WCHAR *const regIdStr = reinterpret_cast<const WCHAR*>(&data[0]))
@@ -384,8 +433,7 @@ int get_os_release_id(DWORD &releaseId)
 					unsigned long regIdVal;
 					if(swscanf(regIdStr, L"%lu", &regIdVal) == 1)
 					{
-						releaseId = regIdVal;
-						result = 1;
+						*releaseId = regIdVal;
 					}
 				}
 			}
@@ -393,26 +441,53 @@ int get_os_release_id(DWORD &releaseId)
 			{
 				if(const DWORD *const regIdPtr = reinterpret_cast<const DWORD*>(&data[0]))
 				{
-					releaseId = (*regIdPtr);
-					result = 1;
+					*releaseId = (*regIdPtr);
 				}
 			}
 			else if((type == REG_QWORD) && (size >= sizeof(ULARGE_INTEGER)))
 			{
 				if(const ULARGE_INTEGER *const regIdPtr = reinterpret_cast<const ULARGE_INTEGER*>(&data[0]))
 				{
-					releaseId = regIdPtr->LowPart;
-					result = 1;
+					*releaseId = regIdPtr->LowPart;
 				}
 			}
-			break;
-		case ERROR_FILE_NOT_FOUND:
-			result = 0; /*value "ReleaseId" does NOT exist*/
-			break;
 		}
 		RegCloseKey(hKeyCurrentVersion);
 	}
-	return result;
+
+	return ((*releaseId) != DWORD(-1)) ? 1 : (-1);
+}
+
+/*
+ * Get friendly name of the Windows 10 release ID
+ */
+const TCHAR *get_os_release_name(const unsigned int releaseId)
+{
+	static const size_t NAME_COUNT = 6;
+	static const struct
+	{
+		const DWORD releaseId;
+		const TCHAR releaseName[32];
+	}
+	s_names[NAME_COUNT] =
+	{
+		{ 1507 , T("Threshold 1") },
+		{ 1511 , T("Threshold 2") },
+		{ 1607 , T("Redstone 1" ) },
+		{ 1703 , T("Redstone 2" ) },
+		{ 1709 , T("Redstone 3" ) },
+		{ 1803 , T("Redstone 4" ) },
+	};
+
+	for(size_t i = 0; i < NAME_COUNT; i++)
+	{
+		if(s_names[i].releaseId == releaseId)
+		{
+			return s_names[i].releaseName;
+		}
+	}
+
+	return T("unknown");
 }
 
 //===========================================================================
