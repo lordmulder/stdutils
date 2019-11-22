@@ -65,7 +65,7 @@ git.exe archive --verbose --output "%PACK_PATH%\Contrib\StdUtils\StdUtils.%ISO_D
 popd
 REM -------------------------------------------------------------------------
 echo StdUtils plug-in for NSIS>                               "%PACK_PATH%\BUILD_TAG.txt"
-echo Copyright (C) 2004-2018 LoRd_MuldeR ^<MuldeR2@GMX.de^>>> "%PACK_PATH%\BUILD_TAG.txt"
+echo Copyright (C) 2004-2019 LoRd_MuldeR ^<MuldeR2@GMX.de^>>> "%PACK_PATH%\BUILD_TAG.txt"
 echo.>>                                                       "%PACK_PATH%\BUILD_TAG.txt"
 echo Built on %DATE%, at %TIME%.>>                            "%PACK_PATH%\BUILD_TAG.txt"
 REM -------------------------------------------------------------------------
