@@ -369,7 +369,7 @@ bool get_os_server_edition(bool *const bIsServer)
  */
 int get_os_release_id(DWORD *const releaseId)
 {
-	static const size_t RELEASE_COUNT = 7;
+	static const size_t RELEASE_COUNT = 9;
 	static const struct
 	{
 		const DWORD buildNmbr;
@@ -383,7 +383,9 @@ int get_os_release_id(DWORD *const releaseId)
 		{ 15063, 1703 }, //Redstone 2
 		{ 16299, 1709 }, //Redstone 3
 		{ 17134, 1803 }, //Redstone 4
-		{ 17763, 1809 }  //Redstone 5
+		{ 17763, 1809 }, //Redstone 5
+		{ 18362, 1903 }, //19H1
+		{ 18363, 1909 }  //19H2
 	};
 
 	*releaseId = DWORD(-1);
@@ -464,7 +466,7 @@ int get_os_release_id(DWORD *const releaseId)
  */
 const TCHAR *get_os_release_name(const unsigned int releaseId)
 {
-	static const size_t NAME_COUNT = 8;
+	static const size_t NAME_COUNT = 9;
 	static const struct
 	{
 		const DWORD releaseId;
@@ -479,7 +481,8 @@ const TCHAR *get_os_release_name(const unsigned int releaseId)
 		{ 1709 , T("Redstone 3" ) },
 		{ 1803 , T("Redstone 4" ) },
 		{ 1809 , T("Redstone 5" ) },
-		{ 1903 , T("19H1"       ) }
+		{ 1903 , T("19H1"       ) },
+		{ 1909 , T("19H2"       ) }
 	};
 
 	for(size_t i = 0; i < NAME_COUNT; i++)
