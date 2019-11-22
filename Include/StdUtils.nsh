@@ -1,6 +1,6 @@
 #################################################################################
 # StdUtils plug-in for NSIS
-# Copyright (C) 2004-2018 LoRd_MuldeR <MuldeR2@GMX.de>
+# Copyright (C) 2004-2019 LoRd_MuldeR <MuldeR2@GMX.de>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,12 @@
 # http://www.gnu.org/licenses/lgpl-2.1.txt
 #################################################################################
 
+!ifndef ___STDUTILS__NSH___
+!define ___STDUTILS__NSH___
+
+# API Version
+!define StdUtils.API 56 #20180513
+
 # DEVELOPER NOTES:
 # - Please see "https://github.com/lordmulder/stdutils/" for news and updates!
 # - Please see "Docs\StdUtils\StdUtils.html" for detailed function descriptions!
@@ -27,9 +33,6 @@
 #################################################################################
 # FUNCTION DECLARTIONS
 #################################################################################
-
-!ifndef ___STDUTILS__NSH___
-!define ___STDUTILS__NSH___
 
 !define StdUtils.Time             '!insertmacro _StdU_Time'          #time(), as in C standard library
 !define StdUtils.GetMinutes       '!insertmacro _StdU_GetMinutes'    #GetSystemTimeAsFileTime(), returns the number of minutes
